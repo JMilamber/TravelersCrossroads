@@ -1,5 +1,6 @@
 {
-  "itemGroup.travelerscrossroads": "Example Mod Tab",
-  "block.travelerscrossroads.example_block": "Example Block",
-  "item.travelerscrossroads.example_item": "Example Item"
+  "block.travelerscrossroads.cairn": "Travelers Cairn",
+  "blockentity.travelerscrossroads.cairn": "Travelers Cairn",
+  "itemGroup.travelerscrossroads.travelers_tab": "Travelers Tab"
+
 }
