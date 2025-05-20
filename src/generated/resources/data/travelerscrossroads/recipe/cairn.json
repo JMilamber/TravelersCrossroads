@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "travelerscrossroads:pebble"
+    },
+    {
+      "item": "travelerscrossroads:pebble"
+    },
+    {
+      "item": "travelerscrossroads:pebble"
+    },
+    {
+      "item": "travelerscrossroads:pebble"
+    },
+    {
+      "item": "travelerscrossroads:pebble"
+    },
+    {
+      "item": "travelerscrossroads:pebble"
+    },
+    {
+      "item": "travelerscrossroads:pebble"
+    },
+    {
+      "item": "travelerscrossroads:pebble"
+    },
+    {
+      "item": "travelerscrossroads:pebble"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "travelerscrossroads:cairn"
+  }
+}

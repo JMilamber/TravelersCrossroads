@@ -1,20 +1,21 @@
 package com.amber_roads.block;
 
-import com.amber_roads.TravelersCrossroads;
 import com.amber_roads.entity.blockentity.CairnBlockEntity;
+import com.amber_roads.init.TravelersInit;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
@@ -24,16 +25,14 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-
 import static com.amber_roads.util.TravelersUtil.rotateShape;
 
 public class CairnBlock extends BaseEntityBlock {
 
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
-    public static final BooleanProperty CREATED_PATHS = BooleanProperty.create("created_paths");
     protected static final MapCodec<CairnBlock> CODEC = simpleCodec(CairnBlock::new);
 
+    protected CairnBlockEntity blockEntity = null;
 
     public static final VoxelShape SHAPE = Shapes.or(
             Block.box(5, 0, 8, 9, 1, 12),
@@ -56,15 +55,11 @@ public class CairnBlock extends BaseEntityBlock {
             );
 
     private int tickCount = 0;
-    protected boolean init;
-    public ArrayList<ChunkPos> cairnPaths = new ArrayList<>();
+
 
     public CairnBlock(Properties properties) {
         super(properties);
-        this.registerDefaultState(
-            this.stateDefinition.any().setValue(FACING, Direction.SOUTH).setValue(CREATED_PATHS, Boolean.FALSE)
-        );
-        this.init = false;
+        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.SOUTH));
     }
 
     @Override
@@ -74,10 +69,7 @@ public class CairnBlock extends BaseEntityBlock {
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        Level level = context.getLevel();
-        Player player = context.getPlayer();
-        boolean flag = !level.isClientSide && player != null && !player.isCreative();
-        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection()).setValue(CREATED_PATHS, flag);
+        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection());
     }
 
        @Override
@@ -123,7 +115,7 @@ public class CairnBlock extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING, CREATED_PATHS);
+        builder.add(FACING);
     }
 
     @Override
@@ -132,22 +124,10 @@ public class CairnBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-        super.tick(state, level, pos, random);
-        this.tickCount ++;
-
-        if (level.isClientSide) {
-            return;
-        }
-
-        if (!this.init && this.tickCount > 20) {
-            TravelersCrossroads.WATCHER.addPoiToMap(
-                    new ChunkPos(pos)
-            );
-            ((CairnBlockEntity) level.getBlockEntity(pos)).addConnections(random);
-
-            this.init = true;
-        }
+    public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
+        return level.isClientSide ? null : createTickerHelper(blockEntityType, TravelersInit.CAIRN_BE.get(),
+                ((pLevel, blockPos, blockState, cairnBlockEntity) -> cairnBlockEntity.tick(pLevel, blockPos, blockState))
+        );
     }
 
     @Override
@@ -160,7 +140,8 @@ public class CairnBlock extends BaseEntityBlock {
         super.onRemove(state, level, pos, newState, movedByPiston);
     }
 
-       @Override
+
+    @Override
     protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
         BlockPos blockpos = pos.below();
         BlockState blockstate = level.getBlockState(blockpos);

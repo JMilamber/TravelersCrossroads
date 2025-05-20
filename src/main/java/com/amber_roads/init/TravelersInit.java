@@ -3,20 +3,21 @@ package com.amber_roads.init;
 import com.amber_roads.TravelersCrossroads;
 import com.amber_roads.block.CairnBlock;
 import com.amber_roads.entity.blockentity.CairnBlockEntity;
-import com.amber_roads.world.TravelersBeginning;
-import com.amber_roads.world.TravelersConfiguration;
+import com.amber_roads.worldgen.DistanceFilter;
+import com.amber_roads.worldgen.TravelersBeginning;
+import com.amber_roads.worldgen.TravelersConfiguration;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.placement.PlacementModifier;
+import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -32,14 +33,17 @@ public class TravelersInit {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, TravelersCrossroads.MODID);
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, TravelersCrossroads.MODID);
     public static final DeferredRegister<Feature<?>> FEATURES = DeferredRegister.create(Registries.FEATURE, TravelersCrossroads.MODID);
+    public static final DeferredRegister<PlacementModifierType<?>> PLACEMENTS = DeferredRegister.create(Registries.PLACEMENT_MODIFIER_TYPE, TravelersCrossroads.MODID);
 
 
-    public static final Supplier<Block> CAIRN = registerBlock("cairn", () -> new CairnBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.COBBLESTONE)));
+    public static final Supplier<Block> CAIRN = registerBlock("cairn", () -> new CairnBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.GRAVEL).forceSolidOn()));
 
     public static final Supplier<BlockEntityType<CairnBlockEntity>> CAIRN_BE =
             BLOCK_ENTITIES.register("cairn_be", () -> BlockEntityType.Builder.of(
                     CairnBlockEntity::new, CAIRN.get()).build(null)
             );
+
+    public static final Supplier<Item> PEBBLE = ITEMS.register("pebble", () -> new Item(new Item.Properties().stacksTo(24)));
 
     public static final Supplier<CreativeModeTab> TRAVELERS_TAB =
             CREATIVE_MODE_TABS.register("travelers_tab", () -> CreativeModeTab.builder()
@@ -51,6 +55,8 @@ public class TravelersInit {
             );
 
     public static final Supplier<Feature<TravelersConfiguration>> TRAVELERS_BEGINNING = registerFeature("travelers_beginning", () -> new TravelersBeginning(TravelersConfiguration.CODEC));
+
+    public static final DeferredHolder<PlacementModifierType<?>, PlacementModifierType<DistanceFilter>> DISTANCE_FILTER = PLACEMENTS.register("distance_filter", () -> explicitPlacmentTypeTyping(DistanceFilter.CODEC));
 
     private static <T extends Block> DeferredBlock<T> registerBlock(String name, Supplier<T> block) {
         DeferredBlock<T> toReturn = (DeferredBlock<T>) BLOCKS.register(name, block);
@@ -66,11 +72,22 @@ public class TravelersInit {
         return FEATURES.register(name, feature);
     }
 
+    /**
+     * ** TelepathicGrunt Structure Tutorial 1.20.2 neoforge **
+     * Originally, I had a double lambda ()->()-> for the RegistryObject line above, but it turns out that
+     * some IDEs cannot resolve the typing correctly. This method explicitly states what the return type
+     * is so that the IDE can put it into the DeferredRegistry properly.
+     */
+    private static <T extends PlacementModifier> PlacementModifierType<T> explicitPlacmentTypeTyping(MapCodec<T> placementTypeCodec) {
+        return () -> placementTypeCodec;
+    }
+
     public static void register(IEventBus eventBus) {
         BLOCKS.register(eventBus);
         ITEMS.register(eventBus);
         BLOCK_ENTITIES.register(eventBus);
         CREATIVE_MODE_TABS.register(eventBus);
         FEATURES.register(eventBus);
+        PLACEMENTS.register(eventBus);
     }
 }

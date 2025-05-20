@@ -1,0 +1,9 @@
+{
+  "values": [
+    "minecraft:gravel",
+    "#minecraft:dirt",
+    "#minecraft:stone_ore_replaceables",
+    "#minecraft:sand",
+    "#minecraft:snow"
+  ]
+}
