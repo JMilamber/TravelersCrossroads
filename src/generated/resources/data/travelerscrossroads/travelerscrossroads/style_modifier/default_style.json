@@ -1,0 +1,19 @@
+{
+  "type": "travelerscrossroads:percent_style_modifier",
+  "biomes": "#minecraft:is_overworld",
+  "main_path_block": [
+    {
+      "Name": "minecraft:gravel"
+    }
+  ],
+  "sub_path_block": [
+    {
+      "Name": "minecraft:dirt_path"
+    }
+  ],
+  "texture_blocks": [
+    {
+      "Name": "minecraft:cobblestone"
+    }
+  ]
+}

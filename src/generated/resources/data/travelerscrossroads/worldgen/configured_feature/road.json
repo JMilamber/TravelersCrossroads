@@ -1,8 +1,0 @@
-{
-  "type": "travelerscrossroads:travelers_beginning",
-  "config": {
-    "avoid_structures": "#travelerscrossroads:path_avoid_structure",
-    "least_distance": 18,
-    "least_struct_distance": 4
-  }
-}

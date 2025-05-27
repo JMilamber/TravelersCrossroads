@@ -1,13 +1,13 @@
 {
-  "feature": "travelerscrossroads:road",
+  "feature": "travelerscrossroads:configured_road",
   "placement": [
     {
       "type": "minecraft:rarity_filter",
-      "chance": 74
+      "chance": 67
     },
     {
       "type": "travelerscrossroads:distance_filter",
-      "distance": 35
+      "distance": 25
     },
     {
       "type": "minecraft:in_square"
@@ -26,7 +26,7 @@
         ]
       },
       "direction_of_search": "down",
-      "max_steps": 12,
+      "max_steps": 5,
       "target_condition": {
         "type": "minecraft:matching_fluids",
         "fluids": "minecraft:empty"
@@ -42,7 +42,7 @@
         ]
       },
       "direction_of_search": "east",
-      "max_steps": 12,
+      "max_steps": 5,
       "target_condition": {
         "type": "minecraft:matching_fluids",
         "fluids": "minecraft:empty"
@@ -58,7 +58,7 @@
         ]
       },
       "direction_of_search": "west",
-      "max_steps": 12,
+      "max_steps": 5,
       "target_condition": {
         "type": "minecraft:matching_fluids",
         "fluids": "minecraft:empty"
@@ -74,7 +74,7 @@
         ]
       },
       "direction_of_search": "north",
-      "max_steps": 12,
+      "max_steps": 5,
       "target_condition": {
         "type": "minecraft:matching_fluids",
         "fluids": "minecraft:empty"
@@ -90,7 +90,7 @@
         ]
       },
       "direction_of_search": "south",
-      "max_steps": 12,
+      "max_steps": 5,
       "target_condition": {
         "type": "minecraft:matching_fluids",
         "fluids": "minecraft:empty"

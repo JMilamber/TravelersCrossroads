@@ -1,0 +1,5 @@
+{
+  "type": "travelerscrossroads:distance_offset_modifier",
+  "offset": 2,
+  "structures": "#travelerscrossroads:village_offset_structures"
+}
