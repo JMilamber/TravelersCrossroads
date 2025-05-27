@@ -1,6 +1,7 @@
 package com.amber_roads.datagen;
 
 import com.amber_roads.TravelersCrossroads;
+import com.amber_roads.init.TravelersRegistries;
 import com.amber_roads.worldgen.TravelersFeatures;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
@@ -16,9 +17,11 @@ public class TravelersWorldGenProvider extends DatapackBuiltinEntriesProvider {
     public static final RegistrySetBuilder BUILDER = new RegistrySetBuilder()
             .add(Registries.CONFIGURED_FEATURE, TravelersFeatures::configuredBootstrap)
             .add(Registries.PLACED_FEATURE, TravelersFeatures::placedBootstrap)
-            .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, TravelersFeatures::biomeBootstrap);
+            .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, TravelersFeatures::biomeBootstrap)
+            .add(TravelersRegistries.Keys.OFFSET_MODIFIERS, TravelersFeatures::pathOffsetBootstrap)
+            .add(TravelersRegistries.Keys.STYLE_MODIFIERS, TravelersFeatures::pathBiomeStylesBootstrap);
 
     public TravelersWorldGenProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
-        super(output, registries, BUILDER, Set.of(TravelersCrossroads.MODID));
+        super(output, registries, BUILDER, Set.of("minecraft", TravelersCrossroads.MOD_ID));
     }
 }

@@ -1,26 +1,42 @@
 package com.amber_roads.util;
 
 import com.amber_roads.TravelersCrossroads;
-import com.amber_roads.worldgen.TravelersBeginning;
-import com.amber_roads.worldgen.TravelersFeatures;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.amber_roads.worldgen.custom.StyleModifier;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
+import static com.amber_roads.util.TravelersTags.Blocks.PATH_ABOVE;
+import static com.amber_roads.util.TravelersTags.Blocks.PATH_BELOW;
 import static com.amber_roads.util.TravelersUtil.chunkMatch;
 import static java.lang.Math.abs;
 
 public class TravelersPath {
+    private static final Map<TravelersDirection, List<Pair<Integer, Integer>>> CONNECTION_POS = Map.of(
+            TravelersDirection.NORTH, List.of(Pair.of(-2, -3), Pair.of(-1, -3), Pair.of(0, -3), Pair.of(1, -3)),
+            TravelersDirection.NORTHEAST, List.of(Pair.of(0, -3), Pair.of(1, -3), Pair.of(2, -3), Pair.of(3, -3), Pair.of(4, -3), Pair.of(2, -2), Pair.of(3, -2), Pair.of(2, -1)),
+            TravelersDirection.EAST, List.of(Pair.of(2, 1), Pair.of(2, 0), Pair.of(2, -1), Pair.of(2, -2)),
+            TravelersDirection.SOUTHEAST, List.of(Pair.of(2, 0), Pair.of(2, 1), Pair.of(3, 1), Pair.of(0, 2), Pair.of(1, 2), Pair.of(2, 2), Pair.of(3, 2), Pair.of(4, 2)),
+            TravelersDirection.SOUTH, List.of(Pair.of(1, 2), Pair.of(0, 2), Pair.of(-1, 2), Pair.of(-2, 2)),
+            TravelersDirection.SOUTHWEST, List.of(Pair.of(-1, 2), Pair.of(-2, 2), Pair.of(-3, 2), Pair.of(-4, 2), Pair.of(-5, 2), Pair.of(-3, 1), Pair.of(-4, 1), Pair.of(-3, 0)),
+            TravelersDirection.WEST, List.of(Pair.of(-3, -2), Pair.of(-3, -1), Pair.of(-3, 0), Pair.of(-3, 1)),
+            TravelersDirection.NORTHWEST, List.of(Pair.of(-3, -1), Pair.of(-3, -2), Pair.of(-4, -2), Pair.of(-1, -3), Pair.of(-2, -3), Pair.of(-3, -3), Pair.of(-4, -3), Pair.of(-5, -3))
+    );
 
+    private final StyleModifier pathStyle;
+    
     private final ChunkPos start;
     private final ChunkPos end;
     private boolean completed;
@@ -28,18 +44,22 @@ public class TravelersPath {
     private int pathIndex;
     private TravelersDirection initialDirection;
 
-    public TravelersPath(ChunkPos start, ChunkPos end, RandomSource randomSource, TravelersDirection initialDirection) {
+    public TravelersPath(
+            ChunkPos start, ChunkPos end, RandomSource randomSource, TravelersDirection initialDirection,
+            StyleModifier pathStyle
+    ) {
         this.start = start;
         this.end = end;
         this.completed = false;
         this.path = new ArrayList<>();
-        this.pathIndex = 1;
+        this.pathIndex = 0;
         this.initialDirection = initialDirection;
+        this.pathStyle = pathStyle;
         this.createPath(randomSource);
         TravelersCrossroads.LOGGER.debug("New path start: {} end {} || Path {}", start, end, path);
     }
 
-    public TravelersPath(CompoundTag tag, int index) {
+    public TravelersPath(CompoundTag tag, int index, StyleModifier pathStyle) {
 
         CompoundTag data = tag.getCompound("path" + index);
         this.completed = data.getBoolean("complete");
@@ -54,6 +74,7 @@ public class TravelersPath {
             CompoundTag chunkData = pathData.getCompound(String.valueOf(i));
             this.path.add(new ChunkPos(chunkData.getInt("x"), chunkData.getInt("z")));
         }
+        this.pathStyle = pathStyle;
     }
 
     public CompoundTag save(CompoundTag tag, int index) {
@@ -134,7 +155,7 @@ public class TravelersPath {
         if (!level.hasChunk(placeChunk.x, placeChunk.z)) {
             return;
         }
-
+        // TravelersCrossroads.LOGGER.debug("Placing Chunk: {}" , placeChunk);
         ChunkGenerator generator = level.getChunkSource().getGenerator();
         RandomSource randomSource = level.getRandom();
         int generationY = generator.getFirstOccupiedHeight(
@@ -156,18 +177,143 @@ public class TravelersPath {
             nextChunk = null;
         }
 
-        if (this.pathIndex == 1) {
-            TravelersBeginning.placeCenterConnection(level, randomSource, this.path.getFirst().getMiddleBlockPosition(generationY), TravelersDirection.directionFromChunks(this.path.getFirst(), placeChunk));
-        }
-        if (!level.getBiome(center).is(TravelersTags.Biomes.PATH_AVOID)) {
-            TravelersBeginning.placeRoadPiece(level, randomSource, center, previousChunk, nextChunk);
-        }
+        placeRoadPiece(level, randomSource, center, previousChunk, nextChunk);
 
         if (this.pathIndex == this.path.size() - 1) {
             this.completed = true;
         }
 
         this.pathIndex++;
+    }
+    
+    public void placeRoadPiece(ServerLevel level, RandomSource random, BlockPos origin, @Nullable TravelersDirection previous, @Nullable TravelersDirection next) {
+        if (!level.getBiome(origin).is(TravelersTags.Biomes.PATH_AVOID)) {
+            placeCenter(level, random, origin);
+        }
+        if (previous != null ) {
+            placeCenterConnection(level, random, origin, previous);
+        }
+        if (next != null) {
+            placeCenterConnection(level, random, origin, next);
+        }
+    }
+
+    public void placeCenter(ServerLevel level, RandomSource random, BlockPos origin) {
+        BlockPos mutable$blockPos;
+        // TravelersCrossroads.LOGGER.debug("In center place");
+
+        for (int x = -2; x < 2; x++) {
+            // TravelersCrossroads.LOGGER.debug("X: {} ", x);
+
+            for (int z = - 2; z < 2; z++) {
+                // TravelersCrossroads.LOGGER.debug("Z: {} ", z);
+                mutable$blockPos = origin.offset(x, 0, z);
+                // TravelersCrossroads.LOGGER.debug("Above: {} | At: {}| Y {}", level.getBlockState(mutable$blockPos.above()), level.getBlockState(mutable$blockPos), mutable$blockPos.getY());
+                mutable$blockPos = findY(level, mutable$blockPos);
+                this.setBlock(level, mutable$blockPos, random);
+            }
+        }
+    }
+
+    public void placeCenterConnection(ServerLevel level, RandomSource random, BlockPos origin, TravelersDirection direction) {
+        BlockPos mutable$blockPos;
+        for (Pair<Integer, Integer> pair : CONNECTION_POS.get(direction)) {
+            mutable$blockPos = origin.offset(pair.getFirst(), 0 , pair.getSecond());
+            mutable$blockPos = findY(level, mutable$blockPos);
+            this.setBlock(level, mutable$blockPos, random);
+        }
+        switch (direction) {
+            case NORTH -> placeVerticalConnection(level, random, origin.offset(0, 0, direction.getZ() * 5));
+            case NORTHEAST -> placeDiagonalLR(level, random, origin.offset(direction.getX() * 5, 0, direction.getZ() * 5));
+            case EAST -> placeHorizontalConnection(level, random, origin.offset(direction.getX() * 6, 0, 0));
+            case SOUTHEAST -> placeDiagonalRL(level, random, origin.offset(direction.getX() * 6, 0, direction.getZ() * 6));
+            case SOUTH -> placeVerticalConnection(level, random, origin.offset(0, 0, direction.getZ() * 5));
+            case SOUTHWEST -> placeDiagonalLR(level, random, origin.offset(direction.getX() * 6, 0, direction.getZ() * 6));
+            case WEST -> placeHorizontalConnection(level, random, origin.offset(direction.getX() * 5, 0, 0));
+            case NORTHWEST -> placeDiagonalRL(level, random, origin.offset(direction.getX() * 5, 0, direction.getZ() * 5));
+        }
+    }
+
+    public void placeVerticalConnection(ServerLevel level, RandomSource random, BlockPos origin) {
+        if (level.getBiome(origin).is(TravelersTags.Biomes.PATH_AVOID)) {
+            return;
+        }
+        BlockPos mutable$blockPos;
+        for (int x = -2; x < 2; x++) {
+            for (int z = -3; z < 3; z++) {
+                mutable$blockPos = origin.offset(x, 0, z);
+                mutable$blockPos = findY(level, mutable$blockPos);
+                this.setBlock(level, mutable$blockPos, random);
+            }
+        }
+    }
+
+    public void placeHorizontalConnection(ServerLevel level, RandomSource random, BlockPos origin) {
+        if (level.getBiome(origin).is(TravelersTags.Biomes.PATH_AVOID)) {
+            return;
+        }
+        BlockPos mutable$blockPos;
+        for (int x = -3; x < 2; x++) {
+            for (int z = -2; z < 2; z++) {
+                mutable$blockPos = origin.offset(x, 0, z);
+                mutable$blockPos = findY(level, mutable$blockPos);
+                this.setBlock(level, mutable$blockPos, random);
+            }
+        }
+    }
+
+    public void placeDiagonalLR(ServerLevel level, RandomSource random, BlockPos origin) {
+        if (level.getBiome(origin).is(TravelersTags.Biomes.PATH_AVOID)) {
+            return;
+        }
+        int xStart = 0;
+        BlockPos mutable$blockPos;
+        for (int z = -3; z < 2 ; z++) {
+            for (int x = xStart; x < xStart + 5; x++) {
+                mutable$blockPos = origin.offset(x, 0, z);
+                mutable$blockPos = findY(level, mutable$blockPos);
+                this.setBlock(level, mutable$blockPos, random);
+            }
+            xStart --;
+        }
+    }
+
+    public void placeDiagonalRL(ServerLevel level, RandomSource random, BlockPos origin) {
+        if (level.getBiome(origin).is(TravelersTags.Biomes.PATH_AVOID)) {
+            return;
+        }
+        int xStart = -5;
+        BlockPos mutable$blockPos;
+        for (int z = -3; z < 2 ; z++) {
+            for (int x = xStart; x < xStart + 5; x++) {
+                mutable$blockPos = origin.offset(x, 0, z);
+                mutable$blockPos = findY(level, mutable$blockPos);
+                this.setBlock(level, mutable$blockPos, random);
+            }
+            xStart ++;
+        }
+    }
+
+    public void setBlock(Level level, BlockPos pos, RandomSource random) {
+        level.setBlock(pos, this.pathStyle.getPathBlock(level.getBlockState(pos), random), 2);
+    }
+
+    public static BlockPos findY(ServerLevel level, BlockPos origin) {
+        while (!level.getBlockState(origin.above()).is(PATH_ABOVE) || !level.getBlockState(origin).is(PATH_BELOW)) {
+            //TravelersCrossroads.LOGGER.info(
+            //        "Blockstates: {} {} {} {}",
+            //        level.getBlockState(origin.above()), level.getBlockState(origin.above()).is(PATH_ABOVE),
+            //        level.getBlockState(origin), level.getBlockState(origin).is(PATH_BELOW)
+            //);
+            if (level.getBlockState(origin).is(PATH_ABOVE)) {
+                origin = origin.below();
+            } else if (level.getBlockState(origin.above()).is(PATH_BELOW)) {
+                origin = origin.above();
+            } else {
+                break;
+            }
+        }
+        return origin;
     }
 
     public boolean isInProgress() {

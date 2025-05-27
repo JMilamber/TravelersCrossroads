@@ -36,4 +36,8 @@ public class TravelersUtil {
     public static double distanceTo2D(double side, double side2) {
         return  Math.sqrt(side * side + side2 * side2);
     }
+
+    public static ChunkPos offsetChunk(ChunkPos pos, int xOffset, int zOffset) {
+        return new ChunkPos(pos.x + xOffset, pos.z + zOffset);
+    }
 }

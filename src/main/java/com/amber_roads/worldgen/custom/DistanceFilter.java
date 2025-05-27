@@ -1,7 +1,8 @@
-package com.amber_roads.worldgen;
+package com.amber_roads.worldgen.custom;
 
 import com.amber_roads.TravelersCrossroads;
 import com.amber_roads.init.TravelersInit;
+import com.amber_roads.worldgen.TravelersWatcher;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -14,12 +15,8 @@ import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 
 public class DistanceFilter extends PlacementFilter {
     public static final MapCodec<DistanceFilter> CODEC = RecordCodecBuilder.mapCodec((instance) -> instance.group(
-            Codec.intRange(0, Integer.MAX_VALUE).fieldOf("distance").forGetter(DistanceFilter::distance)
+            Codec.intRange(0, Integer.MAX_VALUE).fieldOf("distance").forGetter(distanceFilter -> distanceFilter.distance)
     ).apply(instance, instance.stable((DistanceFilter::new))));
-
-    private Integer distance() {
-        return this.distance;
-    }
 
     public final int distance;
 

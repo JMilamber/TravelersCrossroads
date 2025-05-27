@@ -1,7 +1,12 @@
 package com.amber_roads;
 
 import com.amber_roads.init.TravelersInit;
+import com.amber_roads.init.TravelersRegistries;
 import com.amber_roads.worldgen.TravelersWatcher;
+import com.amber_roads.worldgen.custom.OffsetModifier;
+import com.amber_roads.worldgen.custom.StyleModifier;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -22,11 +27,11 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
-@Mod(TravelersCrossroads.MODID)
+@Mod(TravelersCrossroads.MOD_ID)
 public class TravelersCrossroads
 {
     // Define mod id in a common place for everything to reference
-    public static final String MODID = "travelerscrossroads";
+    public static final String MOD_ID = "travelerscrossroads";
     // Directly reference a slf4j logger
     public static final Logger LOGGER = LogUtils.getLogger();
     public static final TravelersWatcher WATCHER = new TravelersWatcher();
@@ -43,8 +48,9 @@ public class TravelersCrossroads
         // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
         NeoForge.EVENT_BUS.register(this);
 
-        TravelersInit.register(modEventBus);
 
+        TravelersInit.register(modEventBus);
+        modEventBus.addListener(this::registerDatapackRegistries);
 
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
@@ -60,6 +66,11 @@ public class TravelersCrossroads
 
     }
 
+    void registerDatapackRegistries(DataPackRegistryEvent.NewRegistry event) {
+        event.dataPackRegistry(TravelersRegistries.Keys.STYLE_MODIFIERS, StyleModifier.DIRECT_CODEC);
+        event.dataPackRegistry(TravelersRegistries.Keys.OFFSET_MODIFIERS, OffsetModifier.DIRECT_CODEC);
+    }
+
     // You can use SubscribeEvent and let the Event Bus discover methods to call
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event)
@@ -69,7 +80,7 @@ public class TravelersCrossroads
     }
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
-    @EventBusSubscriber(modid = MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents
     {
         @SubscribeEvent
@@ -79,5 +90,9 @@ public class TravelersCrossroads
             LOGGER.info("HELLO FROM CLIENT SETUP");
             LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
         }
+    }
+
+    public static ResourceLocation travelersLocation(String path) {
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 }

@@ -18,7 +18,7 @@ public class TravelersStructureTagProvider extends StructureTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
-        this.tag(TravelersTags.Structures.PATH_AVOID)
+        this.tag(TravelersTags.Structures.PATH_STRUCTURES)
                 .add(BuiltinStructures.PILLAGER_OUTPOST)
                 .add(BuiltinStructures.WOODLAND_MANSION)
                 .add(BuiltinStructures.JUNGLE_TEMPLE)
@@ -35,5 +35,27 @@ public class TravelersStructureTagProvider extends StructureTagsProvider {
                 .add(BuiltinStructures.RUINED_PORTAL_JUNGLE)
                 .add(BuiltinStructures.RUINED_PORTAL_SWAMP)
                 .add(BuiltinStructures.RUINED_PORTAL_MOUNTAIN);
+
+        this.tag(TravelersTags.Structures.DEFAULT_OFFSET_STRUCTURES)
+                .add(BuiltinStructures.PILLAGER_OUTPOST)
+                .add(BuiltinStructures.IGLOO)
+                .add(BuiltinStructures.SWAMP_HUT)
+                .add(BuiltinStructures.RUINED_PORTAL_STANDARD)
+                .add(BuiltinStructures.RUINED_PORTAL_DESERT)
+                .add(BuiltinStructures.RUINED_PORTAL_JUNGLE)
+                .add(BuiltinStructures.RUINED_PORTAL_SWAMP)
+                .add(BuiltinStructures.RUINED_PORTAL_MOUNTAIN);
+
+        this.tag(TravelersTags.Structures.VILLAGE_OFFSET_STRUCTURES)
+                .add(BuiltinStructures.VILLAGE_PLAINS)
+                .add(BuiltinStructures.VILLAGE_DESERT)
+                .add(BuiltinStructures.VILLAGE_SAVANNA)
+                .add(BuiltinStructures.VILLAGE_SNOWY)
+                .add(BuiltinStructures.VILLAGE_TAIGA)
+                .add(BuiltinStructures.JUNGLE_TEMPLE)
+                .add(BuiltinStructures.DESERT_PYRAMID);
+
+        this.tag(TravelersTags.Structures.MANSION_OFFSET_STRUCTURES)
+                .add(BuiltinStructures.WOODLAND_MANSION);
     }
 }
