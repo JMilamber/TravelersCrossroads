@@ -3,7 +3,6 @@ package com.amber_roads.worldgen;
 import com.amber_roads.TravelersCrossroads;
 import com.amber_roads.block.CairnBlock;
 import com.amber_roads.init.TravelersInit;
-import com.amber_roads.util.TravelersTags;
 import com.amber_roads.worldgen.custom.StyleModifier;
 import com.mojang.serialization.Codec;
 
@@ -12,7 +11,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
@@ -32,10 +30,10 @@ public class TravelersBeginning extends Feature<NoneFeatureConfiguration> {
 
     @Override
     public boolean place(FeaturePlaceContext context) {
-        return this.place(context.level(), context.chunkGenerator(), context.random(), context.origin());
+        return this.place(context.level(), context.random(), context.origin());
     }
 
-    public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin) {
+    public boolean place(WorldGenLevel level, RandomSource random, BlockPos origin) {
         // Convert origin blockpos into chunkpos center
         ChunkPos originChunk = new ChunkPos(origin);
         origin = originChunk.getMiddleBlockPosition(origin.getY());
@@ -53,6 +51,8 @@ public class TravelersBeginning extends Feature<NoneFeatureConfiguration> {
         );
         TravelersCrossroads.LOGGER.info("Cairn Placed at: {}", cairnPos.above());
 
+
+        TravelersCrossroads.WATCHER.addCrossroad(origin, random);
         return true;
     }
 

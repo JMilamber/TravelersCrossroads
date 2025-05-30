@@ -6,6 +6,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
@@ -59,7 +60,7 @@ public class TravelersPath {
         TravelersCrossroads.LOGGER.debug("New path start: {} end {} || Path {}", start, end, path);
     }
 
-    public TravelersPath(CompoundTag tag, int index, StyleModifier pathStyle) {
+    public TravelersPath(CompoundTag tag, int index) {
 
         CompoundTag data = tag.getCompound("path" + index);
         this.completed = data.getBoolean("complete");
@@ -74,7 +75,7 @@ public class TravelersPath {
             CompoundTag chunkData = pathData.getCompound(String.valueOf(i));
             this.path.add(new ChunkPos(chunkData.getInt("x"), chunkData.getInt("z")));
         }
-        this.pathStyle = pathStyle;
+        this.pathStyle = StyleModifier.DIRECT_CODEC.parse(NbtOps.INSTANCE ,data.get("style")).getOrThrow();
     }
 
     public CompoundTag save(CompoundTag tag, int index) {
@@ -86,8 +87,9 @@ public class TravelersPath {
         endData.putInt("x", this.end.x);
         endData.putInt("z", this.end.z);
         CompoundTag pathData = new CompoundTag();
-        int i = 0;
-        for (ChunkPos pos: this.path) {
+
+        for (int i = 0; i < this.path.size(); i++) {
+            ChunkPos pos = this.path.get(i);
             CompoundTag tag1 = new CompoundTag();
             tag1.putInt("x", pos.x);
             tag1.putInt("z", pos.z);
@@ -99,8 +101,9 @@ public class TravelersPath {
         data.put("start", startData);
         data.put("end", endData);
         data.put("path", pathData);
-        data.putInt("length", i);
+        data.putInt("length", this.path.size());
         data.putInt("index", this.pathIndex);
+        data.put("style", StyleModifier.DIRECT_CODEC.encodeStart(NbtOps.INSTANCE, this.pathStyle).getOrThrow());
         tag.put("path" + index, data);
 
         return tag;

@@ -30,11 +30,11 @@ public class DistanceFilter extends PlacementFilter {
 
     @Override
     protected boolean shouldPlace(PlacementContext context, RandomSource random, BlockPos pos) {
-        if (TravelersWatcher.getClosest(pos) < this.distance) {
+        if (TravelersCrossroads.WATCHER.getClosest(pos) < this.distance) {
             return false;
         }
         TravelersCrossroads.LOGGER.debug("Acceptable cairn pos distance {}", distance);
-        TravelersWatcher.addDistanceFilterPath(new ChunkPos(pos));
+        TravelersCrossroads.WATCHER.addDistanceFilterPath(new ChunkPos(pos));
         return true;
     }
 

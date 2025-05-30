@@ -6,6 +6,7 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryCodecs;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.RegistryFileCodec;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.util.RandomSource;
@@ -16,20 +17,20 @@ import java.util.function.Function;
 
 public interface StyleModifier {
     /**
-     * Codec for (de)serializing pathOffsets modifiers inline.
+     * Codec for (de)serializing Style modifiers inline.
      * Mods can use this for data generation.
      */
     Codec<StyleModifier> DIRECT_CODEC = TravelersRegistries.STYLE_MODIFIER_SERIALIZERS.byNameCodec()
             .dispatch(StyleModifier::codec, Function.identity());
 
     /**
-     * Codec for referring to biome modifiers by id in other datapack registry files.
+     * Codec for referring to Style  modifiers by id in other datapack registry files.
      * Can only be used with {@link RegistryOps}.
      */
     Codec<Holder<StyleModifier>> REFERENCE_CODEC = RegistryFileCodec.create(TravelersRegistries.Keys.STYLE_MODIFIERS, DIRECT_CODEC);
 
     /**
-     * Codec for referring to biome modifiers by id, list of id, or tags.
+     * Codec for referring to Style  modifiers by id, list of id, or tags.
      * Can only be used with {@link RegistryOps}.
      */
     Codec<HolderSet<StyleModifier>> LIST_CODEC = RegistryCodecs.homogeneousList(TravelersRegistries.Keys.STYLE_MODIFIERS, DIRECT_CODEC);

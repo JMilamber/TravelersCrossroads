@@ -2,10 +2,12 @@ package com.amber_roads.worldgen;
 
 import com.amber_roads.TravelersCrossroads;
 import com.amber_roads.init.TravelersRegistries;
+import com.amber_roads.util.CrossroadsData;
+import com.amber_roads.util.TravelersDirection;
+import com.amber_roads.util.TravelersPath;
 import com.amber_roads.util.TravelersTags;
 import com.amber_roads.worldgen.custom.OffsetModifier;
 import com.amber_roads.worldgen.custom.StyleModifier;
-import com.amber_roads.worldgen.custom.PathModifiers;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -15,15 +17,21 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 import javax.annotation.Nullable;
 
 import static com.amber_roads.util.TravelersUtil.chunkDistanceTo;
+import static com.amber_roads.util.TravelersUtil.offsetChunk;
+import static java.lang.Integer.parseInt;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,14 +40,63 @@ import java.util.Optional;
 @EventBusSubscriber(modid = TravelersCrossroads.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public class TravelersWatcher {
 
-    public static ArrayList<ChunkPos> pathPositions = new ArrayList<>();
-    public static MinecraftServer server;
-    public static Registry<StyleModifier> pathStyles;
-    public static Registry<OffsetModifier> pathOffsets;
+    public MinecraftServer server;
+    public Registry<StyleModifier> pathStyles;
+    public Registry<OffsetModifier> pathOffsets;
+    public int tickCount = 0;
+    public CrossroadsData crossroadsData;
+    private boolean pathsFinished = false;
 
     public TravelersWatcher() {}
 
-    public static List<Pair<ChunkPos, Holder<Structure>>> getNearbyStructures(BlockPos center, List<BlockPos> blockPosList) {
+
+    public void addCrossroad(BlockPos center, RandomSource random) {
+        Holder<Biome> biome = this.server.overworld().getBiome(center);
+        ChunkPos centerChunk = new ChunkPos(center);
+
+        List<StyleModifier> possibleStyles = TravelersCrossroads.WATCHER.pathStyles.holders().map(Holder::value)
+                .filter(pathBiomeStyleHolder -> pathBiomeStyleHolder.checkBiome(biome))
+                .toList();
+        // TravelersCrossroads.LOGGER.debug("Biome {} Possible Styles {}", biome.getRegisteredName(), possibleStyles);
+        StyleModifier style = possibleStyles.get(random.nextInt(possibleStyles.size()));
+
+        TravelersCrossroad crossroad = new TravelersCrossroad(centerChunk, random);
+        List<TravelersPath> connectionPaths = crossroad.addConnections(style);
+        this.crossroadsData.addCrossroad(crossroad);
+        for (TravelersPath path : connectionPaths) {
+            this.addPath(path);
+        }
+
+        List<Pair<ChunkPos, Holder<Structure>>> structures = this.getNearbyStructures(center, crossroad.getConnections());
+        for (Pair<ChunkPos, Holder<Structure>> struct : structures) {
+            OffsetModifier offset = null;
+            for (OffsetModifier offsetCheck: pathOffsets.holders().map(Holder::value).toList()) {
+                if (offsetCheck.checkStructure(struct.getSecond())) {
+                    offset = offsetCheck;
+                }
+            }
+            if (offset == null) {
+                offset = this.pathOffsets.getOrThrow(TravelersFeatures.DEFAULT_OFFSET_KEY);
+            }
+
+            TravelersDirection direction = TravelersDirection.directionFromChunks(centerChunk, struct.getFirst()).getOpposite();
+            Optional<TravelersPath> travelersPath = crossroad.addStructure(
+                    offsetChunk(
+                            struct.getFirst(),
+                            offset.getOffset() * direction.getX(),
+                            offset.getOffset() * direction.getZ()),
+                    style
+            );
+            travelersPath.ifPresent(this::addPath);
+        }
+    }
+
+    public void addPath(TravelersPath path) {
+        this.crossroadsData.addPath(path);
+        this.pathsFinished = false;
+    }
+
+    public List<Pair<ChunkPos, Holder<Structure>>> getNearbyStructures(BlockPos center, List<BlockPos> blockPosList) {
         List<Pair<ChunkPos, Holder<Structure>>> structs = new ArrayList<>();
 
         Pair<BlockPos, Holder<Structure>> struct = findNearestMapStructure(TravelersTags.Structures.PATH_STRUCTURES, center);
@@ -66,7 +123,7 @@ public class TravelersWatcher {
     }
 
     @Nullable
-    public static Pair<BlockPos, Holder<Structure>> findNearestMapStructure(TagKey<Structure> structureTag, BlockPos pos) {
+    public Pair<BlockPos, Holder<Structure>> findNearestMapStructure(TagKey<Structure> structureTag, BlockPos pos) {
         if (!server.getWorldData().worldGenOptions().generateStructures()) {
             return null;
         } else {
@@ -78,37 +135,70 @@ public class TravelersWatcher {
         }
     }
 
-    public static MinecraftServer getServer() {
-        return server;
-    }
-
-
-    public static int getClosest(BlockPos checkPos) {
+    public int getClosest(BlockPos checkPos) {
         int distance = 1000;
         ChunkPos chunkPos = new ChunkPos(checkPos);
-        for (ChunkPos pathPos : pathPositions) {
+        for (ChunkPos pathPos : this.crossroadsData.getBeginnings()) {
             distance = Math.min(distance, chunkDistanceTo(chunkPos, pathPos));
         }
-        return pathPositions.isEmpty() ? 100 : distance;
+        return this.crossroadsData.getBeginnings().isEmpty() ? 100 : distance;
     }
 
-    public static void addDistanceFilterPath(ChunkPos pos) {
-        pathPositions.add(pos);
+    public void addDistanceFilterPath(ChunkPos pos) {
+        this.crossroadsData.addBeginning(pos);
     }
-
 
     @SubscribeEvent
-    public static void serverSetup(ServerAboutToStartEvent event) {
-        server = event.getServer();
-        // The order of holders() is the order modifiers were loaded in.
-
-        List<StyleModifier> styleModifiers = server.registryAccess().registryOrThrow(TravelersRegistries.Keys.STYLE_MODIFIERS)
-                .holders()
-                .map(Holder::value)
-                .toList();
-
-        pathOffsets = server.registryAccess().registryOrThrow(TravelersRegistries.Keys.OFFSET_MODIFIERS);
-        pathStyles = server.registryAccess().registryOrThrow(TravelersRegistries.Keys.STYLE_MODIFIERS);
+    public static void tick(LevelTickEvent event) {
+        if (!event.hasTime() || event.getLevel().isClientSide()) {
+          return;
+        }
+        TravelersCrossroads.WATCHER.buildPaths();
     }
 
+    public void buildPaths () {
+        this.tickCount++;
+        if (tickCount % 10 != 0) {
+            return;
+        }
+
+        if (!this.pathsFinished) {
+            // TravelersCrossroads.LOGGER.debug("Finishing Connections");
+            int count = 0;
+            List<TravelersPath> paths = crossroadsData.getPaths();
+            for (TravelersPath path: paths) {
+                if (path.isInProgress()) {
+                    try {
+                        path.placeNextChunk(this.server.overworld());
+                    } catch (Exception e) {
+                        System.out.println("path placement failed: " + e.getMessage());
+                    }
+
+                } else {
+                    count++;
+                }
+            }
+            pathsFinished = count == paths.size();
+        }
+    }
+
+    @SubscribeEvent
+    public static void serverStarting(ServerAboutToStartEvent event) {
+        TravelersCrossroads.WATCHER.setServer(event.getServer());
+    }
+
+    public void setServer(MinecraftServer server) {
+        this.server = server;
+        this.pathOffsets = server.registryAccess().registryOrThrow(TravelersRegistries.Keys.OFFSET_MODIFIERS);
+        this.pathStyles = server.registryAccess().registryOrThrow(TravelersRegistries.Keys.STYLE_MODIFIERS);
+    }
+
+    @SubscribeEvent
+    public static void serverStarted(ServerStartedEvent event) {
+        TravelersCrossroads.WATCHER.setPathData();
+    }
+
+    public void setPathData() {
+        this.crossroadsData = CrossroadsData.instance(this.server.overworld().getLevel().getDataStorage());
+    }
 }
