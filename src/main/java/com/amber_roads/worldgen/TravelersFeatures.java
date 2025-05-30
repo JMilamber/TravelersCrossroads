@@ -32,11 +32,10 @@ public class TravelersFeatures {
     public static final ResourceKey<ConfiguredFeature<?, ?>> CONFIGURED_BEGINNING_KEY = registerConfiguredKey("configured_road");
     public static final ResourceKey<PlacedFeature> PLACED_BEGINNING_KEY = registerPlacedKey("placed_road");
     public static final ResourceKey<BiomeModifier> BIOME_BEGINNING_KEY = registerBiomeKey("road_biomes");
-        public static final ResourceKey<OffsetModifier> DEFAULT_OFFSET_KEY = registerPathOffsetKey("default_offset");
+    public static final ResourceKey<OffsetModifier> DEFAULT_OFFSET_KEY = registerPathOffsetKey("default_offset");
     public static final ResourceKey<OffsetModifier> VILLAGE_OFFSET_KEY = registerPathOffsetKey("village_offset");
     public static final ResourceKey<OffsetModifier> MANSION_OFFSET_KEY = registerPathOffsetKey("mansion_offset");
     public static final ResourceKey<StyleModifier> DEFAULT_STYLE_KEY = registerPathStyleKey("default_style");
-
 
     public static void configuredBootstrap(BootstrapContext<ConfiguredFeature<?, ?>> configuredContext) {
         configuredRegister(
@@ -136,7 +135,6 @@ public class TravelersFeatures {
     private static ResourceKey<StyleModifier> registerPathStyleKey(String name) {
         return ResourceKey.create(TravelersRegistries.Keys.STYLE_MODIFIERS, TravelersCrossroads.travelersLocation(name));
     }
-
 }
 
 

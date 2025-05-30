@@ -31,7 +31,6 @@ import javax.annotation.Nullable;
 
 import static com.amber_roads.util.TravelersUtil.chunkDistanceTo;
 import static com.amber_roads.util.TravelersUtil.offsetChunk;
-import static java.lang.Integer.parseInt;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +47,6 @@ public class TravelersWatcher {
     private boolean pathsFinished = false;
 
     public TravelersWatcher() {}
-
 
     public void addCrossroad(BlockPos center, RandomSource random) {
         Holder<Biome> biome = this.server.overworld().getBiome(center);

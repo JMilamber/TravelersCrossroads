@@ -2,7 +2,6 @@ package com.amber_roads.worldgen.custom;
 
 import com.amber_roads.TravelersCrossroads;
 import com.amber_roads.init.TravelersInit;
-import com.amber_roads.worldgen.TravelersWatcher;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -37,8 +36,6 @@ public class DistanceFilter extends PlacementFilter {
         TravelersCrossroads.WATCHER.addDistanceFilterPath(new ChunkPos(pos));
         return true;
     }
-
-
 
     @Override
     public PlacementModifierType<?> type() {

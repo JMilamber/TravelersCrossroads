@@ -31,7 +31,6 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
 
-
 public class TravelersInit {
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.createBlocks(TravelersCrossroads.MOD_ID);
@@ -42,7 +41,6 @@ public class TravelersInit {
     public static final DeferredRegister<PlacementModifierType<?>> PLACEMENTS = DeferredRegister.create(Registries.PLACEMENT_MODIFIER_TYPE, TravelersCrossroads.MOD_ID);
     public static final DeferredRegister<MapCodec<? extends StyleModifier>> STYLE_MODIFIER_SERIALIZERS = DeferredRegister.create(TravelersRegistries.STYLE_MODIFIER_SERIALIZERS, TravelersCrossroads.MOD_ID);
     public static final DeferredRegister<MapCodec<? extends OffsetModifier>> OFFSET_MODIFIER_SERIALIZERS = DeferredRegister.create(TravelersRegistries.OFFSET_MODIFIER_SERIALIZERS, TravelersCrossroads.MOD_ID);
-
 
     public static final Supplier<Block> CAIRN = registerBlock(
             "cairn", () -> new CairnBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.GRAVEL).forceSolidOn())

@@ -19,6 +19,4 @@ public class TravelersRecipeProvider extends RecipeProvider implements IConditio
     protected void buildRecipes(@NotNull RecipeOutput recipeOutput) {
         threeByThreePacker(recipeOutput, RecipeCategory.MISC, TravelersInit.CAIRN.get(), TravelersInit.PEBBLE.get());
     }
-
-
 }

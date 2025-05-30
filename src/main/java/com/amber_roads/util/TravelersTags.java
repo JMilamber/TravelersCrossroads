@@ -2,9 +2,6 @@ package com.amber_roads.util;
 
 import com.amber_roads.TravelersCrossroads;
 
-import com.amber_roads.init.TravelersRegistries;
-import com.amber_roads.worldgen.custom.OffsetModifier;
-import com.amber_roads.worldgen.custom.StyleModifier;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;

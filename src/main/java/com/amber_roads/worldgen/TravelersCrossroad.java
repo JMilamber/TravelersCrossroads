@@ -4,11 +4,9 @@ import com.amber_roads.TravelersCrossroads;
 import com.amber_roads.util.TravelersDirection;
 import com.amber_roads.util.TravelersPath;
 import com.amber_roads.worldgen.custom.StyleModifier;
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 
@@ -17,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.amber_roads.util.TravelersUtil.chunkDistanceTo;
-import static com.amber_roads.util.TravelersUtil.chunkMatch;
 
 public class TravelersCrossroad {
     

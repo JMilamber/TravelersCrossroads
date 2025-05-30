@@ -40,14 +40,12 @@ public class CairnBlock extends Block {
             Block.box(6.5, 3, 6.75, 9, 4, 9.25),
             Block.box(6.1, 4, 7.15, 8.6, 5, 9.65),
             Block.box(6.6, 5, 7.65, 8.1, 5.75, 9.15)
-            );
-
+    );
 
     public CairnBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.SOUTH));
     }
-
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
@@ -109,7 +107,6 @@ public class CairnBlock extends Block {
     protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
         super.onRemove(state, level, pos, newState, movedByPiston);
     }
-
 
     @Override
     protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {

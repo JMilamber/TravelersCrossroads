@@ -11,7 +11,6 @@ import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.level.levelgen.structure.Structure;
 
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 public interface OffsetModifier {
     /**
@@ -36,7 +35,6 @@ public interface OffsetModifier {
     boolean checkStructure(Holder<Structure> checkStruct);
 
     int getOffset();
-
 
     MapCodec<? extends OffsetModifier> codec();
 }

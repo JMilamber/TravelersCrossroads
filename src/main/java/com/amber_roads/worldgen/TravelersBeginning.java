@@ -3,24 +3,19 @@ package com.amber_roads.worldgen;
 import com.amber_roads.TravelersCrossroads;
 import com.amber_roads.block.CairnBlock;
 import com.amber_roads.init.TravelersInit;
-import com.amber_roads.worldgen.custom.StyleModifier;
 import com.mojang.serialization.Codec;
 
 import net.minecraft.core.*;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 
-import java.util.List;
-
 import static com.amber_roads.util.TravelersTags.Biomes.PATH_AVOID;
 import static com.amber_roads.util.TravelersTags.Blocks.PATH_ABOVE;
 import static com.amber_roads.util.TravelersTags.Blocks.PATH_BELOW;
-
 
 public class TravelersBeginning extends Feature<NoneFeatureConfiguration> {
 
@@ -68,5 +63,4 @@ public class TravelersBeginning extends Feature<NoneFeatureConfiguration> {
         }
         return origin;
     }
-
 }

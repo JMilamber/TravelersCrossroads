@@ -1,7 +1,5 @@
 package com.amber_roads.util;
 
-import com.amber_roads.TravelersCrossroads;
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
@@ -28,8 +26,8 @@ public enum TravelersDirection implements StringRepresentable {
     private static final int[][] indexByXZ = {{7, 6, 5}, {0, -1, 4}, {1, 2, 3}};
     private static final TravelersDirection[] VALUES = values();
 
-    private TravelersDirection(
-        int index, int x, int z, String name
+    TravelersDirection(
+            int index, int x, int z, String name
     ) {
         this.index = index;
         this.x = x;
@@ -137,8 +135,6 @@ public enum TravelersDirection implements StringRepresentable {
     public static TravelersDirection getRandomNarrowForDirection(RandomSource random, TravelersDirection direction) {
         return getRandomNarrowList(random, weightedNarrowList(direction));
     }
-
-
 
     @Override
     public String getSerializedName() {

@@ -3,7 +3,6 @@ package com.amber_roads.util;
 import com.amber_roads.TravelersCrossroads;
 import com.amber_roads.worldgen.custom.StyleModifier;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
