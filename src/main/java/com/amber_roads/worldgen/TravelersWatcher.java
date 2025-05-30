@@ -44,11 +44,17 @@ public class TravelersWatcher {
     public Registry<OffsetModifier> pathOffsets;
     public int tickCount = 0;
     public CrossroadsData crossroadsData;
+    public ArrayList<BlockPos> newCrossroadPositions;
     private boolean pathsFinished = false;
 
     public TravelersWatcher() {}
 
-    public void addCrossroad(BlockPos center, RandomSource random) {
+    public void addCrossroadToCreate(BlockPos center) {
+        this.newCrossroadPositions.add(center);
+    }
+
+    public void addCrossroad(BlockPos center) {
+        RandomSource random = server.overworld().getRandom();
         Holder<Biome> biome = this.server.overworld().getBiome(center);
         ChunkPos centerChunk = new ChunkPos(center);
 
@@ -147,7 +153,7 @@ public class TravelersWatcher {
     }
 
     @SubscribeEvent
-    public static void tick(LevelTickEvent event) {
+    public static void tick(LevelTickEvent.Post event) {
         if (!event.hasTime() || event.getLevel().isClientSide()) {
           return;
         }
@@ -159,7 +165,9 @@ public class TravelersWatcher {
         if (tickCount % 10 != 0) {
             return;
         }
-
+        if (!this.newCrossroadPositions.isEmpty()) {
+            this.addCrossroad(this.newCrossroadPositions.removeFirst());
+        }
         if (!this.pathsFinished) {
             // TravelersCrossroads.LOGGER.debug("Finishing Connections");
             int count = 0;

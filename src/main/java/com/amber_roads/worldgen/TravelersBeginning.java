@@ -47,7 +47,7 @@ public class TravelersBeginning extends Feature<NoneFeatureConfiguration> {
         TravelersCrossroads.LOGGER.info("Cairn Placed at: {}", cairnPos.above());
 
 
-        TravelersCrossroads.WATCHER.addCrossroad(origin, random);
+        TravelersCrossroads.WATCHER.addCrossroadToCreate(origin);
         return true;
     }
 
