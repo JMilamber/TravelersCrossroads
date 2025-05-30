@@ -1,38 +1,26 @@
 package com.amber_roads.block;
 
-import com.amber_roads.entity.blockentity.CairnBlockEntity;
-import com.amber_roads.init.TravelersInit;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityTicker;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.jetbrains.annotations.Nullable;
 
 import static com.amber_roads.util.TravelersUtil.rotateShape;
 
-public class CairnBlock extends BaseEntityBlock {
+public class CairnBlock extends Block {
 
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     protected static final MapCodec<CairnBlock> CODEC = simpleCodec(CairnBlock::new);
-
-    protected CairnBlockEntity blockEntity = null;
 
     public static final VoxelShape SHAPE = Shapes.or(
             Block.box(5, 0, 8, 9, 1, 12),
@@ -54,18 +42,12 @@ public class CairnBlock extends BaseEntityBlock {
             Block.box(6.6, 5, 7.65, 8.1, 5.75, 9.15)
             );
 
-    private int tickCount = 0;
-
 
     public CairnBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.SOUTH));
     }
 
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
-    }
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
@@ -116,18 +98,6 @@ public class CairnBlock extends BaseEntityBlock {
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING);
-    }
-
-    @Override
-    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new CairnBlockEntity(pos, state);
-    }
-
-    @Override
-    public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
-        return level.isClientSide ? null : createTickerHelper(blockEntityType, TravelersInit.CAIRN_BE.get(),
-                ((pLevel, blockPos, blockState, cairnBlockEntity) -> cairnBlockEntity.tick(pLevel, blockPos, blockState))
-        );
     }
 
     @Override

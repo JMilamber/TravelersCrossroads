@@ -2,7 +2,6 @@ package com.amber_roads.init;
 
 import com.amber_roads.TravelersCrossroads;
 import com.amber_roads.block.CairnBlock;
-import com.amber_roads.entity.blockentity.CairnBlockEntity;
 import com.amber_roads.worldgen.custom.DistanceFilter;
 import com.amber_roads.worldgen.TravelersBeginning;
 import com.amber_roads.worldgen.custom.OffsetModifier;
@@ -47,12 +46,6 @@ public class TravelersInit {
 
     public static final Supplier<Block> CAIRN = registerBlock(
             "cairn", () -> new CairnBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.GRAVEL).forceSolidOn())
-    );
-
-    public static final Supplier<BlockEntityType<CairnBlockEntity>> CAIRN_BE = BLOCK_ENTITIES.register(
-            "cairn_be", () -> BlockEntityType.Builder.of(
-                    CairnBlockEntity::new, CAIRN.get()
-            ).build(null)
     );
 
     public static final Supplier<Item> PEBBLE = ITEMS.register(
