@@ -24,7 +24,7 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
-import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 import javax.annotation.Nullable;
@@ -44,8 +44,9 @@ public class TravelersWatcher {
     public Registry<OffsetModifier> pathOffsets;
     public int tickCount = 0;
     public CrossroadsData crossroadsData;
-    public ArrayList<BlockPos> newCrossroadPositions;
+    public ArrayList<BlockPos> newCrossroadPositions = new ArrayList<>();
     private boolean pathsFinished = false;
+    private ArrayList<ChunkPos> beginnings = new ArrayList<>();
 
     public TravelersWatcher() {}
 
@@ -117,7 +118,7 @@ public class TravelersWatcher {
             if (struct != null) {
                 ChunkPos structChunkPos = new ChunkPos(struct.getFirst());
                 int distance = chunkDistanceTo(new ChunkPos(center), structChunkPos);
-                if (distance <= 20 && distance > 1) {
+                if (distance <= 20 && distance > 1 && structs.stream().noneMatch(s -> s.getFirst() == structChunkPos)) {
                     structs.add(Pair.of(structChunkPos, struct.getSecond()));
                 }
             }
@@ -142,14 +143,14 @@ public class TravelersWatcher {
     public int getClosest(BlockPos checkPos) {
         int distance = 1000;
         ChunkPos chunkPos = new ChunkPos(checkPos);
-        for (ChunkPos pathPos : this.crossroadsData.getBeginnings()) {
+        for (ChunkPos pathPos : this.beginnings) {
             distance = Math.min(distance, chunkDistanceTo(chunkPos, pathPos));
         }
-        return this.crossroadsData.getBeginnings().isEmpty() ? 100 : distance;
+        return this.beginnings.isEmpty() ? 100 : distance;
     }
 
     public void addDistanceFilterPath(ChunkPos pos) {
-        this.crossroadsData.addBeginning(pos);
+        this.beginnings.add(pos);
     }
 
     @SubscribeEvent
@@ -165,6 +166,7 @@ public class TravelersWatcher {
         if (tickCount % 10 != 0) {
             return;
         }
+
         if (!this.newCrossroadPositions.isEmpty()) {
             this.addCrossroad(this.newCrossroadPositions.removeFirst());
         }
@@ -188,23 +190,20 @@ public class TravelersWatcher {
         }
     }
 
-    @SubscribeEvent
-    public static void serverStarting(ServerAboutToStartEvent event) {
-        TravelersCrossroads.WATCHER.setServer(event.getServer());
-    }
-
     public void setServer(MinecraftServer server) {
         this.server = server;
         this.pathOffsets = server.registryAccess().registryOrThrow(TravelersRegistries.Keys.OFFSET_MODIFIERS);
         this.pathStyles = server.registryAccess().registryOrThrow(TravelersRegistries.Keys.STYLE_MODIFIERS);
     }
 
-    @SubscribeEvent
-    public static void serverStarted(ServerStartedEvent event) {
-        TravelersCrossroads.WATCHER.setPathData();
+    public void setPathData() {
+        this.crossroadsData = CrossroadsData.instance(server.overworld().getDataStorage());
+        this.beginnings.addAll(this.crossroadsData.getBeginnings());
     }
 
-    public void setPathData() {
-        this.crossroadsData = CrossroadsData.instance(this.server.overworld().getLevel().getDataStorage());
+    public void saveBeginningsData() {
+        for (ChunkPos pos : this.beginnings) {
+            this.crossroadsData.addBeginning(pos);
+        }
     }
 }

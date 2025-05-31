@@ -100,7 +100,7 @@ public class TravelersFeatures {
                 DEFAULT_STYLE_KEY,
                 new PathModifiers.PercentStyleModifier(
                         biomes.getOrThrow(BiomeTags.IS_OVERWORLD), List.of(Blocks.GRAVEL.defaultBlockState(), Blocks.COBBLESTONE.defaultBlockState()),
-                        List.of(Blocks.DIRT_PATH.defaultBlockState()), List.of(Blocks.DIRT_PATH.defaultBlockState())
+                        List.of(Blocks.DIRT_PATH.defaultBlockState()), List.of(Blocks.COARSE_DIRT.defaultBlockState())
                 )
         );
 

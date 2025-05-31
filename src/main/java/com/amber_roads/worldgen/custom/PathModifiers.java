@@ -50,9 +50,9 @@ public class PathModifiers {
             if (next >= 95) {
                 return currentState;
             } else if (next >= 40) {
-                return mainPathBlocks.get(randomSource.nextInt(textureBlocks.size()));
+                return mainPathBlocks.get(randomSource.nextInt(mainPathBlocks.size()));
             } else if (next >= 15) {
-                return subPathBlocks.get(randomSource.nextInt(textureBlocks.size()));
+                return subPathBlocks.get(randomSource.nextInt(subPathBlocks.size()));
             } else {
                return textureBlocks.get(randomSource.nextInt(textureBlocks.size()));
             }

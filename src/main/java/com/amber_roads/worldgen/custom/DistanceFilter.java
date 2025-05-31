@@ -1,7 +1,9 @@
 package com.amber_roads.worldgen.custom;
 
+import com.amber_roads.TravelersConfig;
 import com.amber_roads.TravelersCrossroads;
 import com.amber_roads.init.TravelersInit;
+import com.amber_roads.util.TravelersUtil;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -29,10 +31,11 @@ public class DistanceFilter extends PlacementFilter {
 
     @Override
     protected boolean shouldPlace(PlacementContext context, RandomSource random, BlockPos pos) {
-        if (TravelersCrossroads.WATCHER.getClosest(pos) < this.distance) {
+        int closest = TravelersCrossroads.WATCHER.getClosest(pos);
+        if (closest < this.distance || TravelersUtil.chunkDistanceTo(ChunkPos.ZERO, new ChunkPos(pos)) < TravelersConfig.distanceFromWorldCenter) {
             return false;
         }
-        TravelersCrossroads.LOGGER.debug("Acceptable cairn pos distance {}", distance);
+        TravelersCrossroads.LOGGER.debug("Acceptable cairn pos distance {}", closest);
         TravelersCrossroads.WATCHER.addDistanceFilterPath(new ChunkPos(pos));
         return true;
     }

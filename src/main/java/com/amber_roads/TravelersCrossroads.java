@@ -6,6 +6,8 @@ import com.amber_roads.worldgen.TravelersWatcher;
 import com.amber_roads.worldgen.custom.OffsetModifier;
 import com.amber_roads.worldgen.custom.StyleModifier;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import org.slf4j.Logger;
 
@@ -53,17 +55,13 @@ public class TravelersCrossroads
         modEventBus.addListener(this::registerDatapackRegistries);
 
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
-        modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        modContainer.registerConfig(ModConfig.Type.COMMON, TravelersConfig.SPEC);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)
     {
         // Some common setup code
         LOGGER.info("HELLO FROM COMMON SETUP");
-
-        if (Config.logDirtBlock)
-            LOGGER.info("DIRT BLOCK >> {}", BuiltInRegistries.BLOCK.getKey(Blocks.DIRT));
-
     }
 
     void registerDatapackRegistries(DataPackRegistryEvent.NewRegistry event) {
@@ -73,10 +71,20 @@ public class TravelersCrossroads
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call
     @SubscribeEvent
-    public void onServerStarting(ServerStartingEvent event)
-    {
+    public void onServerStarting(ServerStartingEvent event) {
         // Do something when the server starts
         LOGGER.info("HELLO from server starting");
+        WATCHER.setPathData();
+    }
+
+    @SubscribeEvent
+    public void serverStarting(ServerAboutToStartEvent event) {
+        WATCHER.setServer(event.getServer());
+        LOGGER.debug("ServerAboutToStart");
+    }
+
+    public void serverStopping(ServerStoppingEvent event) {
+        WATCHER.saveBeginningsData();
     }
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent

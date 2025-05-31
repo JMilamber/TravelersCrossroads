@@ -1,13 +1,18 @@
 package com.amber_roads.util;
 
 import com.amber_roads.TravelersCrossroads;
+import com.amber_roads.worldgen.TravelersFeatures;
+import com.amber_roads.worldgen.custom.PathModifiers;
 import com.amber_roads.worldgen.custom.StyleModifier;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Dynamic;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderSet;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.monster.warden.WardenSpawnTracker;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.ChunkGenerator;
@@ -20,6 +25,7 @@ import java.util.Map;
 
 import static com.amber_roads.util.TravelersTags.Blocks.PATH_ABOVE;
 import static com.amber_roads.util.TravelersTags.Blocks.PATH_BELOW;
+import static com.amber_roads.util.TravelersUtil.LOGGER;
 import static com.amber_roads.util.TravelersUtil.chunkMatch;
 import static java.lang.Math.abs;
 
@@ -35,7 +41,7 @@ public class TravelersPath {
             TravelersDirection.NORTHWEST, List.of(Pair.of(-3, -1), Pair.of(-3, -2), Pair.of(-4, -2), Pair.of(-1, -3), Pair.of(-2, -3), Pair.of(-3, -3), Pair.of(-4, -3), Pair.of(-5, -3))
     );
 
-    private final StyleModifier pathStyle;
+    private StyleModifier pathStyle;
     
     private final ChunkPos start;
     private final ChunkPos end;
@@ -74,7 +80,17 @@ public class TravelersPath {
             CompoundTag chunkData = pathData.getCompound(String.valueOf(i));
             this.path.add(new ChunkPos(chunkData.getInt("x"), chunkData.getInt("z")));
         }
-        this.pathStyle = StyleModifier.DIRECT_CODEC.parse(NbtOps.INSTANCE ,data.get("style")).getOrThrow();
+        if (data.contains("style")) {
+            StyleModifier.DIRECT_CODEC
+                    .parse(new Dynamic<>(NbtOps.INSTANCE, data.get("style")))
+                    .resultOrPartial(LOGGER::error)
+                    .ifPresentOrElse(
+                            tag1 -> this.pathStyle = tag1,
+                            () -> this.pathStyle = TravelersCrossroads.WATCHER.pathStyles.getOrThrow(TravelersFeatures.DEFAULT_STYLE_KEY)
+                            );
+        } else {
+            this.pathStyle = TravelersCrossroads.WATCHER.pathStyles.getOrThrow(TravelersFeatures.DEFAULT_STYLE_KEY);
+        }
     }
 
     public CompoundTag save(CompoundTag tag, int index) {
@@ -102,7 +118,10 @@ public class TravelersPath {
         data.put("path", pathData);
         data.putInt("length", this.path.size());
         data.putInt("index", this.pathIndex);
-        data.put("style", StyleModifier.DIRECT_CODEC.encodeStart(NbtOps.INSTANCE, this.pathStyle).getOrThrow());
+        StyleModifier.DIRECT_CODEC
+                .encodeStart(NbtOps.INSTANCE, this.pathStyle)
+                .resultOrPartial(TravelersCrossroads.LOGGER::error)
+                .ifPresent(tag1 -> data.put("style", tag1));
         tag.put("path" + index, data);
 
         return tag;
