@@ -4,9 +4,8 @@ import com.amber_roads.util.TravelersTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.BiomeTagsProvider;
-import net.minecraft.data.tags.StructureTagsProvider;
 import net.minecraft.tags.BiomeTags;
-import net.minecraft.world.level.levelgen.structure.BuiltinStructures;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,7 +20,7 @@ public class TravelersBiomeTagProvider extends BiomeTagsProvider {
     @Override
     protected void addTags(HolderLookup.Provider provider) {
         this.tag(TravelersTags.Biomes.PATH_AVOID)
-                .addTag(BiomeTags.IS_OCEAN)
-                .addTag(BiomeTags.IS_RIVER);
+                .addTag(Tags.Biomes.IS_AQUATIC)
+                .addTag(Tags.Biomes.IS_AQUATIC_ICY);
     }
 }

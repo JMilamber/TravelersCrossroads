@@ -14,6 +14,7 @@ import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.data.worldgen.placement.PlacementUtils;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BiomeTags;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
@@ -21,6 +22,7 @@ import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 import net.minecraft.world.level.levelgen.placement.*;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.world.BiomeModifier;
 import net.neoforged.neoforge.common.world.BiomeModifiers;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -37,6 +39,7 @@ public class TravelersFeatures {
     public static final ResourceKey<OffsetModifier> VILLAGE_OFFSET_KEY = registerPathOffsetKey("village_offset");
     public static final ResourceKey<OffsetModifier> MANSION_OFFSET_KEY = registerPathOffsetKey("mansion_offset");
     public static final ResourceKey<StyleModifier> DEFAULT_STYLE_KEY = registerPathStyleKey("default_style");
+    public static final ResourceKey<StyleModifier> DESERT_STYLE_KEY = registerPathStyleKey("desert_style");
 
     public static void configuredBootstrap(BootstrapContext<ConfiguredFeature<?, ?>> configuredContext) {
         configuredRegister(
@@ -51,7 +54,7 @@ public class TravelersFeatures {
         placedRegister(
                 placedContext, PLACED_BEGINNING_KEY, configuredFeatures.getOrThrow(CONFIGURED_BEGINNING_KEY),
                 List.of(
-                        RarityFilter.onAverageOnceEvery(67),
+                        RarityFilter.onAverageOnceEvery(64),
                         DistanceFilter.minimumEvery(25),
                         InSquarePlacement.spread(),
                         PlacementUtils.HEIGHTMAP,
@@ -98,13 +101,20 @@ public class TravelersFeatures {
         );
     }
 
-    public static void pathBiomeStylesBootstrap(BootstrapContext<StyleModifier> pathBiomeBlocksContext) {
-        var biomes = pathBiomeBlocksContext.lookup(Registries.BIOME);
+    public static void pathBiomeStylesBootstrap(BootstrapContext<StyleModifier> pathStylesContext) {
+        var biomes = pathStylesContext.lookup(Registries.BIOME);
 
-        pathBiomeBlocksContext.register(
+        pathStylesContext.register(
                 DEFAULT_STYLE_KEY,
                 new PathModifiers.PercentStyleModifier(
                         biomes.getOrThrow(BiomeTags.IS_OVERWORLD), List.of(Blocks.GRAVEL.defaultBlockState(), Blocks.COBBLESTONE.defaultBlockState()),
+                        List.of(Blocks.DIRT_PATH.defaultBlockState()), List.of(Blocks.COARSE_DIRT.defaultBlockState())
+                )
+        );
+        pathStylesContext.register(
+                DESERT_STYLE_KEY,
+                new PathModifiers.PercentStyleModifier(
+                        biomes.getOrThrow(Tags.Biomes.IS_DESERT), List.of(Blocks.GRAVEL.defaultBlockState(), Blocks.COBBLESTONE.defaultBlockState()),
                         List.of(Blocks.DIRT_PATH.defaultBlockState()), List.of(Blocks.COARSE_DIRT.defaultBlockState())
                 )
         );
