@@ -36,11 +36,13 @@ public class TravelersStructureTagProvider extends StructureTagsProvider {
                 .add(BuiltinStructures.RUINED_PORTAL_SWAMP)
                 .add(BuiltinStructures.RUINED_PORTAL_MOUNTAIN);
 
+        this.tag(TravelersTags.Structures.ZERO_OFFSET_STRUCTURES)
+                .add(BuiltinStructures.RUINED_PORTAL_STANDARD);
+
         this.tag(TravelersTags.Structures.DEFAULT_OFFSET_STRUCTURES)
                 .add(BuiltinStructures.PILLAGER_OUTPOST)
                 .add(BuiltinStructures.IGLOO)
                 .add(BuiltinStructures.SWAMP_HUT)
-                .add(BuiltinStructures.RUINED_PORTAL_STANDARD)
                 .add(BuiltinStructures.RUINED_PORTAL_DESERT)
                 .add(BuiltinStructures.RUINED_PORTAL_JUNGLE)
                 .add(BuiltinStructures.RUINED_PORTAL_SWAMP)

@@ -4,6 +4,9 @@
   "main_path_block": [
     {
       "Name": "minecraft:gravel"
+    },
+    {
+      "Name": "minecraft:cobblestone"
     }
   ],
   "sub_path_block": [
@@ -13,7 +16,7 @@
   ],
   "texture_blocks": [
     {
-      "Name": "minecraft:cobblestone"
+      "Name": "minecraft:coarse_dirt"
     }
   ]
 }

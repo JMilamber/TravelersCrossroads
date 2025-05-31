@@ -32,6 +32,7 @@ public class TravelersFeatures {
     public static final ResourceKey<ConfiguredFeature<?, ?>> CONFIGURED_BEGINNING_KEY = registerConfiguredKey("configured_road");
     public static final ResourceKey<PlacedFeature> PLACED_BEGINNING_KEY = registerPlacedKey("placed_road");
     public static final ResourceKey<BiomeModifier> BIOME_BEGINNING_KEY = registerBiomeKey("road_biomes");
+    public static final ResourceKey<OffsetModifier> ZERO_OFFSET_KEY = registerPathOffsetKey("zero_offset");
     public static final ResourceKey<OffsetModifier> DEFAULT_OFFSET_KEY = registerPathOffsetKey("default_offset");
     public static final ResourceKey<OffsetModifier> VILLAGE_OFFSET_KEY = registerPathOffsetKey("village_offset");
     public static final ResourceKey<OffsetModifier> MANSION_OFFSET_KEY = registerPathOffsetKey("mansion_offset");
@@ -79,6 +80,10 @@ public class TravelersFeatures {
     public static void pathOffsetBootstrap(BootstrapContext<OffsetModifier> pathOffsetContext) {
         var structures = pathOffsetContext.lookup(Registries.STRUCTURE);
 
+        pathOffsetContext.register(
+                ZERO_OFFSET_KEY,
+                new PathModifiers.DistanceModifier(structures.getOrThrow(TravelersTags.Structures.ZERO_OFFSET_STRUCTURES), 1)
+        );
         pathOffsetContext.register(
                 DEFAULT_OFFSET_KEY,
                 new PathModifiers.DistanceModifier(structures.getOrThrow(TravelersTags.Structures.DEFAULT_OFFSET_STRUCTURES), 1)

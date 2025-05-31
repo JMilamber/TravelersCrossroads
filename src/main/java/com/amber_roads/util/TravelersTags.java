@@ -32,6 +32,7 @@ public class TravelersTags {
 
     public static class Structures {
         public static final TagKey<Structure> PATH_STRUCTURES = createTag("path_structures");
+        public static final TagKey<Structure> ZERO_OFFSET_STRUCTURES = createTag("zero_offset_structures");
         public static final TagKey<Structure> DEFAULT_OFFSET_STRUCTURES = createTag("default_offset_structures");
         public static final TagKey<Structure> VILLAGE_OFFSET_STRUCTURES = createTag("village_offset_structures");
         public static final TagKey<Structure> MANSION_OFFSET_STRUCTURES = createTag("mansion_offset_structures");

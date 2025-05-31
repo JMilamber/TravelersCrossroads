@@ -103,11 +103,12 @@ public class TravelersWatcher {
 
     public List<Pair<ChunkPos, Holder<Structure>>> getNearbyStructures(BlockPos center, List<BlockPos> blockPosList) {
         List<Pair<ChunkPos, Holder<Structure>>> structs = new ArrayList<>();
+        ChunkPos centerChunk = new ChunkPos(center);
 
         Pair<BlockPos, Holder<Structure>> struct = findNearestMapStructure(TravelersTags.Structures.PATH_STRUCTURES, center);
             if (struct != null) {
                 ChunkPos structChunkPos = new ChunkPos(struct.getFirst());
-                int distance = chunkDistanceTo(new ChunkPos(center), structChunkPos);
+                int distance = chunkDistanceTo(centerChunk, structChunkPos);
                 if (distance <= 20 && distance > 4) {
                     structs.add(Pair.of(structChunkPos, struct.getSecond()));
                 }
@@ -117,14 +118,15 @@ public class TravelersWatcher {
             struct = findNearestMapStructure(TravelersTags.Structures.PATH_STRUCTURES, pos);
             if (struct != null) {
                 ChunkPos structChunkPos = new ChunkPos(struct.getFirst());
-                int distance = chunkDistanceTo(new ChunkPos(center), structChunkPos);
-                if (distance <= 20 && distance > 1 && structs.stream().noneMatch(s -> s.getFirst() == structChunkPos)) {
+                int distance = chunkDistanceTo(centerChunk, structChunkPos);
+                if (distance <= 20 && distance > 1) {
                     structs.add(Pair.of(structChunkPos, struct.getSecond()));
+                    TravelersCrossroads.LOGGER.debug("Structure found {} {}", struct.getFirst(), struct.getSecond());
                 }
             }
         }
 
-        return structs;
+        return structs.stream().distinct().toList();
     }
 
     @Nullable
