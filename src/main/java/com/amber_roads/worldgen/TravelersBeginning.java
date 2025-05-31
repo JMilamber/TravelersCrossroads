@@ -37,8 +37,14 @@ public class TravelersBeginning extends Feature<NoneFeatureConfiguration> {
             return false;
         }
         TravelersCrossroads.LOGGER.info("Spawning Feature at: {}", origin);
-        BlockPos cairnPos = origin.offset(random.nextInt(5) - 2, 0, random.nextInt(5) - 2);
-        cairnPos = findY(level, cairnPos);
+        BlockPos cairnPos;
+        int tries = 0;
+        do {
+            tries++;
+            cairnPos = origin.offset(random.nextInt(5) - 2, 0, random.nextInt(5) - 2);
+            cairnPos = findY(level, cairnPos);
+        } while (level.getBlockState(cairnPos).getFluidState().isSource() && tries < 25);
+
         level.setBlock(
                 cairnPos.above(),
                 TravelersInit.CAIRN.get().defaultBlockState().setValue(CairnBlock.FACING, Direction.from2DDataValue(random.nextInt(4))),

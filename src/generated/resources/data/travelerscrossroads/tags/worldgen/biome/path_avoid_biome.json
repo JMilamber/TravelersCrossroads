@@ -1,6 +1,6 @@
 {
   "values": [
-    "#minecraft:is_ocean",
-    "#minecraft:is_river"
+    "#c:is_aquatic",
+    "#c:is_aquatic_icy"
   ]
 }

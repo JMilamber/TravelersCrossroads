@@ -22,6 +22,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.amber_roads.util.TravelersTags.Blocks.PATH_ABOVE;
 import static com.amber_roads.util.TravelersTags.Blocks.PATH_BELOW;
@@ -208,9 +209,7 @@ public class TravelersPath {
     }
     
     public void placeRoadPiece(ServerLevel level, RandomSource random, BlockPos origin, @Nullable TravelersDirection previous, @Nullable TravelersDirection next) {
-        if (!level.getBiome(origin).is(TravelersTags.Biomes.PATH_AVOID)) {
-            placeCenter(level, random, origin);
-        }
+        placeCenter(level, random, origin);
         if (previous != null ) {
             placeCenterConnection(level, random, origin, previous);
         }
@@ -220,28 +219,25 @@ public class TravelersPath {
     }
 
     public void placeCenter(ServerLevel level, RandomSource random, BlockPos origin) {
-        BlockPos mutable$blockPos;
+        Optional<BlockPos> mutable$blockPos;
         // TravelersCrossroads.LOGGER.debug("In center place");
 
         for (int x = -2; x < 2; x++) {
             // TravelersCrossroads.LOGGER.debug("X: {} ", x);
-
             for (int z = - 2; z < 2; z++) {
                 // TravelersCrossroads.LOGGER.debug("Z: {} ", z);
-                mutable$blockPos = origin.offset(x, 0, z);
+                mutable$blockPos = findY(level, origin.offset(x, 0, z));
                 // TravelersCrossroads.LOGGER.debug("Above: {} | At: {}| Y {}", level.getBlockState(mutable$blockPos.above()), level.getBlockState(mutable$blockPos), mutable$blockPos.getY());
-                mutable$blockPos = findY(level, mutable$blockPos);
-                this.setBlock(level, mutable$blockPos, random);
+                mutable$blockPos.ifPresent(blockPos ->  this.setBlock(level, blockPos, random));
             }
         }
     }
 
     public void placeCenterConnection(ServerLevel level, RandomSource random, BlockPos origin, TravelersDirection direction) {
-        BlockPos mutable$blockPos;
+        Optional<BlockPos> mutable$blockPos;
         for (Pair<Integer, Integer> pair : CONNECTION_POS.get(direction)) {
-            mutable$blockPos = origin.offset(pair.getFirst(), 0 , pair.getSecond());
-            mutable$blockPos = findY(level, mutable$blockPos);
-            this.setBlock(level, mutable$blockPos, random);
+            mutable$blockPos = findY(level, origin.offset(pair.getFirst(), 0 , pair.getSecond()));
+            mutable$blockPos.ifPresent(blockPos ->  this.setBlock(level, blockPos, random));
         }
         switch (direction) {
             case NORTH -> placeVerticalConnection(level, random, origin.offset(0, 0, direction.getZ() * 5));
@@ -259,12 +255,11 @@ public class TravelersPath {
         if (level.getBiome(origin).is(TravelersTags.Biomes.PATH_AVOID)) {
             return;
         }
-        BlockPos mutable$blockPos;
+        Optional<BlockPos> mutable$blockPos;
         for (int x = -2; x < 2; x++) {
             for (int z = -3; z < 3; z++) {
-                mutable$blockPos = origin.offset(x, 0, z);
-                mutable$blockPos = findY(level, mutable$blockPos);
-                this.setBlock(level, mutable$blockPos, random);
+                mutable$blockPos = findY(level, origin.offset(x, 0, z));
+                mutable$blockPos.ifPresent(blockPos ->  this.setBlock(level, blockPos, random));
             }
         }
     }
@@ -273,12 +268,11 @@ public class TravelersPath {
         if (level.getBiome(origin).is(TravelersTags.Biomes.PATH_AVOID)) {
             return;
         }
-        BlockPos mutable$blockPos;
+        Optional<BlockPos> mutable$blockPos;
         for (int x = -3; x < 2; x++) {
             for (int z = -2; z < 2; z++) {
-                mutable$blockPos = origin.offset(x, 0, z);
-                mutable$blockPos = findY(level, mutable$blockPos);
-                this.setBlock(level, mutable$blockPos, random);
+                mutable$blockPos = findY(level, origin.offset(x, 0, z));
+                mutable$blockPos.ifPresent(blockPos ->  this.setBlock(level, blockPos, random));
             }
         }
     }
@@ -288,12 +282,11 @@ public class TravelersPath {
             return;
         }
         int xStart = 0;
-        BlockPos mutable$blockPos;
+        Optional<BlockPos> mutable$blockPos;
         for (int z = -3; z < 2 ; z++) {
             for (int x = xStart; x < xStart + 5; x++) {
-                mutable$blockPos = origin.offset(x, 0, z);
-                mutable$blockPos = findY(level, mutable$blockPos);
-                this.setBlock(level, mutable$blockPos, random);
+                mutable$blockPos = findY(level, origin.offset(x, 0, z));
+                mutable$blockPos.ifPresent(blockPos ->  this.setBlock(level, blockPos, random));
             }
             xStart --;
         }
@@ -304,12 +297,11 @@ public class TravelersPath {
             return;
         }
         int xStart = -5;
-        BlockPos mutable$blockPos;
+        Optional<BlockPos> mutable$blockPos;
         for (int z = -3; z < 2 ; z++) {
             for (int x = xStart; x < xStart + 5; x++) {
-                mutable$blockPos = origin.offset(x, 0, z);
-                mutable$blockPos = findY(level, mutable$blockPos);
-                this.setBlock(level, mutable$blockPos, random);
+                mutable$blockPos = findY(level, origin.offset(x, 0, z));
+                mutable$blockPos.ifPresent(blockPos ->  this.setBlock(level, blockPos, random));
             }
             xStart ++;
         }
@@ -319,14 +311,17 @@ public class TravelersPath {
         level.setBlock(pos, this.pathStyle.getPathBlock(level.getBlockState(pos), random), 2);
     }
 
-    public static BlockPos findY(ServerLevel level, BlockPos origin) {
+    public static Optional<BlockPos> findY(ServerLevel level, BlockPos origin) {
+
         while (!level.getBlockState(origin.above()).is(PATH_ABOVE) || !level.getBlockState(origin).is(PATH_BELOW)) {
             //TravelersCrossroads.LOGGER.info(
             //        "Blockstates: {} {} {} {}",
             //        level.getBlockState(origin.above()), level.getBlockState(origin.above()).is(PATH_ABOVE),
             //        level.getBlockState(origin), level.getBlockState(origin).is(PATH_BELOW)
             //);
-            if (level.getBlockState(origin).is(PATH_ABOVE)) {
+            if (level.getBlockState(origin.above()).getFluidState().isSource() || level.getBlockState(origin).getFluidState().isSource()){
+                return Optional.empty();
+            } else if (level.getBlockState(origin).is(PATH_ABOVE)) {
                 origin = origin.below();
             } else if (level.getBlockState(origin.above()).is(PATH_BELOW)) {
                 origin = origin.above();
@@ -334,7 +329,7 @@ public class TravelersPath {
                 break;
             }
         }
-        return origin;
+        return Optional.of(origin);
     }
 
     public boolean isInProgress() {
