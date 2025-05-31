@@ -40,7 +40,7 @@ public enum TravelersDirection implements StringRepresentable {
     }
 
     public int getOppositeIndex() {
-        return Math.abs((index + 4) - 8);
+        return index > 3 ? index - 4 : index + 4;
     }
 
     public int getModifiedIndex(int modifier) {
