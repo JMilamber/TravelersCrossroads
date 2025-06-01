@@ -54,7 +54,7 @@ public class TravelersFeatures {
         placedRegister(
                 placedContext, PLACED_BEGINNING_KEY, configuredFeatures.getOrThrow(CONFIGURED_BEGINNING_KEY),
                 List.of(
-                        RarityFilter.onAverageOnceEvery(64),
+                        RarityFilter.onAverageOnceEvery(59),
                         DistanceFilter.minimumEvery(25),
                         InSquarePlacement.spread(),
                         PlacementUtils.HEIGHTMAP,
