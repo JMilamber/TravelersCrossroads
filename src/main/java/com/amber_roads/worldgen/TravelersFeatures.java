@@ -41,6 +41,8 @@ public class TravelersFeatures {
     public static final ResourceKey<OffsetModifier> MANSION_OFFSET_KEY = registerPathOffsetKey("mansion_offset");
     public static final ResourceKey<StyleModifier> DEFAULT_STYLE_KEY = registerPathStyleKey("default_style");
     public static final ResourceKey<StyleModifier> DESERT_STYLE_KEY = registerPathStyleKey("desert_style");
+    public static final ResourceKey<StyleModifier> SPARSE_GRAVEL_STYLE_KEY = registerPathStyleKey("sparse_gravel_style");
+    public static final ResourceKey<StyleModifier> RUSTIC_STYLE_KEY = registerPathStyleKey("rustic_style");
 
     public static void configuredBootstrap(BootstrapContext<ConfiguredFeature<?, ?>> configuredContext) {
         configuredRegister(
@@ -55,7 +57,7 @@ public class TravelersFeatures {
         placedRegister(
                 placedContext, PLACED_BEGINNING_KEY, configuredFeatures.getOrThrow(CONFIGURED_BEGINNING_KEY),
                 List.of(
-                        RarityFilter.onAverageOnceEvery(59),
+                        RarityFilter.onAverageOnceEvery(47),
                         DistanceFilter.minimumEvery(25),
                         InSquarePlacement.spread(),
                         PlacementUtils.HEIGHTMAP,
@@ -105,19 +107,38 @@ public class TravelersFeatures {
     public static void pathBiomeStylesBootstrap(BootstrapContext<StyleModifier> pathStylesContext) {
         var biomes = pathStylesContext.lookup(Registries.BIOME);
 
+
+
+
         pathStylesContext.register(
                 DEFAULT_STYLE_KEY,
                 new PathModifiers.PercentStyleModifier(
-                        biomes.getOrThrow(BiomeTags.IS_OVERWORLD), BlockStateProvider.simple(Blocks.GRAVEL), BlockStateProvider.simple(Blocks.COBBLESTONE),
-                        List.of(Blocks.DIRT_PATH.defaultBlockState(), Blocks.COBBLESTONE_SLAB.defaultBlockState(), Blocks.COARSE_DIRT.defaultBlockState())
+                        biomes.getOrThrow(BiomeTags.IS_OVERWORLD), BlockStateProvider.simple(Blocks.DIRT_PATH),
+                        List.of(Blocks.GRAVEL.defaultBlockState(), Blocks.COARSE_DIRT.defaultBlockState())
+                )
+        );
+
+        pathStylesContext.register(
+                RUSTIC_STYLE_KEY,
+                new PathModifiers.PercentStyleModifier(
+                        biomes.getOrThrow(BiomeTags.IS_OVERWORLD), BlockStateProvider.simple(Blocks.DIRT_PATH),
+                        List.of(Blocks.OAK_PLANKS.defaultBlockState(), Blocks.OAK_STAIRS.defaultBlockState(), Blocks.COARSE_DIRT.defaultBlockState())
                 )
         );
 
         pathStylesContext.register(
                 DESERT_STYLE_KEY,
                 new PathModifiers.PercentStyleModifier(
-                        biomes.getOrThrow(Tags.Biomes.IS_DESERT), BlockStateProvider.simple(Blocks.SANDSTONE), BlockStateProvider.simple(Blocks.GRAVEL),
-                        List.of(Blocks.COBBLESTONE.defaultBlockState(), Blocks.SANDSTONE_SLAB.defaultBlockState())
+                        biomes.getOrThrow(Tags.Biomes.IS_DESERT), BlockStateProvider.simple(Blocks.SANDSTONE),
+                        List.of(Blocks.GRAVEL.defaultBlockState(), Blocks.SANDSTONE_SLAB.defaultBlockState())
+                )
+        );
+
+        pathStylesContext.register(
+                SPARSE_GRAVEL_STYLE_KEY,
+                new PathModifiers.SparseStyleModifier(
+                        biomes.getOrThrow(Tags.Biomes.IS_TEMPERATE), BlockStateProvider.simple(Blocks.SANDSTONE),
+                        BlockStateProvider.simple(Blocks.GRAVEL)
                 )
         );
 

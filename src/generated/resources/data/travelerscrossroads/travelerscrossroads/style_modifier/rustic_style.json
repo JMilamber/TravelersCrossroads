@@ -9,7 +9,16 @@
   },
   "texture_blocks": [
     {
-      "Name": "minecraft:gravel"
+      "Name": "minecraft:oak_planks"
+    },
+    {
+      "Name": "minecraft:oak_stairs",
+      "Properties": {
+        "facing": "north",
+        "half": "bottom",
+        "shape": "straight",
+        "waterlogged": "false"
+      }
     },
     {
       "Name": "minecraft:coarse_dirt"
