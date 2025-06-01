@@ -38,9 +38,8 @@ public class PathModifiers {
     }
 
     public record PercentStyleModifier (
-            HolderSet<Biome> biomes,
-            BlockStateProvider mainPathBlock, BlockStateProvider subPathBlock,
-            List<BlockState> textureBlocks) implements StyleModifier {
+            HolderSet<Biome> biomes, BlockStateProvider mainPathBlock, List<BlockState> textureBlocks
+    ) implements StyleModifier {
 
         public boolean checkBiome(Holder<Biome> checkBiome) {
             Predicate<Holder<Biome>> predicate = biomes::contains;
@@ -50,13 +49,11 @@ public class PathModifiers {
         public BlockState getPathBlock(BlockState currentState, BlockPos pos, RandomSource randomSource) {
             int next = randomSource.nextInt(100);
 
-            if (next >= 50) {
+            if (next >= 55) {
                 return mainPathBlock.getState(randomSource, pos);
-            } else if (next >= 15) {
-                return subPathBlock.getState(randomSource, pos);
-            } else if (next >= 5){
+            } else if (next >= 35){
                return textureBlocks.get(randomSource.nextInt(textureBlocks.size()));
-            }  else   {
+            } else {
                 return currentState;
             }
         }
@@ -64,6 +61,33 @@ public class PathModifiers {
         @Override
         public MapCodec<? extends StyleModifier> codec() {
             return TravelersInit.PERCENT_STYLE_MODIFIER_TYPE.get();
+        }
+    }
+
+    public record SparseStyleModifier (
+            HolderSet<Biome> biomes, BlockStateProvider mainPathBlock, BlockStateProvider subPathBlock
+    ) implements StyleModifier {
+
+        public boolean checkBiome(Holder<Biome> checkBiome) {
+            Predicate<Holder<Biome>> predicate = biomes::contains;
+            return predicate.test(checkBiome);
+        }
+
+        public BlockState getPathBlock(BlockState currentState, BlockPos pos, RandomSource randomSource) {
+            int next = randomSource.nextInt(100);
+
+            if (next >= 70) {
+                return mainPathBlock.getState(randomSource, pos);
+            } else if (next >= 55) {
+                return subPathBlock.getState(randomSource, pos);
+            } else {
+                return currentState;
+            }
+        }
+
+        @Override
+        public MapCodec<? extends StyleModifier> codec() {
+            return TravelersInit.SPARSE_STYLE_MODIFIER_TYPE.get();
         }
     }
 }

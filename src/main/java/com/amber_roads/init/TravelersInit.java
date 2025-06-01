@@ -72,9 +72,17 @@ public class TravelersInit {
                     .group(
                             RegistryCodecs.homogeneousList(Registries.BIOME).fieldOf("biomes").forGetter(PathModifiers.PercentStyleModifier::biomes),
                             BlockStateProvider.CODEC.fieldOf("main_path_block").forGetter(PathModifiers.PercentStyleModifier::mainPathBlock),
-                            BlockStateProvider.CODEC.fieldOf("sub_path_block").forGetter(PathModifiers.PercentStyleModifier::subPathBlock),
                             ExtraCodecs.nonEmptyList(BlockState.CODEC.listOf()).fieldOf("texture_blocks").forGetter(PathModifiers.PercentStyleModifier::textureBlocks)
                     ).apply(builder, PathModifiers.PercentStyleModifier::new))
+    );
+
+    public static final DeferredHolder<MapCodec<? extends StyleModifier>, MapCodec<PathModifiers.SparseStyleModifier>> SPARSE_STYLE_MODIFIER_TYPE = STYLE_MODIFIER_SERIALIZERS.register("sparse_style_modifier", () -> RecordCodecBuilder.mapCodec(
+            builder -> builder
+                    .group(
+                            RegistryCodecs.homogeneousList(Registries.BIOME).fieldOf("biomes").forGetter(PathModifiers.SparseStyleModifier::biomes),
+                            BlockStateProvider.CODEC.fieldOf("main_path_block").forGetter(PathModifiers.SparseStyleModifier::mainPathBlock),
+                            BlockStateProvider.CODEC.fieldOf("sub_path_block").forGetter(PathModifiers.SparseStyleModifier::subPathBlock)
+                    ).apply(builder, PathModifiers.SparseStyleModifier::new))
     );
 
     public static final DeferredHolder<MapCodec<? extends OffsetModifier>, MapCodec<PathModifiers.DistanceModifier>> DISTANCE_OFFSET_MODIFIER_TYPE = OFFSET_MODIFIER_SERIALIZERS.register("distance_offset_modifier", () -> RecordCodecBuilder.mapCodec(

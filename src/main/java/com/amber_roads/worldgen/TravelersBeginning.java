@@ -36,7 +36,7 @@ public class TravelersBeginning extends Feature<NoneFeatureConfiguration> {
         if (level.getBiome(origin).is(PATH_AVOID)) {
             return false;
         }
-        TravelersCrossroads.LOGGER.info("Spawning Feature at: {}", origin);
+        TravelersCrossroads.LOGGER.debug("Spawning Feature at: {}", origin);
         BlockPos cairnPos;
         int tries = 0;
         do {
@@ -50,7 +50,7 @@ public class TravelersBeginning extends Feature<NoneFeatureConfiguration> {
                 TravelersInit.CAIRN.get().defaultBlockState().setValue(CairnBlock.FACING, Direction.from2DDataValue(random.nextInt(4))),
                 3
         );
-        TravelersCrossroads.LOGGER.info("Cairn Placed at: {}", cairnPos.above());
+        TravelersCrossroads.LOGGER.debug("Cairn Placed at: {}", cairnPos.above());
 
 
         TravelersCrossroads.WATCHER.addCrossroadToCreate(origin);
