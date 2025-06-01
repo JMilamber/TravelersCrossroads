@@ -2,11 +2,13 @@ package com.amber_roads.worldgen.custom;
 
 import com.amber_roads.init.TravelersInit;
 import com.mojang.serialization.MapCodec;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.world.level.levelgen.structure.Structure;
 
 import java.util.List;
@@ -37,7 +39,7 @@ public class PathModifiers {
 
     public record PercentStyleModifier (
             HolderSet<Biome> biomes,
-            List<BlockState> mainPathBlocks, List<BlockState> subPathBlocks,
+            BlockStateProvider mainPathBlock, BlockStateProvider subPathBlock,
             List<BlockState> textureBlocks) implements StyleModifier {
 
         public boolean checkBiome(Holder<Biome> checkBiome) {
@@ -45,16 +47,17 @@ public class PathModifiers {
             return predicate.test(checkBiome);
         }
 
-        public BlockState getPathBlock(BlockState currentState, RandomSource randomSource) {
+        public BlockState getPathBlock(BlockState currentState, BlockPos pos, RandomSource randomSource) {
             int next = randomSource.nextInt(100);
-            if (next >= 95) {
-                return currentState;
-            } else if (next >= 40) {
-                return mainPathBlocks.get(randomSource.nextInt(mainPathBlocks.size()));
+
+            if (next >= 50) {
+                return mainPathBlock.getState(randomSource, pos);
             } else if (next >= 15) {
-                return subPathBlocks.get(randomSource.nextInt(subPathBlocks.size()));
-            } else {
+                return subPathBlock.getState(randomSource, pos);
+            } else if (next >= 5){
                return textureBlocks.get(randomSource.nextInt(textureBlocks.size()));
+            }  else   {
+                return currentState;
             }
         }
 

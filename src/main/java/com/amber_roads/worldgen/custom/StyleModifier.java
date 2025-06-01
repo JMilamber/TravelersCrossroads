@@ -3,6 +3,7 @@ package com.amber_roads.worldgen.custom;
 import com.amber_roads.init.TravelersRegistries;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryCodecs;
@@ -36,7 +37,7 @@ public interface StyleModifier {
 
     boolean checkBiome(Holder<Biome> checkBiome);
 
-    BlockState getPathBlock(BlockState currentState, RandomSource randomSource);
+    BlockState getPathBlock(BlockState currentState, BlockPos pos, RandomSource randomSource);
 
     MapCodec<? extends StyleModifier> codec();
 }

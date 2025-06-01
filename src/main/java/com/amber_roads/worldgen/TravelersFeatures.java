@@ -21,6 +21,7 @@ import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
+import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.world.level.levelgen.placement.*;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.world.BiomeModifier;
@@ -107,15 +108,16 @@ public class TravelersFeatures {
         pathStylesContext.register(
                 DEFAULT_STYLE_KEY,
                 new PathModifiers.PercentStyleModifier(
-                        biomes.getOrThrow(BiomeTags.IS_OVERWORLD), List.of(Blocks.GRAVEL.defaultBlockState(), Blocks.COBBLESTONE.defaultBlockState()),
-                        List.of(Blocks.DIRT_PATH.defaultBlockState()), List.of(Blocks.COARSE_DIRT.defaultBlockState())
+                        biomes.getOrThrow(BiomeTags.IS_OVERWORLD), BlockStateProvider.simple(Blocks.GRAVEL), BlockStateProvider.simple(Blocks.COBBLESTONE),
+                        List.of(Blocks.DIRT_PATH.defaultBlockState(), Blocks.COBBLESTONE_SLAB.defaultBlockState(), Blocks.COARSE_DIRT.defaultBlockState())
                 )
         );
+
         pathStylesContext.register(
                 DESERT_STYLE_KEY,
                 new PathModifiers.PercentStyleModifier(
-                        biomes.getOrThrow(Tags.Biomes.IS_DESERT), List.of(Blocks.GRAVEL.defaultBlockState(), Blocks.COBBLESTONE.defaultBlockState()),
-                        List.of(Blocks.DIRT_PATH.defaultBlockState()), List.of(Blocks.COARSE_DIRT.defaultBlockState())
+                        biomes.getOrThrow(Tags.Biomes.IS_DESERT), BlockStateProvider.simple(Blocks.SANDSTONE), BlockStateProvider.simple(Blocks.GRAVEL),
+                        List.of(Blocks.COBBLESTONE.defaultBlockState(), Blocks.SANDSTONE_SLAB.defaultBlockState())
                 )
         );
 

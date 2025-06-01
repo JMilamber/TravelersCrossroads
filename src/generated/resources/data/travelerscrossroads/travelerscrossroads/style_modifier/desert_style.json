@@ -1,22 +1,28 @@
 {
   "type": "travelerscrossroads:percent_style_modifier",
   "biomes": "#c:is_desert",
-  "main_path_block": [
-    {
+  "main_path_block": {
+    "type": "minecraft:simple_state_provider",
+    "state": {
+      "Name": "minecraft:sandstone"
+    }
+  },
+  "sub_path_block": {
+    "type": "minecraft:simple_state_provider",
+    "state": {
       "Name": "minecraft:gravel"
-    },
-    {
-      "Name": "minecraft:cobblestone"
     }
-  ],
-  "sub_path_block": [
-    {
-      "Name": "minecraft:dirt_path"
-    }
-  ],
+  },
   "texture_blocks": [
     {
-      "Name": "minecraft:coarse_dirt"
+      "Name": "minecraft:cobblestone"
+    },
+    {
+      "Name": "minecraft:sandstone_slab",
+      "Properties": {
+        "type": "bottom",
+        "waterlogged": "false"
+      }
     }
   ]
 }

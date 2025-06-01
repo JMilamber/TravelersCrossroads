@@ -22,6 +22,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.world.level.levelgen.placement.PlacementModifier;
 import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 import net.neoforged.bus.api.IEventBus;
@@ -70,8 +71,8 @@ public class TravelersInit {
             builder -> builder
                     .group(
                             RegistryCodecs.homogeneousList(Registries.BIOME).fieldOf("biomes").forGetter(PathModifiers.PercentStyleModifier::biomes),
-                            ExtraCodecs.nonEmptyList(BlockState.CODEC.listOf()).fieldOf("main_path_block").forGetter(PathModifiers.PercentStyleModifier::mainPathBlocks),
-                            ExtraCodecs.nonEmptyList(BlockState.CODEC.listOf()).fieldOf("sub_path_block").forGetter(PathModifiers.PercentStyleModifier::subPathBlocks),
+                            BlockStateProvider.CODEC.fieldOf("main_path_block").forGetter(PathModifiers.PercentStyleModifier::mainPathBlock),
+                            BlockStateProvider.CODEC.fieldOf("sub_path_block").forGetter(PathModifiers.PercentStyleModifier::subPathBlock),
                             ExtraCodecs.nonEmptyList(BlockState.CODEC.listOf()).fieldOf("texture_blocks").forGetter(PathModifiers.PercentStyleModifier::textureBlocks)
                     ).apply(builder, PathModifiers.PercentStyleModifier::new))
     );

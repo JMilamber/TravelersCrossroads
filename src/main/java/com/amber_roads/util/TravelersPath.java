@@ -308,7 +308,7 @@ public class TravelersPath {
     }
 
     public void setBlock(Level level, BlockPos pos, RandomSource random) {
-        level.setBlock(pos, this.pathStyle.getPathBlock(level.getBlockState(pos), random), 2);
+        level.setBlock(pos, this.pathStyle.getPathBlock(level.getBlockState(pos), pos, random), 2);
     }
 
     public static Optional<BlockPos> findY(ServerLevel level, BlockPos origin) {
