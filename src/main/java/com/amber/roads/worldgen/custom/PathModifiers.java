@@ -5,8 +5,11 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.world.level.levelgen.structure.Structure;
@@ -46,16 +49,22 @@ public class PathModifiers {
             return predicate.test(checkBiome);
         }
 
-        public BlockState getPathBlock(BlockState currentState, BlockPos pos, RandomSource randomSource) {
+        public void setPathBlock(ServerLevel level, BlockPos originPos, int xOffset, int zOffset) {
+            RandomSource randomSource = level.getRandom();
             int next = randomSource.nextInt(100);
+            BlockPos currentPos = originPos.offset(xOffset, 0, zOffset);
+            BlockState currentState = level.getBlockState(currentPos);
+            BlockState setState;
 
             if (next >= 55) {
-                return mainPathBlock.getState(randomSource, pos);
+                setState = mainPathBlock.getState(randomSource, currentPos);
             } else if (next >= 35){
-               return textureBlocks.get(randomSource.nextInt(textureBlocks.size()));
+                setState = textureBlocks.get(randomSource.nextInt(textureBlocks.size()));
             } else {
-                return currentState;
+                setState = currentState;
             }
+
+            level.setBlock(currentPos, setState, 2);
         }
 
         @Override
@@ -73,16 +82,21 @@ public class PathModifiers {
             return predicate.test(checkBiome);
         }
 
-        public BlockState getPathBlock(BlockState currentState, BlockPos pos, RandomSource randomSource) {
+        public void setPathBlock(ServerLevel level, BlockPos originPos, int xOffset, int zOffset) {
+            RandomSource randomSource = level.getRandom();
             int next = randomSource.nextInt(100);
-
+            BlockPos currentPos = originPos.offset(xOffset, 0, zOffset);
+            BlockState currentState = level.getBlockState(currentPos);
+            BlockState setState;
             if (next >= 75) {
-                return mainPathBlock.getState(randomSource, pos);
+                setState =  mainPathBlock.getState(randomSource, currentPos);
             } else if (next >= 60) {
-                return subPathBlock.getState(randomSource, pos);
+                setState =  subPathBlock.getState(randomSource, currentPos);
             } else {
-                return currentState;
+                setState =  currentState;
             }
+
+            level.setBlock(currentPos, setState, 2);
         }
 
         @Override

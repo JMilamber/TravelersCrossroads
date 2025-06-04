@@ -9,7 +9,9 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryCodecs;
 import net.minecraft.resources.RegistryFileCodec;
 import net.minecraft.resources.RegistryOps;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -37,7 +39,7 @@ public interface StyleModifier {
 
     boolean checkBiome(Holder<Biome> checkBiome);
 
-    BlockState getPathBlock(BlockState currentState, BlockPos pos, RandomSource randomSource);
+    void setPathBlock(ServerLevel level, BlockPos originPos, int xOffset, int zOffset);
 
     MapCodec<? extends StyleModifier> codec();
 }
