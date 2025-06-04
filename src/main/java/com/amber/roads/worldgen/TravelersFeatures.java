@@ -39,6 +39,7 @@ public class TravelersFeatures {
     public static final ResourceKey<OffsetModifier> VILLAGE_OFFSET_KEY = registerPathOffsetKey("village_offset");
     public static final ResourceKey<OffsetModifier> MANSION_OFFSET_KEY = registerPathOffsetKey("mansion_offset");
     public static final ResourceKey<StyleModifier> DEFAULT_STYLE_KEY = registerPathStyleKey("default_style");
+    public static final ResourceKey<StyleModifier> STONE_BRICKS_STYLE_KEY = registerPathStyleKey("stone_bricks_style");
     public static final ResourceKey<StyleModifier> DESERT_STYLE_KEY = registerPathStyleKey("desert_style");
     public static final ResourceKey<StyleModifier> SPARSE_GRAVEL_STYLE_KEY = registerPathStyleKey("sparse_gravel_style");
     public static final ResourceKey<StyleModifier> RUSTIC_STYLE_KEY = registerPathStyleKey("rustic_style");
@@ -106,14 +107,22 @@ public class TravelersFeatures {
     public static void pathBiomeStylesBootstrap(BootstrapContext<StyleModifier> pathStylesContext) {
         var biomes = pathStylesContext.lookup(Registries.BIOME);
 
-
-
-
         pathStylesContext.register(
                 DEFAULT_STYLE_KEY,
                 new PathModifiers.PercentStyleModifier(
                         biomes.getOrThrow(BiomeTags.IS_OVERWORLD), BlockStateProvider.simple(Blocks.DIRT_PATH),
                         List.of(Blocks.GRAVEL.defaultBlockState(), Blocks.COARSE_DIRT.defaultBlockState())
+                )
+        );
+
+        pathStylesContext.register(
+                STONE_BRICKS_STYLE_KEY,
+                new PathModifiers.PercentStyleModifier(
+                        biomes.getOrThrow(BiomeTags.IS_OVERWORLD), BlockStateProvider.simple(Blocks.STONE_BRICKS),
+                        List.of(
+                                Blocks.MOSSY_STONE_BRICKS.defaultBlockState(), Blocks.MOSSY_STONE_BRICKS.defaultBlockState(),
+                                Blocks.STONE_BRICK_SLAB.defaultBlockState(), Blocks.COBBLESTONE.defaultBlockState()
+                        )
                 )
         );
 
@@ -136,8 +145,8 @@ public class TravelersFeatures {
         pathStylesContext.register(
                 SPARSE_GRAVEL_STYLE_KEY,
                 new PathModifiers.SparseStyleModifier(
-                        biomes.getOrThrow(Tags.Biomes.IS_TEMPERATE), BlockStateProvider.simple(Blocks.SANDSTONE),
-                        BlockStateProvider.simple(Blocks.GRAVEL)
+                        biomes.getOrThrow(Tags.Biomes.IS_TEMPERATE), BlockStateProvider.simple(Blocks.GRAVEL),
+                        BlockStateProvider.simple(Blocks.COARSE_DIRT)
                 )
         );
 

@@ -90,7 +90,7 @@ public class CairnBlock extends Block {
      */
     @Override
     protected BlockState mirror(BlockState state, Mirror mirror) {
-        return state.rotate(mirror.getRotation(state.getValue(FACING)));
+        return state.mirror(mirror);
     }
 
     @Override
