@@ -76,9 +76,9 @@ public class PathModifiers {
         public BlockState getPathBlock(BlockState currentState, BlockPos pos, RandomSource randomSource) {
             int next = randomSource.nextInt(100);
 
-            if (next >= 70) {
+            if (next >= 75) {
                 return mainPathBlock.getState(randomSource, pos);
-            } else if (next >= 55) {
+            } else if (next >= 60) {
                 return subPathBlock.getState(randomSource, pos);
             } else {
                 return currentState;
