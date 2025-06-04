@@ -196,7 +196,7 @@ public class TravelersPath {
             nextChunk = null;
         }
 
-        placeRoadPiece(level, randomSource, center, previousChunk, nextChunk);
+        placeRoadPiece(level, center, previousChunk, nextChunk);
 
         if (this.pathIndex == this.path.size() - 1) {
             this.completed = true;
@@ -205,17 +205,17 @@ public class TravelersPath {
         this.pathIndex++;
     }
     
-    public void placeRoadPiece(ServerLevel level, RandomSource random, BlockPos origin, @Nullable TravelersDirection previous, @Nullable TravelersDirection next) {
-        placeCenter(level, random, origin);
+    public void placeRoadPiece(ServerLevel level, BlockPos origin, @Nullable TravelersDirection previous, @Nullable TravelersDirection next) {
+        placeCenter(level, origin);
         if (previous != null ) {
-            placeCenterConnection(level, random, origin, previous);
+            placeCenterConnection(level, origin, previous);
         }
         if (next != null) {
-            placeCenterConnection(level, random, origin, next);
+            placeCenterConnection(level, origin, next);
         }
     }
 
-    public void placeCenter(ServerLevel level, RandomSource random, BlockPos origin) {
+    public void placeCenter(ServerLevel level, BlockPos origin) {
         Optional<BlockPos> mutable$blockPos;
         // TravelersCrossroads.LOGGER.debug("In center place");
 
@@ -225,87 +225,70 @@ public class TravelersPath {
                 // TravelersCrossroads.LOGGER.debug("Z: {} ", z);
                 mutable$blockPos = findY(level, origin.offset(x, 0, z));
                 // TravelersCrossroads.LOGGER.debug("Above: {} | At: {}| Y {}", level.getBlockState(mutable$blockPos.above()), level.getBlockState(mutable$blockPos), mutable$blockPos.getY());
-                mutable$blockPos.ifPresent(blockPos ->  this.setBlock(level, blockPos, random));
+                int finalX = x;
+                int finalZ = z;
+                mutable$blockPos.ifPresent(blockPos ->  this.pathStyle.setPathBlock(level, origin, finalX, finalZ));
             }
         }
     }
 
-    public void placeCenterConnection(ServerLevel level, RandomSource random, BlockPos origin, TravelersDirection direction) {
+    public void placeCenterConnection(ServerLevel level, BlockPos origin, TravelersDirection direction) {
         Optional<BlockPos> mutable$blockPos;
         for (Pair<Integer, Integer> pair : CONNECTION_POS.get(direction)) {
             mutable$blockPos = findY(level, origin.offset(pair.getFirst(), 0 , pair.getSecond()));
-            mutable$blockPos.ifPresent(blockPos ->  this.setBlock(level, blockPos, random));
+            mutable$blockPos.ifPresent(blockPos ->  this.pathStyle.setPathBlock(level, origin, pair.getFirst(),  pair.getSecond()));
         }
+        BlockPos placementCenter;
+        int startX;
+        int endX;
+        int startZ;
+        int endZ;
+
         switch (direction) {
-            case NORTH -> placeVerticalConnection(level, random, origin.offset(0, 0, direction.getZ() * 5));
-            case NORTHEAST -> placeDiagonalLR(level, random, origin.offset(direction.getX() * 5, 0, direction.getZ() * 5));
-            case EAST -> placeHorizontalConnection(level, random, origin.offset(direction.getX() * 6, 0, 0));
-            case SOUTHEAST -> placeDiagonalRL(level, random, origin.offset(direction.getX() * 6, 0, direction.getZ() * 6));
-            case SOUTH -> placeVerticalConnection(level, random, origin.offset(0, 0, direction.getZ() * 5));
-            case SOUTHWEST -> placeDiagonalLR(level, random, origin.offset(direction.getX() * 6, 0, direction.getZ() * 6));
-            case WEST -> placeHorizontalConnection(level, random, origin.offset(direction.getX() * 5, 0, 0));
-            case NORTHWEST -> placeDiagonalRL(level, random, origin.offset(direction.getX() * 5, 0, direction.getZ() * 5));
-        }
-    }
-
-    public void placeVerticalConnection(ServerLevel level, RandomSource random, BlockPos origin) {
-        if (level.getBiome(origin).is(TravelersTags.Biomes.PATH_AVOID)) {
-            return;
-        }
-        Optional<BlockPos> mutable$blockPos;
-        for (int x = -2; x < 2; x++) {
-            for (int z = -3; z < 3; z++) {
-                mutable$blockPos = findY(level, origin.offset(x, 0, z));
-                mutable$blockPos.ifPresent(blockPos ->  this.setBlock(level, blockPos, random));
+            case NORTHEAST, SOUTHWEST -> {
+                placementCenter = origin.offset(direction.getX() * 5, 0, direction.getZ() * 5);
+                startX = 0;
+                endX = 5;
+                startZ = -3;
+                endZ = 3;
+            }
+            case EAST, WEST -> {
+                placementCenter = origin.offset(direction.getX() * 5, 0, 0);
+                startX = -3;
+                endX = 3;
+                startZ = -2;
+                endZ = 2;
+            }
+            case SOUTHEAST, NORTHWEST -> {
+                placementCenter = origin.offset(direction.getX() * 5, 0, direction.getZ() * 5);
+                startX = -5;
+                endX = 0;
+                startZ = -3;
+                endZ = 3;
+            }
+            default -> { // NORTH, SOUTH
+                placementCenter = origin.offset(0, 0, direction.getZ() * 5);
+                startX = -2;
+                endX = 2;
+                startZ = -3;
+                endZ = 3;
             }
         }
-    }
 
-    public void placeHorizontalConnection(ServerLevel level, RandomSource random, BlockPos origin) {
-        if (level.getBiome(origin).is(TravelersTags.Biomes.PATH_AVOID)) {
+
+        if (level.getBiome(placementCenter).is(TravelersTags.Biomes.PATH_AVOID)) {
             return;
         }
-        Optional<BlockPos> mutable$blockPos;
-        for (int x = -3; x < 2; x++) {
-            for (int z = -2; z < 2; z++) {
-                mutable$blockPos = findY(level, origin.offset(x, 0, z));
-                mutable$blockPos.ifPresent(blockPos ->  this.setBlock(level, blockPos, random));
+
+        for (int x = startX; x < endX; x++) {
+            for (int z = startZ; z < endZ; z++) {
+                mutable$blockPos = findY(level, placementCenter.offset(x, 0, z));
+                int finalX = x;
+                int finalZ = z;
+                mutable$blockPos.ifPresent(blockPos ->  this.pathStyle.setPathBlock(level, origin, finalX, finalZ));
             }
         }
-    }
 
-    public void placeDiagonalLR(ServerLevel level, RandomSource random, BlockPos origin) {
-        if (level.getBiome(origin).is(TravelersTags.Biomes.PATH_AVOID)) {
-            return;
-        }
-        int xStart = 0;
-        Optional<BlockPos> mutable$blockPos;
-        for (int z = -3; z < 2 ; z++) {
-            for (int x = xStart; x < xStart + 5; x++) {
-                mutable$blockPos = findY(level, origin.offset(x, 0, z));
-                mutable$blockPos.ifPresent(blockPos ->  this.setBlock(level, blockPos, random));
-            }
-            xStart --;
-        }
-    }
-
-    public void placeDiagonalRL(ServerLevel level, RandomSource random, BlockPos origin) {
-        if (level.getBiome(origin).is(TravelersTags.Biomes.PATH_AVOID)) {
-            return;
-        }
-        int xStart = -5;
-        Optional<BlockPos> mutable$blockPos;
-        for (int z = -3; z < 2 ; z++) {
-            for (int x = xStart; x < xStart + 5; x++) {
-                mutable$blockPos = findY(level, origin.offset(x, 0, z));
-                mutable$blockPos.ifPresent(blockPos ->  this.setBlock(level, blockPos, random));
-            }
-            xStart ++;
-        }
-    }
-
-    public void setBlock(Level level, BlockPos pos, RandomSource random) {
-        level.setBlock(pos, this.pathStyle.getPathBlock(level.getBlockState(pos), pos, random), 2);
     }
 
     public static Optional<BlockPos> findY(ServerLevel level, BlockPos origin) {
