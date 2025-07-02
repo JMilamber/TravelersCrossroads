@@ -4,7 +4,7 @@ import com.amber.roads.init.TravelersInit;
 import com.amber.roads.init.TravelersRegistries;
 import com.amber.roads.worldgen.TravelersWatcher;
 import com.amber.roads.worldgen.custom.OffsetModifier;
-import com.amber.roads.worldgen.custom.StyleModifier;
+import com.amber.roads.worldgen.custom.pathstyle.PathStyle;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
@@ -63,7 +63,7 @@ public class TravelersCrossroads
     }
 
     void registerDatapackRegistries(DataPackRegistryEvent.NewRegistry event) {
-        event.dataPackRegistry(TravelersRegistries.Keys.STYLE_MODIFIERS, StyleModifier.DIRECT_CODEC);
+        event.dataPackRegistry(TravelersRegistries.Keys.STYLE_MODIFIERS, PathStyle.DIRECT_CODEC);
         event.dataPackRegistry(TravelersRegistries.Keys.OFFSET_MODIFIERS, OffsetModifier.DIRECT_CODEC);
     }
 

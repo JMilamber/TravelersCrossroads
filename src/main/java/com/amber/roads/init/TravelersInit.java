@@ -2,27 +2,25 @@ package com.amber.roads.init;
 
 import com.amber.roads.TravelersCrossroads;
 import com.amber.roads.block.CairnBlock;
-import com.amber.roads.worldgen.custom.DistanceFilter;
+import com.amber.roads.worldgen.custom.*;
 import com.amber.roads.worldgen.TravelersBeginning;
-import com.amber.roads.worldgen.custom.OffsetModifier;
-import com.amber.roads.worldgen.custom.StyleModifier;
-import com.amber.roads.worldgen.custom.PathModifiers;
+import com.amber.roads.worldgen.custom.pathstyle.PathStyle;
+import com.amber.roads.worldgen.custom.pathstyle.PercentStyle;
+import com.amber.roads.worldgen.custom.pathstyle.SparseStyle;
+import com.amber.roads.worldgen.custom.pathstyle.StyleModifierType;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
-import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.world.level.levelgen.placement.PlacementModifier;
 import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 import net.neoforged.bus.api.IEventBus;
@@ -40,7 +38,7 @@ public class TravelersInit {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, TravelersCrossroads.MOD_ID);
     public static final DeferredRegister<Feature<?>> FEATURES = DeferredRegister.create(Registries.FEATURE, TravelersCrossroads.MOD_ID);
     public static final DeferredRegister<PlacementModifierType<?>> PLACEMENTS = DeferredRegister.create(Registries.PLACEMENT_MODIFIER_TYPE, TravelersCrossroads.MOD_ID);
-    public static final DeferredRegister<MapCodec<? extends StyleModifier>> STYLE_MODIFIER_SERIALIZERS = DeferredRegister.create(TravelersRegistries.STYLE_MODIFIER_SERIALIZERS, TravelersCrossroads.MOD_ID);
+    public static final DeferredRegister<StyleModifierType<?>> STYLE_MODIFIER_SERIALIZERS = DeferredRegister.create(TravelersRegistries.STYLE_MODIFIER_TYPE, TravelersCrossroads.MOD_ID);
     public static final DeferredRegister<MapCodec<? extends OffsetModifier>> OFFSET_MODIFIER_SERIALIZERS = DeferredRegister.create(TravelersRegistries.OFFSET_MODIFIER_SERIALIZERS, TravelersCrossroads.MOD_ID);
 
     public static final Supplier<Block> CAIRN = registerBlock(
@@ -67,23 +65,12 @@ public class TravelersInit {
             "distance_filter", () -> explicitPlacmentTypeTyping(DistanceFilter.CODEC)
     );
 
-    public static final DeferredHolder<MapCodec<? extends StyleModifier>, MapCodec<PathModifiers.PercentStyleModifier>> PERCENT_STYLE_MODIFIER_TYPE = STYLE_MODIFIER_SERIALIZERS.register("percent_style_modifier", () -> RecordCodecBuilder.mapCodec(
-            builder -> builder
-                    .group(
-                            RegistryCodecs.homogeneousList(Registries.BIOME).fieldOf("biomes").forGetter(PathModifiers.PercentStyleModifier::biomes),
-                            BlockStateProvider.CODEC.fieldOf("main_path_block").forGetter(PathModifiers.PercentStyleModifier::mainPathBlock),
-                            ExtraCodecs.nonEmptyList(BlockState.CODEC.listOf()).fieldOf("texture_blocks").forGetter(PathModifiers.PercentStyleModifier::textureBlocks)
-                    ).apply(builder, PathModifiers.PercentStyleModifier::new))
-    );
+    public static final DeferredHolder<StyleModifierType<?>, StyleModifierType<PercentStyle>> PERCENT_STYLE = STYLE_MODIFIER_SERIALIZERS.register(
+            "percent_style", () -> explicitPathStyleTypeTyping(PercentStyle.CODEC));
 
-    public static final DeferredHolder<MapCodec<? extends StyleModifier>, MapCodec<PathModifiers.SparseStyleModifier>> SPARSE_STYLE_MODIFIER_TYPE = STYLE_MODIFIER_SERIALIZERS.register("sparse_style_modifier", () -> RecordCodecBuilder.mapCodec(
-            builder -> builder
-                    .group(
-                            RegistryCodecs.homogeneousList(Registries.BIOME).fieldOf("biomes").forGetter(PathModifiers.SparseStyleModifier::biomes),
-                            BlockStateProvider.CODEC.fieldOf("main_path_block").forGetter(PathModifiers.SparseStyleModifier::mainPathBlock),
-                            BlockStateProvider.CODEC.fieldOf("sub_path_block").forGetter(PathModifiers.SparseStyleModifier::subPathBlock)
-                    ).apply(builder, PathModifiers.SparseStyleModifier::new))
-    );
+    public static final DeferredHolder<StyleModifierType<?>, StyleModifierType<SparseStyle>> SPARSE_STYLE = STYLE_MODIFIER_SERIALIZERS.register(
+            "sparse_style", () -> explicitPathStyleTypeTyping(SparseStyle.CODEC));
+
 
     public static final DeferredHolder<MapCodec<? extends OffsetModifier>, MapCodec<PathModifiers.DistanceModifier>> DISTANCE_OFFSET_MODIFIER_TYPE = OFFSET_MODIFIER_SERIALIZERS.register("distance_offset_modifier", () -> RecordCodecBuilder.mapCodec(
             builder -> builder
@@ -115,6 +102,10 @@ public class TravelersInit {
      */
     private static <T extends PlacementModifier> PlacementModifierType<T> explicitPlacmentTypeTyping(MapCodec<T> placementTypeCodec) {
         return () -> placementTypeCodec;
+    }
+
+    private static <T extends PathStyle> StyleModifierType<T> explicitPathStyleTypeTyping(MapCodec<T> pathStyleTypeCodec) {
+        return () -> pathStyleTypeCodec;
     }
 
     public static void register(IEventBus eventBus) {
