@@ -34,7 +34,10 @@ public class TravelersStructureTagProvider extends StructureTagsProvider {
                 .add(BuiltinStructures.RUINED_PORTAL_DESERT)
                 .add(BuiltinStructures.RUINED_PORTAL_JUNGLE)
                 .add(BuiltinStructures.RUINED_PORTAL_SWAMP)
-                .add(BuiltinStructures.RUINED_PORTAL_MOUNTAIN);
+                .add(BuiltinStructures.RUINED_PORTAL_MOUNTAIN)
+                .add(BuiltinStructures.TRIAL_CHAMBERS)
+                .add(BuiltinStructures.TRAIL_RUINS);
+
 
         this.tag(TravelersTags.Structures.ZERO_OFFSET_STRUCTURES)
                 .add(BuiltinStructures.RUINED_PORTAL_STANDARD);
@@ -46,7 +49,8 @@ public class TravelersStructureTagProvider extends StructureTagsProvider {
                 .add(BuiltinStructures.RUINED_PORTAL_DESERT)
                 .add(BuiltinStructures.RUINED_PORTAL_JUNGLE)
                 .add(BuiltinStructures.RUINED_PORTAL_SWAMP)
-                .add(BuiltinStructures.RUINED_PORTAL_MOUNTAIN);
+                .add(BuiltinStructures.RUINED_PORTAL_MOUNTAIN)
+                .add(BuiltinStructures.JUNGLE_TEMPLE);
 
         this.tag(TravelersTags.Structures.VILLAGE_OFFSET_STRUCTURES)
                 .add(BuiltinStructures.VILLAGE_PLAINS)
@@ -54,7 +58,6 @@ public class TravelersStructureTagProvider extends StructureTagsProvider {
                 .add(BuiltinStructures.VILLAGE_SAVANNA)
                 .add(BuiltinStructures.VILLAGE_SNOWY)
                 .add(BuiltinStructures.VILLAGE_TAIGA)
-                .add(BuiltinStructures.JUNGLE_TEMPLE)
                 .add(BuiltinStructures.DESERT_PYRAMID);
 
         this.tag(TravelersTags.Structures.MANSION_OFFSET_STRUCTURES)
