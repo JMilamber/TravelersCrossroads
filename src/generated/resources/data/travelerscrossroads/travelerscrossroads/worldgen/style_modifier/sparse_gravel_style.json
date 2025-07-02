@@ -1,16 +1,17 @@
 {
-  "type": "travelerscrossroads:sparse_style_modifier",
+  "type": "travelerscrossroads:sparse_style",
   "biomes": "#c:is_temperate",
   "main_path_block": {
     "type": "minecraft:simple_state_provider",
     "state": {
-      "Name": "minecraft:sandstone"
+      "Name": "minecraft:gravel"
     }
   },
+  "pathSize": "SMALL",
   "sub_path_block": {
     "type": "minecraft:simple_state_provider",
     "state": {
-      "Name": "minecraft:gravel"
+      "Name": "minecraft:coarse_dirt"
     }
   }
 }
