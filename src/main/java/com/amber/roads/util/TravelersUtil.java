@@ -1,6 +1,8 @@
 package com.amber.roads.util;
 
+import com.amber.roads.world.PathPos;
 import com.mojang.logging.LogUtils;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.ChunkPos;
@@ -37,7 +39,23 @@ public class TravelersUtil {
         return  Math.sqrt(side * side + side2 * side2);
     }
 
+    public static double distanceTo2D(BlockPos origin, BlockPos end) {
+        double dX = Math.abs(origin.getX() - end.getX());
+        double dZ = Math.abs(origin.getZ() - end.getZ());
+        return Math.sqrt(dX * dX + dZ * dZ);
+    }
+
+    public static double distanceTo2D(PathPos origin, PathPos end) {
+        double dX = Math.abs(end.getX() - origin.getX());
+        double dZ = Math.abs(end.getZ() - origin.getZ());
+        return Math.sqrt(dX * dX + dZ * dZ);
+    }
+
     public static ChunkPos offsetChunk(ChunkPos pos, int xOffset, int zOffset) {
         return new ChunkPos(pos.x + xOffset, pos.z + zOffset);
+    }
+
+    public static float roundToHalf(float d) {
+        return Math.round(d * 2) / 2.0f;
     }
 }
