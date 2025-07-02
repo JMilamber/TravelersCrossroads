@@ -3,11 +3,12 @@ package com.amber.roads.worldgen;
 import com.amber.roads.TravelersCrossroads;
 import com.amber.roads.init.TravelersInit;
 import com.amber.roads.init.TravelersRegistries;
+import com.amber.roads.util.PathSize;
 import com.amber.roads.util.TravelersTags;
-import com.amber.roads.worldgen.custom.OffsetModifier;
-import com.amber.roads.worldgen.custom.PathModifiers;
-import com.amber.roads.worldgen.custom.StyleModifier;
-import com.amber.roads.worldgen.custom.DistanceFilter;
+import com.amber.roads.worldgen.custom.*;
+import com.amber.roads.worldgen.custom.pathstyle.PathStyle;
+import com.amber.roads.worldgen.custom.pathstyle.PercentStyle;
+import com.amber.roads.worldgen.custom.pathstyle.SparseStyle;
 import net.minecraft.core.*;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstrapContext;
@@ -38,11 +39,12 @@ public class TravelersFeatures {
     public static final ResourceKey<OffsetModifier> DEFAULT_OFFSET_KEY = registerPathOffsetKey("default_offset");
     public static final ResourceKey<OffsetModifier> VILLAGE_OFFSET_KEY = registerPathOffsetKey("village_offset");
     public static final ResourceKey<OffsetModifier> MANSION_OFFSET_KEY = registerPathOffsetKey("mansion_offset");
-    public static final ResourceKey<StyleModifier> DEFAULT_STYLE_KEY = registerPathStyleKey("default_style");
-    public static final ResourceKey<StyleModifier> STONE_BRICKS_STYLE_KEY = registerPathStyleKey("stone_bricks_style");
-    public static final ResourceKey<StyleModifier> DESERT_STYLE_KEY = registerPathStyleKey("desert_style");
-    public static final ResourceKey<StyleModifier> SPARSE_GRAVEL_STYLE_KEY = registerPathStyleKey("sparse_gravel_style");
-    public static final ResourceKey<StyleModifier> RUSTIC_STYLE_KEY = registerPathStyleKey("rustic_style");
+
+    public static final ResourceKey<PathStyle> DEFAULT_STYLE_KEY = registerPathStyleKey("default_style");
+    public static final ResourceKey<PathStyle> STONE_BRICKS_STYLE_KEY = registerPathStyleKey("stone_bricks_style");
+    public static final ResourceKey<PathStyle> DESERT_STYLE_KEY = registerPathStyleKey("desert_style");
+    public static final ResourceKey<PathStyle> SPARSE_GRAVEL_STYLE_KEY = registerPathStyleKey("sparse_gravel_style");
+    public static final ResourceKey<PathStyle> RUSTIC_STYLE_KEY = registerPathStyleKey("rustic_style");
 
     public static void configuredBootstrap(BootstrapContext<ConfiguredFeature<?, ?>> configuredContext) {
         configuredRegister(
@@ -57,15 +59,10 @@ public class TravelersFeatures {
         placedRegister(
                 placedContext, PLACED_BEGINNING_KEY, configuredFeatures.getOrThrow(CONFIGURED_BEGINNING_KEY),
                 List.of(
-                        RarityFilter.onAverageOnceEvery(47),
+                        RarityFilter.onAverageOnceEvery(42),
                         DistanceFilter.minimumEvery(25),
                         InSquarePlacement.spread(),
                         PlacementUtils.HEIGHTMAP,
-                        EnvironmentScanPlacement.scanningFor(Direction.DOWN, BlockPredicate.noFluid(), BlockPredicate.ONLY_IN_AIR_OR_WATER_PREDICATE, 5),
-                        EnvironmentScanPlacement.scanningFor(Direction.EAST, BlockPredicate.noFluid(), BlockPredicate.ONLY_IN_AIR_OR_WATER_PREDICATE, 5),
-                        EnvironmentScanPlacement.scanningFor(Direction.WEST, BlockPredicate.noFluid(), BlockPredicate.ONLY_IN_AIR_OR_WATER_PREDICATE, 5),
-                        EnvironmentScanPlacement.scanningFor(Direction.NORTH, BlockPredicate.noFluid(), BlockPredicate.ONLY_IN_AIR_OR_WATER_PREDICATE, 5),
-                        EnvironmentScanPlacement.scanningFor(Direction.SOUTH, BlockPredicate.noFluid(), BlockPredicate.ONLY_IN_AIR_OR_WATER_PREDICATE, 5),
                         BiomeFilter.biome()
                 )
         );
@@ -88,64 +85,84 @@ public class TravelersFeatures {
 
         pathOffsetContext.register(
                 ZERO_OFFSET_KEY,
-                new PathModifiers.DistanceModifier(structures.getOrThrow(TravelersTags.Structures.ZERO_OFFSET_STRUCTURES), 1)
+                new PathModifiers.DistanceModifier(structures.getOrThrow(TravelersTags.Structures.ZERO_OFFSET_STRUCTURES), 0)
         );
         pathOffsetContext.register(
                 DEFAULT_OFFSET_KEY,
-                new PathModifiers.DistanceModifier(structures.getOrThrow(TravelersTags.Structures.DEFAULT_OFFSET_STRUCTURES), 1)
+                new PathModifiers.DistanceModifier(structures.getOrThrow(TravelersTags.Structures.DEFAULT_OFFSET_STRUCTURES), 10)
         );
         pathOffsetContext.register(
                 VILLAGE_OFFSET_KEY,
-                new PathModifiers.DistanceModifier(structures.getOrThrow(TravelersTags.Structures.VILLAGE_OFFSET_STRUCTURES), 2)
+                new PathModifiers.DistanceModifier(structures.getOrThrow(TravelersTags.Structures.VILLAGE_OFFSET_STRUCTURES), 20)
         );
         pathOffsetContext.register(
                 MANSION_OFFSET_KEY,
-                new PathModifiers.DistanceModifier(structures.getOrThrow(TravelersTags.Structures.MANSION_OFFSET_STRUCTURES), 2)
+                new PathModifiers.DistanceModifier(structures.getOrThrow(TravelersTags.Structures.MANSION_OFFSET_STRUCTURES), 20)
         );
     }
 
-    public static void pathBiomeStylesBootstrap(BootstrapContext<StyleModifier> pathStylesContext) {
+    public static void pathBiomeStylesBootstrap(BootstrapContext<PathStyle> pathStylesContext) {
         var biomes = pathStylesContext.lookup(Registries.BIOME);
 
         pathStylesContext.register(
                 DEFAULT_STYLE_KEY,
-                new PathModifiers.PercentStyleModifier(
-                        biomes.getOrThrow(BiomeTags.IS_OVERWORLD), BlockStateProvider.simple(Blocks.DIRT_PATH),
-                        List.of(Blocks.GRAVEL.defaultBlockState(), Blocks.COARSE_DIRT.defaultBlockState())
+                new PercentStyle(
+                        new PathStyle.PathSettings(
+                                biomes.getOrThrow(BiomeTags.IS_OVERWORLD), BlockStateProvider.simple(Blocks.DIRT_PATH),
+                                PathSize.MEDIUM.getSerializedName()
+                        ),
+                        List.of(Blocks.GRAVEL.defaultBlockState(), Blocks.COARSE_DIRT.defaultBlockState()),
+                        60, 30, 10
                 )
         );
 
         pathStylesContext.register(
                 STONE_BRICKS_STYLE_KEY,
-                new PathModifiers.PercentStyleModifier(
-                        biomes.getOrThrow(BiomeTags.IS_OVERWORLD), BlockStateProvider.simple(Blocks.STONE_BRICKS),
+                new PercentStyle(
+                        new PathStyle.PathSettings(
+                                biomes.getOrThrow(BiomeTags.IS_OVERWORLD), BlockStateProvider.simple(Blocks.STONE_BRICKS),
+                                PathSize.LARGE.getSerializedName()
+                        ),
                         List.of(
                                 Blocks.MOSSY_STONE_BRICKS.defaultBlockState(), Blocks.MOSSY_STONE_BRICKS.defaultBlockState(),
                                 Blocks.STONE_BRICK_SLAB.defaultBlockState(), Blocks.COBBLESTONE.defaultBlockState()
-                        )
+                        ),
+                        60, 30, 10
                 )
         );
 
         pathStylesContext.register(
                 RUSTIC_STYLE_KEY,
-                new PathModifiers.PercentStyleModifier(
-                        biomes.getOrThrow(BiomeTags.IS_OVERWORLD), BlockStateProvider.simple(Blocks.DIRT_PATH),
-                        List.of(Blocks.OAK_PLANKS.defaultBlockState(), Blocks.OAK_STAIRS.defaultBlockState(), Blocks.COARSE_DIRT.defaultBlockState())
+                new PercentStyle(
+                        new PathStyle.PathSettings(
+                                biomes.getOrThrow(BiomeTags.IS_OVERWORLD), BlockStateProvider.simple(Blocks.DIRT_PATH),
+                                PathSize.SMALL.getSerializedName()
+                        ),
+                        List.of(Blocks.OAK_PLANKS.defaultBlockState(), Blocks.OAK_STAIRS.defaultBlockState(), Blocks.COARSE_DIRT.defaultBlockState()),
+                        60, 30, 10
                 )
         );
 
         pathStylesContext.register(
                 DESERT_STYLE_KEY,
-                new PathModifiers.PercentStyleModifier(
-                        biomes.getOrThrow(Tags.Biomes.IS_DESERT), BlockStateProvider.simple(Blocks.SANDSTONE),
-                        List.of(Blocks.GRAVEL.defaultBlockState(), Blocks.SANDSTONE_SLAB.defaultBlockState())
+                new PercentStyle(
+                        new PathStyle.PathSettings(
+                                biomes.getOrThrow(Tags.Biomes.IS_DESERT), BlockStateProvider.simple(Blocks.SANDSTONE),
+                                PathSize.MEDIUM.getSerializedName()
+                        ),
+                        List.of(Blocks.GRAVEL.defaultBlockState(), Blocks.SANDSTONE_SLAB.defaultBlockState()),
+                        60, 30, 10
                 )
         );
 
         pathStylesContext.register(
                 SPARSE_GRAVEL_STYLE_KEY,
-                new PathModifiers.SparseStyleModifier(
-                        biomes.getOrThrow(Tags.Biomes.IS_TEMPERATE), BlockStateProvider.simple(Blocks.GRAVEL),
+                new SparseStyle(
+                        new PathStyle.PathSettings(
+                                biomes.getOrThrow(Tags.Biomes.IS_TEMPERATE),
+                                BlockStateProvider.simple(Blocks.GRAVEL),
+                                PathSize.SMALL.getSerializedName()
+                        ),
                         BlockStateProvider.simple(Blocks.COARSE_DIRT)
                 )
         );
@@ -178,7 +195,7 @@ public class TravelersFeatures {
         return ResourceKey.create(TravelersRegistries.Keys.OFFSET_MODIFIERS, TravelersCrossroads.travelersLocation(name));
     }
 
-    private static ResourceKey<StyleModifier> registerPathStyleKey(String name) {
+    private static ResourceKey<PathStyle> registerPathStyleKey(String name) {
         return ResourceKey.create(TravelersRegistries.Keys.STYLE_MODIFIERS, TravelersCrossroads.travelersLocation(name));
     }
 }
