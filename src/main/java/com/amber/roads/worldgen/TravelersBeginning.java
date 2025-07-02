@@ -13,6 +13,8 @@ import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 
+import java.util.Optional;
+
 import static com.amber.roads.util.TravelersTags.Biomes.PATH_AVOID;
 import static com.amber.roads.util.TravelersTags.Blocks.PATH_ABOVE;
 import static com.amber.roads.util.TravelersTags.Blocks.PATH_BELOW;
@@ -37,36 +39,42 @@ public class TravelersBeginning extends Feature<NoneFeatureConfiguration> {
             return false;
         }
         TravelersCrossroads.LOGGER.debug("Spawning Feature at: {}", origin);
-        BlockPos cairnPos;
+        Optional<BlockPos> cairnPos;
         int tries = 0;
         do {
             tries++;
-            cairnPos = origin.offset(random.nextInt(5) - 2, 0, random.nextInt(5) - 2);
-            cairnPos = findY(level, cairnPos);
-        } while (level.getBlockState(cairnPos).getFluidState().isSource() && tries < 25);
+            cairnPos = Optional.of(origin.offset(random.nextInt(4) - 2, 0, random.nextInt(4) - 2));
+            cairnPos = findY(level, cairnPos.get());
+        } while (cairnPos.isEmpty() && tries < 16);
 
-        level.setBlock(
-                cairnPos.above(),
+        if (tries == 25) {
+            return false;
+        }
+
+        cairnPos.ifPresent(blockPos -> level.setBlock(
+                blockPos.above(),
                 TravelersInit.CAIRN.get().defaultBlockState().setValue(CairnBlock.FACING, Direction.from2DDataValue(random.nextInt(4))),
                 3
-        );
-        TravelersCrossroads.LOGGER.debug("Cairn Placed at: {}", cairnPos.above());
-
+        ));
+        cairnPos.ifPresent(blockPos -> TravelersCrossroads.LOGGER.debug("Cairn Placed at: {}", blockPos.above()));
 
         TravelersCrossroads.WATCHER.addCrossroadToCreate(origin);
         return true;
     }
 
-    public static BlockPos findY(WorldGenLevel level, BlockPos origin) {
+    public static Optional<BlockPos> findY(WorldGenLevel level, BlockPos origin) {
+
         while (!level.getBlockState(origin.above()).is(PATH_ABOVE) || !level.getBlockState(origin).is(PATH_BELOW)) {
-            if (level.getBlockState(origin).is(PATH_ABOVE)) {
+            if (level.getBlockState(origin.above()).getFluidState().isSource() || level.getBlockState(origin).getFluidState().isSource()){
+                return Optional.empty();
+            } else if (level.getBlockState(origin).is(PATH_ABOVE)) {
                 origin = origin.below();
-            } else if (level.getBlockState(origin.above()).is(PATH_BELOW)){
+            } else if (level.getBlockState(origin.above()).is(PATH_BELOW)) {
                 origin = origin.above();
             } else {
                 break;
             }
         }
-        return origin;
+        return Optional.of(origin);
     }
 }
