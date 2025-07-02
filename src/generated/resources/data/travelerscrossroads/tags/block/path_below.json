@@ -4,6 +4,7 @@
     "#minecraft:dirt",
     "#minecraft:stone_ore_replaceables",
     "#minecraft:sand",
-    "#minecraft:snow"
+    "#minecraft:snow",
+    "#minecraft:badlands_terracotta"
   ]
 }
