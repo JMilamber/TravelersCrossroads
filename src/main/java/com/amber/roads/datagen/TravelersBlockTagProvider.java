@@ -36,7 +36,8 @@ public class TravelersBlockTagProvider extends BlockTagsProvider {
                 .addTag(BlockTags.DIRT)
                 .addTag(BlockTags.STONE_ORE_REPLACEABLES)
                 .addTag(BlockTags.SAND)
-                .addTag(BlockTags.SNOW);
+                .addTag(BlockTags.SNOW)
+                .addTag(BlockTags.BADLANDS_TERRACOTTA);
 
     }
 }
