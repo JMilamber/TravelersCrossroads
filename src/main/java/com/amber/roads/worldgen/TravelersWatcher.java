@@ -6,8 +6,10 @@ import com.amber.roads.util.CrossroadsData;
 import com.amber.roads.util.TravelersDirection;
 import com.amber.roads.util.TravelersPath;
 import com.amber.roads.util.TravelersTags;
+import com.amber.roads.world.PathPos;
+import com.amber.roads.world.TravelersCrossroad;
 import com.amber.roads.worldgen.custom.OffsetModifier;
-import com.amber.roads.worldgen.custom.StyleModifier;
+import com.amber.roads.worldgen.custom.pathstyle.PathStyle;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -28,7 +30,6 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import javax.annotation.Nullable;
 
 import static com.amber.roads.util.TravelersUtil.chunkDistanceTo;
-import static com.amber.roads.util.TravelersUtil.offsetChunk;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,7 @@ import java.util.Optional;
 public class TravelersWatcher {
 
     public MinecraftServer server;
-    public Registry<StyleModifier> pathStyles;
+    public Registry<PathStyle> pathStyles;
     public Registry<OffsetModifier> pathOffsets;
     public int tickCount = 0;
     public CrossroadsData crossroadsData;
@@ -55,16 +56,16 @@ public class TravelersWatcher {
     public void addCrossroad(BlockPos center) {
         RandomSource random = server.overworld().getRandom();
         Holder<Biome> biome = this.server.overworld().getBiome(center);
-        ChunkPos centerChunk = new ChunkPos(center);
+        PathPos centerPos = new PathPos(center);
 
-        List<StyleModifier> possibleStyles = TravelersCrossroads.WATCHER.pathStyles.holders().map(Holder::value)
+        List<PathStyle> possiblePathStyles = TravelersCrossroads.WATCHER.pathStyles.holders().map(Holder::value)
                 .filter(pathBiomeStyleHolder -> pathBiomeStyleHolder.checkBiome(biome))
                 .toList();
         // TravelersCrossroads.LOGGER.debug("Biome {} Possible Styles {}", biome.getRegisteredName(), possibleStyles);
-        StyleModifier style = possibleStyles.get(random.nextInt(possibleStyles.size()));
+        PathStyle pathStyle = possiblePathStyles.get(random.nextInt(possiblePathStyles.size()));
 
-        TravelersCrossroad crossroad = new TravelersCrossroad(centerChunk, random);
-        List<TravelersPath> connectionPaths = crossroad.addConnections(style);
+        TravelersCrossroad crossroad = new TravelersCrossroad(centerPos, random);
+        List<TravelersPath> connectionPaths = crossroad.addConnections(pathStyle);
         this.crossroadsData.addCrossroad(crossroad);
         for (TravelersPath path : connectionPaths) {
             this.addPath(path);
@@ -82,13 +83,12 @@ public class TravelersWatcher {
                 offset = this.pathOffsets.getOrThrow(TravelersFeatures.DEFAULT_OFFSET_KEY);
             }
 
-            TravelersDirection direction = TravelersDirection.directionFromChunks(centerChunk, struct.getFirst()).getOpposite();
+            PathPos structPathPos = new PathPos(struct.getFirst());
+
+            TravelersDirection direction = TravelersDirection.directionFromPos(centerPos, structPathPos, pathStyle.getDistance()).getOpposite();
             Optional<TravelersPath> travelersPath = crossroad.addStructure(
-                    offsetChunk(
-                            struct.getFirst(),
-                            offset.getOffset() * direction.getX(),
-                            offset.getOffset() * direction.getZ()),
-                    style
+                    direction.nextPos(structPathPos, offset.getOffset()),
+                    pathStyle
             );
             travelersPath.ifPresent(this::addPath);
         }
@@ -177,11 +177,11 @@ public class TravelersWatcher {
             for (TravelersPath path: paths) {
                 if (path.isInProgress()) {
                     try {
-                        path.placeNextChunk(this.server.overworld());
+                        path.placeNextSection(this.server.overworld());
                     } catch (Exception e) {
-                        System.out.println("path placement failed: " + e.getMessage());
+                        System.out.println("path placement failed: ");
+                        e.printStackTrace();
                     }
-
                 } else {
                     count++;
                 }

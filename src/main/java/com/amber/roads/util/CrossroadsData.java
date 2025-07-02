@@ -1,6 +1,6 @@
 package com.amber.roads.util;
 
-import com.amber.roads.worldgen.TravelersCrossroad;
+import com.amber.roads.world.TravelersCrossroad;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
@@ -9,8 +9,6 @@ import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 
 import java.util.ArrayList;
-
-import static com.amber.roads.util.TravelersUtil.chunkMatch;
 
 public class CrossroadsData extends SavedData {
 
@@ -82,7 +80,7 @@ public class CrossroadsData extends SavedData {
     public boolean addPath(TravelersPath newPath) {
         // Change data in saved data
         for (TravelersPath path : this.paths) {
-            if (chunkMatch(path.getEnd(), newPath.getEnd())) {
+            if (path.getEnd().x == newPath.getEnd().x && path.getEnd().z == newPath.getEnd().z) {
                 return false;
             }
         }
