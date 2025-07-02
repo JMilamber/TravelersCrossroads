@@ -1,5 +1,5 @@
 {
   "type": "travelerscrossroads:distance_offset_modifier",
-  "offset": 1,
+  "offset": 0,
   "structures": "#travelerscrossroads:zero_offset_structures"
 }
