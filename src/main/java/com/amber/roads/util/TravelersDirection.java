@@ -1,6 +1,6 @@
 package com.amber.roads.util;
 
-import com.amber.roads.world.PathPos;
+import com.amber.roads.world.PathNode;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -131,29 +131,29 @@ public enum TravelersDirection implements StringRepresentable {
         return nextPosZ(distance) / 2;
     }
 
-    public PathPos nextPos(PathPos pos, int distance) {
-        return new PathPos(pos.x + nextPosX(distance), pos.z + nextPosZ(distance));
+    public PathNode nextPos(PathNode pos, int distance) {
+        return new PathNode(pos.x + nextPosX(distance), pos.z + nextPosZ(distance), false);
     }
 
-    public BlockPos nextSectionCenter(PathPos pos, int distance) {
+    public BlockPos nextSectionCenter(PathNode pos, int distance) {
         return new BlockPos(pos.x + nextSectionCenterX(distance), 0, pos.z + nextSectionCenterZ(distance));
     }
 
 
-    public static TravelersDirection directionFromPos(PathPos pos1, PathPos pos2, float distance) {
-        float max = Math.max(Math.max(abs(pos2.x - pos1.x), abs(pos2.z - pos1.z)), distance);
+    public static TravelersDirection directionFromPos(PathNode pos1, PathNode pos2) {
+        float max = Math.max(abs(pos2.x - pos1.x), abs(pos2.z - pos1.z));
         double x = Mth.clamp(roundToHalf((pos2.x - pos1.x) / max), -1f, 1f);
         double z = Mth.clamp(roundToHalf((pos2.z - pos1.z) / max), -1f, 1f);
         // TravelersCrossroads.LOGGER.debug("Direction x {} z {} indexX {} indexZ {}", x, z, (x + 1) * 2, (z + 1) * 2);
         return VALUES[indexByXZ[(int) ((x + 1) * 2)][(int) ((z + 1) * 2)]];
     }
 
-    public static ArrayList<TravelersDirection> weightedList(TravelersDirection direction) {
+    public ArrayList<TravelersDirection> weightedList() {
         ArrayList<TravelersDirection> list = new ArrayList<>();
-        int above = direction.getModifiedIndex(1);
-        int above2 = direction.getModifiedIndex(2);
-        int below = direction.getModifiedIndex(-1);
-        int below2 = direction.getModifiedIndex(-2);
+        int above = this.getModifiedIndex(1);
+        int above2 = this.getModifiedIndex(2);
+        int below = this.getModifiedIndex(-1);
+        int below2 = this.getModifiedIndex(-2);
 
         list.add(VALUES[above]);
         list.add(VALUES[above]);
@@ -167,11 +167,11 @@ public enum TravelersDirection implements StringRepresentable {
         return list;
     }
 
-    public static ArrayList<TravelersDirection> weightedNarrowList(TravelersDirection direction) {
+    public ArrayList<TravelersDirection> weightedNarrowList() {
         ArrayList<TravelersDirection> list = new ArrayList<>();
 
-        int above = direction.getModifiedIndex(1);
-        int below = direction.getModifiedIndex(-1);
+        int above = this.getModifiedIndex(1);
+        int below = this.getModifiedIndex(-1);
 
         list.add(VALUES[above]);
         list.add(VALUES[above]);
@@ -189,16 +189,16 @@ public enum TravelersDirection implements StringRepresentable {
         return weightedList.get(random.nextInt(weightedList.size()));
     }
 
-    public static TravelersDirection getRandomForDirection(RandomSource random, TravelersDirection direction) {
-        return getRandomList(random, weightedList(direction));
+    public TravelersDirection getRandomForDirection(RandomSource random) {
+        return getRandomList(random, this.weightedList());
     }
 
     public static TravelersDirection getRandomNarrowList(RandomSource random, ArrayList<TravelersDirection> weightedNarrowList) {
         return weightedNarrowList.get(random.nextInt(weightedNarrowList.size()));
     }
 
-    public static TravelersDirection getRandomNarrowForDirection(RandomSource random, TravelersDirection direction) {
-        return getRandomNarrowList(random, weightedNarrowList(direction));
+    public TravelersDirection getRandomNarrowForDirection(RandomSource random) {
+        return getRandomNarrowList(random, this.weightedNarrowList());
     }
 
     @Override
