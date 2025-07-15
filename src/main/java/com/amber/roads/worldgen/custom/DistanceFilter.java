@@ -14,6 +14,10 @@ import net.minecraft.world.level.levelgen.placement.PlacementContext;
 import net.minecraft.world.level.levelgen.placement.PlacementFilter;
 import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 
+import java.util.Optional;
+
+import static com.amber.roads.util.TravelersUtil.chunkDistanceTo;
+
 public class DistanceFilter extends PlacementFilter {
     public static final MapCodec<DistanceFilter> CODEC = RecordCodecBuilder.mapCodec((instance) -> instance.group(
             Codec.intRange(0, Integer.MAX_VALUE).fieldOf("distance").forGetter(distanceFilter -> distanceFilter.distance)
@@ -31,11 +35,11 @@ public class DistanceFilter extends PlacementFilter {
 
     @Override
     protected boolean shouldPlace(PlacementContext context, RandomSource random, BlockPos pos) {
-        int closest = TravelersCrossroads.WATCHER.getClosest(pos);
-        if (closest < this.distance || TravelersUtil.chunkDistanceTo(ChunkPos.ZERO, new ChunkPos(pos)) < TravelersConfig.distanceFromWorldCenter) {
+        Optional<ChunkPos> closestPath = TravelersCrossroads.WATCHER.getClosest(pos, this.distance);
+        if (closestPath.isPresent() || chunkDistanceTo(ChunkPos.ZERO, new ChunkPos(pos)) < TravelersConfig.distanceFromWorldCenter) {
             return false;
         }
-        TravelersCrossroads.LOGGER.debug("Acceptable cairn pos distance {}", closest);
+        closestPath.ifPresent(pathPos -> TravelersCrossroads.LOGGER.debug("Acceptable cairn pos distance {}", chunkDistanceTo(new ChunkPos(pos), pathPos)));
         TravelersCrossroads.WATCHER.addDistanceFilterPath(new ChunkPos(pos));
         return true;
     }
