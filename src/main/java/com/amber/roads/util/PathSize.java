@@ -1,33 +1,38 @@
 package com.amber.roads.util;
 
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.item.DyeColor;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-
 public enum PathSize implements StringRepresentable {
-    TINY("TINY", 3),
-    SMALL("SMALL", 4),
-    MEDIUM("MEDIUM", 5),
-    LARGE("LARGE", 6);
+    MINI("MINI", 1),
+    SMALL("SMALL", 2),
+    MEDIUM("MEDIUM", 3),
+    LARGE("LARGE", 4),
+    EXTRA_LARGE("EXTRA_LARGE", 5);
 
-    private final int size;
+
+    private final int width;
+    private final int extraWidth;
     private final int distance;
     private final String name;
 
-    PathSize(String name, int size) {
-        this.size = size;
+    PathSize(String name, int width) {
+        this.width = width;
+        this.extraWidth = width + 2;
         this.name = name;
-        this.distance = (size - 1) * 2;
+        this.distance = (width + 1) * 2;
     }
 
     public int getDistance() {
         return distance;
     }
 
-    public int getSize() {
-        return size;
+    public int getWidth() {
+        return width;
+    }
+
+    public int getExtraWidth() {
+        return extraWidth;
     }
 
     @Override
