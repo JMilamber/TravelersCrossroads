@@ -2,7 +2,7 @@ package com.amber.roads.worldgen.custom.pathstyle;
 
 import com.amber.roads.init.TravelersInit;
 import com.amber.roads.util.TravelersDirection;
-import com.amber.roads.world.PathPos;
+import com.amber.roads.world.PathNode;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -49,7 +49,7 @@ public class SparseStyle extends PathStyle {
     }
 
     @Override
-    public void placeExtraBlocks(ServerLevel level, PathPos pos1, TravelersDirection direction, List<Pair<Integer, Integer>> extraBlockPositions) {}
+    public void placeExtraBlocks(ServerLevel level, PathNode pos1, TravelersDirection direction, List<Pair<Integer, Integer>> extraBlockPositions) {}
 
     @Override
     MapCodec<? extends PathStyle> codec() {

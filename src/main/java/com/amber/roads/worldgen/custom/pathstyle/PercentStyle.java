@@ -2,21 +2,17 @@ package com.amber.roads.worldgen.custom.pathstyle;
 
 import com.amber.roads.init.TravelersInit;
 import com.amber.roads.util.TravelersDirection;
-import com.amber.roads.world.PathPos;
+import com.amber.roads.world.PathNode;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.LegacyRandomSource;
-import net.minecraft.world.level.levelgen.WorldgenRandom;
-import net.minecraft.world.level.levelgen.synth.NormalNoise;
 
 import java.util.List;
 
@@ -66,7 +62,7 @@ public class PercentStyle extends PathStyle {
     }
 
     @Override
-    public void placeExtraBlocks(ServerLevel level, PathPos pos1, TravelersDirection direction, List<Pair<Integer, Integer>> extraBlockPositions) {
+    public void placeExtraBlocks(ServerLevel level, PathNode pos1, TravelersDirection direction, List<Pair<Integer, Integer>> extraBlockPositions) {
 
     }
 
