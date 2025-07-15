@@ -1,6 +1,6 @@
 package com.amber.roads.util;
 
-import com.amber.roads.world.PathPos;
+import com.amber.roads.world.PathNode;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -45,7 +45,7 @@ public class TravelersUtil {
         return Math.sqrt(dX * dX + dZ * dZ);
     }
 
-    public static double distanceTo2D(PathPos origin, PathPos end) {
+    public static double distanceTo2D(PathNode origin, PathNode end) {
         double dX = Math.abs(end.getX() - origin.getX());
         double dZ = Math.abs(end.getZ() - origin.getZ());
         return Math.sqrt(dX * dX + dZ * dZ);
