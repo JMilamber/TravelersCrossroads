@@ -5,36 +5,39 @@ import net.minecraft.core.SectionPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.ChunkPos;
 
-public class PathPos {
-    public static final PathPos ZERO = new PathPos(0, 0);
+import java.util.Objects;
+
+public class PathNode {
+    public static final PathNode ZERO = new PathNode(0, 0, false);
     public final int x;
     public final int z;
+    public final boolean start;
 
-    public PathPos(int x, int z) {
+    public PathNode(int x, int z, boolean start) {
         this.x = x;
         this.z = z;
+        this.start = start;
     }
 
-    public PathPos(BlockPos pos) {
-        this.x = pos.getX();
-        this.z = pos.getZ();
+    public PathNode(BlockPos pos) {
+        this(pos.getX(), pos.getZ(), false);
     }
 
-    public PathPos(ChunkPos pos) {
-        this.x = pos.getMiddleBlockX();
-        this.z = pos.getMiddleBlockZ();
+    public PathNode(ChunkPos pos) {
+        this(pos.getMiddleBlockX(), pos.getMiddleBlockZ(), false);
     }
 
-     public PathPos(CompoundTag tag) {
+     public PathNode(CompoundTag tag) {
         this.x = tag.getInt("x");
         this.z = tag.getInt("z");
-
+        this.start = tag.getBoolean("start");
     }
 
     public CompoundTag save(CompoundTag tag, int index) {
         CompoundTag data = new CompoundTag();
         data.putInt("x", this.x);
         data.putInt("z", this.z);
+        data.putBoolean("z", this.start);
 
         tag.put(String.valueOf(index), data);
         return tag;
@@ -65,11 +68,23 @@ public class PathPos {
     }
 
     public ChunkPos asChunkPos() {
-        return new ChunkPos(SectionPos.blockToSectionCoord(x), SectionPos.blockToSectionCoord(z));
+        return new ChunkPos(asBlockPos());
     }
 
     @Override
     public String toString() {
         return "X: " + x + "| Z: "+ z;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        PathNode pathNode = (PathNode) o;
+        return getX() == pathNode.getX() && getZ() == pathNode.getZ();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getX(), getZ());
     }
 }
