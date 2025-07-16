@@ -8,7 +8,7 @@
       "Name": "minecraft:stone_bricks"
     }
   },
-  "pathSize": "LARGE",
+  "pathSize": "SMALL",
   "skip_block_chance": 10,
   "texture_block_chance": 30,
   "texture_blocks": [

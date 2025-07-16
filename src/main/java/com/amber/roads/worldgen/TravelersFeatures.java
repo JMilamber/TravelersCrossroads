@@ -17,7 +17,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.GenerationStep;
-import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
@@ -59,8 +58,8 @@ public class TravelersFeatures {
         placedRegister(
                 placedContext, PLACED_BEGINNING_KEY, configuredFeatures.getOrThrow(CONFIGURED_BEGINNING_KEY),
                 List.of(
-                        RarityFilter.onAverageOnceEvery(42),
-                        DistanceFilter.minimumEvery(25),
+                        RarityFilter.onAverageOnceEvery(38),
+                        DistanceFilter.minimumEvery(20),
                         InSquarePlacement.spread(),
                         PlacementUtils.HEIGHTMAP,
                         BiomeFilter.biome()
@@ -109,7 +108,7 @@ public class TravelersFeatures {
                 new PercentStyle(
                         new PathStyle.PathSettings(
                                 biomes.getOrThrow(BiomeTags.IS_OVERWORLD), BlockStateProvider.simple(Blocks.DIRT_PATH),
-                                PathSize.MEDIUM.getSerializedName()
+                                PathSize.SMALL.getSerializedName()
                         ),
                         List.of(Blocks.GRAVEL.defaultBlockState(), Blocks.COARSE_DIRT.defaultBlockState()),
                         60, 30, 10
@@ -121,7 +120,7 @@ public class TravelersFeatures {
                 new PercentStyle(
                         new PathStyle.PathSettings(
                                 biomes.getOrThrow(BiomeTags.IS_OVERWORLD), BlockStateProvider.simple(Blocks.STONE_BRICKS),
-                                PathSize.LARGE.getSerializedName()
+                                PathSize.SMALL.getSerializedName()
                         ),
                         List.of(
                                 Blocks.MOSSY_STONE_BRICKS.defaultBlockState(), Blocks.MOSSY_STONE_BRICKS.defaultBlockState(),
@@ -136,7 +135,7 @@ public class TravelersFeatures {
                 new PercentStyle(
                         new PathStyle.PathSettings(
                                 biomes.getOrThrow(BiomeTags.IS_OVERWORLD), BlockStateProvider.simple(Blocks.DIRT_PATH),
-                                PathSize.SMALL.getSerializedName()
+                                PathSize.MINI.getSerializedName()
                         ),
                         List.of(Blocks.OAK_PLANKS.defaultBlockState(), Blocks.OAK_STAIRS.defaultBlockState(), Blocks.COARSE_DIRT.defaultBlockState()),
                         60, 30, 10
@@ -148,7 +147,7 @@ public class TravelersFeatures {
                 new PercentStyle(
                         new PathStyle.PathSettings(
                                 biomes.getOrThrow(Tags.Biomes.IS_DESERT), BlockStateProvider.simple(Blocks.SANDSTONE),
-                                PathSize.MEDIUM.getSerializedName()
+                                PathSize.SMALL.getSerializedName()
                         ),
                         List.of(Blocks.GRAVEL.defaultBlockState(), Blocks.SANDSTONE_SLAB.defaultBlockState()),
                         60, 30, 10
@@ -161,7 +160,7 @@ public class TravelersFeatures {
                         new PathStyle.PathSettings(
                                 biomes.getOrThrow(Tags.Biomes.IS_TEMPERATE),
                                 BlockStateProvider.simple(Blocks.GRAVEL),
-                                PathSize.SMALL.getSerializedName()
+                                PathSize.MINI.getSerializedName()
                         ),
                         BlockStateProvider.simple(Blocks.COARSE_DIRT)
                 )

@@ -15,6 +15,8 @@
     "minecraft:ruined_portal_desert",
     "minecraft:ruined_portal_jungle",
     "minecraft:ruined_portal_swamp",
-    "minecraft:ruined_portal_mountain"
+    "minecraft:ruined_portal_mountain",
+    "minecraft:trial_chambers",
+    "minecraft:trail_ruins"
   ]
 }
