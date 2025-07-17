@@ -49,7 +49,9 @@ public class SparseStyle extends PathStyle {
     }
 
     @Override
-    public void placeExtraBlocks(ServerLevel level, PathNode pos1, TravelersDirection direction, List<Pair<Integer, Integer>> extraBlockPositions) {}
+    public void placeExtraBlocks(ServerLevel level, PathNode pos1, TravelersDirection direction, List<BlockPos> extraBlockPositions) {
+
+    }
 
     @Override
     MapCodec<? extends PathStyle> codec() {
