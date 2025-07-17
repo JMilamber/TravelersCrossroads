@@ -47,10 +47,6 @@ public class TravelersBeginning extends Feature<NoneFeatureConfiguration> {
             cairnPos = findY(level, cairnPos.get());
         } while (cairnPos.isEmpty() && tries < 16);
 
-        if (tries == 25) {
-            return false;
-        }
-
         cairnPos.ifPresent(blockPos -> level.setBlock(
                 blockPos.above(),
                 TravelersInit.CAIRN.get().defaultBlockState().setValue(CairnBlock.FACING, Direction.from2DDataValue(random.nextInt(4))),
