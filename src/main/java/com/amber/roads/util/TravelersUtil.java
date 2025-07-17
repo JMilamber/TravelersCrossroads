@@ -10,6 +10,8 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.slf4j.Logger;
 
+import static net.minecraft.util.Mth.floor;
+
 public class TravelersUtil {
     static final Logger LOGGER = LogUtils.getLogger();
 
@@ -55,7 +57,15 @@ public class TravelersUtil {
         return new ChunkPos(pos.x + xOffset, pos.z + zOffset);
     }
 
+    public static BlockPos offsetBlockPos(BlockPos pos, float x, float z) {
+        return new BlockPos(floor(pos.getX() + x), 0, floor(pos.getZ() + z));
+    }
+
     public static float roundToHalf(float d) {
         return Math.round(d * 2) / 2.0f;
+    }
+
+    public static boolean isEven(int i) {
+        return (i & 1) == 0;
     }
 }
