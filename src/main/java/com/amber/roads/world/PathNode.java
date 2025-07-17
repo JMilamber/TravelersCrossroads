@@ -59,6 +59,10 @@ public class PathNode {
         return SectionPos.blockToSectionCoord(x);
     }
 
+    public PathPos asPathPos() {
+        return new PathPos(this.x,  this.z);
+    }
+
     public BlockPos asBlockPos() {
         return new BlockPos(this.x, 0, this.z);
     }
