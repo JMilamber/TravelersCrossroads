@@ -2,9 +2,10 @@ package com.amber.roads.worldgen.custom.pathstyle;
 
 import com.amber.roads.TravelersCrossroads;
 import com.amber.roads.init.TravelersRegistries;
-import com.amber.roads.world.PathPos;
+import com.amber.roads.world.PathNode;
 import com.amber.roads.util.PathSize;
 import com.amber.roads.util.TravelersDirection;
+import com.amber.roads.world.PathPos;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -26,6 +27,8 @@ import java.util.function.Predicate;
 import static com.amber.roads.util.TravelersTags.Blocks.PATH_ABOVE;
 import static com.amber.roads.util.TravelersTags.Blocks.PATH_BELOW;
 
+import static com.amber.roads.util.TravelersUtil.isEven;
+import static com.amber.roads.util.TravelersUtil.offsetBlockPos;
 import static net.minecraft.util.Mth.*;
 
 public abstract class PathStyle {
@@ -67,63 +70,60 @@ public abstract class PathStyle {
      */
     public abstract void setPathBlock(ServerLevel level, BlockPos originPos);
 
-    public boolean placeSection(ServerLevel level, PathPos pos1, TravelersDirection direction) {
-        int distance = this.getDistance();
-        PathPos pos2 = direction.nextPos(pos1, distance);
+    public boolean placeSection(ServerLevel level, PathNode pos1, PathNode pos2) {
+        // Immediately return if one of the chunks is not loaded
         if (!level.hasChunk(pos1.getChunkX(), pos1.getChunkZ()) || !level.hasChunk(pos2.getChunkX(), pos2.getChunkZ())) {
             return false;
         }
+
+        int distance = this.getDistance();
+        TravelersDirection direction = TravelersDirection.directionFromPos(pos1, pos2);
+
         // TravelersCrossroads.LOGGER.debug("place section {} {}", pos1, direction);
-        int size = this.pathSize.getSize();
-        int innerSize = size - 2;
+        int width = this.pathSize.getWidth();
+        int extraWidth = this.pathSize.getExtraWidth();
+        List<BlockPos> pathBlocks = new ArrayList<>();
+        List<BlockPos> extraBlocks = new ArrayList<>();
+        PathPos currPos = pos1.asPathPos();
 
-        List<Pair<Integer, Integer>> pathBlocks = new ArrayList<>();
-        List<Pair<Integer, Integer>> extraBlocks = new ArrayList<>();
-
-        int lowerX;
-        int lowerZ;
-        int upperX;
-        int upperZ;
-
-        if (direction.isN()) {
-            lowerZ = pos2.z;
-            upperZ = pos1.z;
-        } else {
-            lowerZ = pos1.z;
-            upperZ = pos2.z;
+        if (isEven(width)) {
+            // If working with an odd path size, ensure center is middle of the block
+            currPos.offset(.5f, .5f);
         }
 
-        if (direction.isW()) {
-            lowerX = pos2.x;
-            upperX = pos1.x;
-        } else {
-            lowerX = pos1.x;
-           upperX = pos2.x;
+        // Find the pathPos on the line between pos1 and pos2
+        List<PathPos> linePos = new ArrayList<>();
+        for (int i = 0; i < distance; i++) {
+            currPos = currPos.relative(direction);
+            linePos.add(currPos);
         }
+        // TravelersCrossroads.LOGGER.debug("Place Path Section Pos1: {}, Pos2 {}, Line Pos: {}", pos1, pos2, linePos);
 
-        int startX = lowerX - innerSize;
-        int startZ = lowerZ - innerSize;
-        int endX = upperX + innerSize - 1;
-        int endZ = upperZ + innerSize - 1;
+        int xWidth = floor(abs((width / 2f) * direction.getZ()));
+        int zWidth = floor(abs((width / 2f) * direction.getX()));
+        int xExtraWidth = floor(abs((extraWidth / 2f) * direction.getZ()));
+        int zExtraWidth = floor(abs((extraWidth / 2f) * direction.getX()));
 
-        int xdistance;
-        int zdistance;
-        boolean sameX = pos1.x == pos2.x;
-        boolean sameZ = pos1.z == pos2.z;
+        TravelersCrossroads.LOGGER.debug(
+                "PathSize: {} | Width: {} | xWidth: {} | zWidth: {} | xExtraWidth: {} | zExtraWidth: {}",
+                this.settings.pathSize(), width, xWidth, zWidth, xExtraWidth, zExtraWidth
+        );
 
-        for (int x = startX; x <= endX; x++) {
-            for (int z = startZ; z <= endZ; z++) {
-                xdistance = abs(x-lowerX) + innerSize;
-                zdistance = abs(z-lowerZ) + innerSize;
+        BlockPos extraPos;
 
-                if (sameX && 0 < xdistance && xdistance < innerSize) {
-                    pathBlocks.add(Pair.of(x, z));
-                } else if (sameZ && 0 < zdistance && zdistance < innerSize) {
-                    pathBlocks.add(Pair.of(x, z));
-                } else if (findDistance(pos1.x, pos1.z, pos2.x, pos2.z, x, z) < innerSize) {
-                    pathBlocks.add(Pair.of(x, z));
-                } else {
-                    extraBlocks.add(Pair.of(x, z));
+        // for each blockpos on the line,
+        for (PathPos pos: linePos) {
+            for (int x = -xWidth; x <= zWidth; x++) {
+                for (int z = -zWidth; z <= zWidth; z++) {
+                    pathBlocks.add(pos.asBlockPos().offset(x, 0, z));
+                }
+            }
+            for (int x = -xExtraWidth; x < xExtraWidth; x++) {
+                for (int z = -zExtraWidth; z < zExtraWidth; z++) {
+                    extraPos = pos.asBlockPos().offset(x, 0, z);
+                    if (!pathBlocks.contains(extraPos)) {
+                        extraBlocks.add(extraPos);
+                    }
                 }
             }
         }
@@ -134,26 +134,17 @@ public abstract class PathStyle {
                 level, level.getChunkSource().randomState());
 
 
-        BlockPos placePos;
         Optional<BlockPos> newPlacePos;
-        for (Pair<Integer, Integer> position : pathBlocks.stream().distinct().toList()) {
-            placePos = new BlockPos(position.getFirst(), generationY, position.getSecond());
-            newPlacePos = findY(level, placePos);
+        for (BlockPos position : pathBlocks.stream().distinct().toList()) {
+            newPlacePos = findY(level, position.above(generationY));
             newPlacePos.ifPresent(blockPos -> this.setPathBlock(level, blockPos));
         }
 
-        placeExtraBlocks(level, pos1, direction, extraBlocks);
+        placeExtraBlocks(level, pos1, direction, extraBlocks.stream().distinct().toList());
         return true;
     }
 
-    public float findDistance(float x1, float y1, float x2, float y2, float x0, float y0) {
-        float top = abs((y2 - y1) * x0 - (x2 - x1) * y0 + x2*y1 - y2*x1);
-        float bottom = sqrt((float) (Math.pow(y2-y1, 2) + Math.pow(x2-x1, 2)));
-
-        return top/bottom;
-    }
-
-    public abstract void placeExtraBlocks(ServerLevel level, PathPos pos1, TravelersDirection direction, List<Pair<Integer, Integer>> extraBlockPositions);
+    public abstract void placeExtraBlocks(ServerLevel level, PathNode pos1, TravelersDirection direction, List<BlockPos> extraBlockPositions);
 
     public static Optional<BlockPos> findY(ServerLevel level, BlockPos origin) {
 
