@@ -1,7 +1,7 @@
 package com.amber.roads.util;
 
 import com.amber.roads.TravelersCrossroads;
-import com.amber.roads.world.PathPos;
+import com.amber.roads.world.PathNode;
 import com.amber.roads.worldgen.TravelersFeatures;
 import com.amber.roads.worldgen.custom.pathstyle.PathStyle;
 import com.mojang.serialization.Dynamic;
@@ -11,87 +11,85 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 
 import java.util.ArrayList;
+import java.util.Objects;
+
 import static com.amber.roads.util.TravelersUtil.*;
 
 public class TravelersPath {
     private PathStyle pathStyle;
-    private final PathPos start;
-    private PathPos end;
     private boolean completed;
-    private ArrayList<TravelersDirection> pathDirections;
-    private int directionId;
-    private PathPos currentPos;
+    private final ArrayList<PathNode> path;
+    private int currentIndex;
 
     public TravelersPath(
-            PathPos start, PathPos end, RandomSource randomSource, TravelersDirection initialDirection,
+            RandomSource randomSource,
+            PathNode startNode, PathNode endNode,
             PathStyle pathStyle
     ) {
-        this.start = start;
-        this.currentPos = start;
-        this.end = end;
+        this.currentIndex = 0;
         this.completed = false;
-        this.pathDirections = new ArrayList<>();
-        this.pathDirections.add(initialDirection);
-        this.directionId = 0;
+        this.path = new ArrayList<>();
+        this.path.add(startNode);
         this.pathStyle = pathStyle;
-        this.createPath(randomSource);
-        // TravelersCrossroads.LOGGER.debug("New path start: {} end {} || Path {}", start, end, pathDirections);
+        // TravelersCrossroads.LOGGER.debug("New path startNode: {} endNode {} || Path {}", startNode, endNode, pathDirections);
+
+        int step;
+        int styleDistance = pathStyle.getDistance();
+        int doubleDistance = styleDistance * 2;
+        PathNode currentNode = startNode;
+        TravelersDirection nextDir = TravelersDirection.directionFromPos(startNode, endNode);;
+
+        while (distanceTo2D(currentNode, endNode) > doubleDistance) {
+            step = randomSource.nextInt(10);
+            if (step > 6) {
+                nextDir = TravelersDirection.directionFromPos(currentNode, endNode);
+            } else if (step > 2) {
+                nextDir = nextDir.getRandomNarrowForDirection(randomSource);
+            } else {
+                nextDir = nextDir.getRandomForDirection(randomSource);
+            }
+            currentNode = nextDir.nextPos(currentNode, styleDistance);
+
+            this.path.add(currentNode);
+        }
+        this.path.add(endNode);
     }
 
     public TravelersPath(CompoundTag tag, int index) {
 
         CompoundTag data = tag.getCompound("path" + index);
         this.completed = data.getBoolean("complete");
-        this.directionId = data.getInt("index");
-        CompoundTag startData = data.getCompound("start");
-        this.start = new PathPos(startData.getInt("x"), startData.getInt("z"));
-        CompoundTag endData = data.getCompound("end");
-        this.end = new PathPos(endData.getInt("x"), endData.getInt("z"));
-        this.currentPos = this.start;
-        this.pathDirections = new ArrayList<>();
-        CompoundTag pathData = data.getCompound("pathDirections");
+        this.path = new ArrayList<>();
+        CompoundTag pathData = data.getCompound("path");
         for (int i = 0; i < data.getInt("length"); i++) {
-            TravelersDirection nextDirection = TravelersDirection.valueOf(pathData.getString(String.valueOf(i)));
-            this.pathDirections.add(nextDirection);
-            if (i < this.directionId) {
-                this.currentPos = nextDirection.nextPos(this.currentPos, this.pathStyle.getDistance());
-            }
+            this.path.add(new PathNode(pathData.getCompound(String.valueOf(i))));
         }
+        this.currentIndex = data.getInt("currentIndex");
         if (data.contains("style")) {
             PathStyle.DIRECT_CODEC
                     .parse(new Dynamic<>(NbtOps.INSTANCE, data.get("style")))
                     .resultOrPartial(LOGGER::error)
                     .ifPresentOrElse(
                             tag1 -> this.pathStyle = tag1,
-                            () -> this.pathStyle = TravelersCrossroads.WATCHER.pathStyles.getOrThrow(TravelersFeatures.DEFAULT_STYLE_KEY)
+                            () -> this.pathStyle = TravelersCrossroads.WATCHER.pathStyleReg.getOrThrow(TravelersFeatures.DEFAULT_STYLE_KEY)
                             );
         } else {
-            this.pathStyle = TravelersCrossroads.WATCHER.pathStyles.getOrThrow(TravelersFeatures.DEFAULT_STYLE_KEY);
+            this.pathStyle = TravelersCrossroads.WATCHER.pathStyleReg.getOrThrow(TravelersFeatures.DEFAULT_STYLE_KEY);
         }
     }
 
     public CompoundTag save(CompoundTag tag, int index) {
         CompoundTag data = new CompoundTag();
-        CompoundTag startData = new CompoundTag();
-        startData.putInt("x", this.start.x);
-        startData.putInt("z", this.start.z);
-        CompoundTag endData = new CompoundTag();
-        endData.putInt("x", this.end.x);
-        endData.putInt("z", this.end.z);
         CompoundTag pathData = new CompoundTag();
 
-        for (int i = 0; i < this.pathDirections.size(); i++) {
-            TravelersDirection direction = this.pathDirections.get(i);
-            pathData.putString(String.valueOf(i), direction.getSerializedName());
+        for (int i = 0; i < this.path.size(); i++) {
+            PathNode node = this.path.get(i);
+            node.save(pathData, i);
             i++;
         }
-
         data.putBoolean("complete", this.completed);
-        data.put("start", startData);
-        data.put("end", endData);
-        data.put("pathDirections", pathData);
-        data.putInt("length", this.pathDirections.size());
-        data.putInt("index", this.directionId);
+        data.put("path", pathData);
+        data.putInt("length", this.path.size());
         PathStyle.DIRECT_CODEC
                 .encodeStart(NbtOps.INSTANCE, this.pathStyle)
                 .resultOrPartial(TravelersCrossroads.LOGGER::error)
@@ -101,62 +99,34 @@ public class TravelersPath {
         return tag;
     }
 
-    public PathPos getEnd() {
-        return this.end;
-    }
-
-    public void createPath(RandomSource randomSource) {
-        int distance = this.pathStyle.getDistance();
-        TravelersDirection initialDirection = pathDirections.getFirst();
-        PathPos pathPos = initialDirection.nextPos(this.start, distance);
-        TravelersDirection direction;
-        TravelersDirection newDirection;
-        int pathState = 0;
-
-        while (distanceTo2D(pathPos, this.end) >= distance) {
-            // TravelersCrossroads.LOGGER.debug("pos {} End {} Distance{}", pathPos, this.end, distanceTo2D(pathPos, this.end));
-            direction = TravelersDirection.directionFromPos(pathPos, this.end, distance);
-            // TravelersCrossroads.LOGGER.debug("Direction {}", direction);
-
-            if (distanceTo2D(pathPos, this.end) < distance * 3) {
-                this.pathDirections.add(direction);
-                pathPos = direction.nextPos(pathPos, distance);
-            } else {
-                switch (pathState) {
-                    case 1, 3 -> newDirection = TravelersDirection.getRandomForDirection(randomSource, direction);
-                    case 2, 4 -> newDirection = TravelersDirection.getRandomNarrowForDirection(randomSource, direction);
-                    case 6 -> {
-                        pathState = 0;
-                        newDirection = null;
-                    }
-                    default -> newDirection = direction;
-                }
-                if (newDirection != null) {
-                    // TravelersCrossroads.LOGGER.debug("Direction 2 {}", newDirection);
-                    this.pathDirections.add(newDirection);
-                    pathPos = newDirection.nextPos(pathPos, distance);
-                }
-                pathState++;
-            }
-        }
-        this.end = pathPos;
+        public PathNode getEnd() {
+        return this.path.getLast();
     }
 
     public void placeNextSection(ServerLevel level) {
-        TravelersDirection nextPosDirection = this.pathDirections.get(this.directionId);
         // TravelersCrossroads.LOGGER.debug("Placing Chunk: {}" , placePos);
 
-        if (this.pathStyle.placeSection(level, this.currentPos, nextPosDirection)) {
-            this.directionId++;
-            this.currentPos = nextPosDirection.nextPos(this.currentPos, pathStyle.getDistance());
-        }
-
-        if (this.directionId == this.pathDirections.size() - 1) {
+        if (this.currentIndex < this.path.size() - 1) {
+            this.pathStyle.placeSection(level, this.path.get(this.currentIndex), this.path.get(this.currentIndex+1));
+        } else {
             this.completed = true;
         }
+        this.currentIndex += 1;
     }
 
     public boolean isInProgress() {
         return !this.completed;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        TravelersPath that = (TravelersPath) o;
+        return Objects.equals(path.getFirst(), that.path.getFirst()) & Objects.equals(path.getLast(), that.path.getLast());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(path.getFirst(), path.getLast());
     }
 }
