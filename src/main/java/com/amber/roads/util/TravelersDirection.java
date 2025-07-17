@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.phys.Vec2;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,6 +13,7 @@ import java.util.List;
 
 import static com.amber.roads.util.TravelersUtil.roundToHalf;
 import static java.lang.Math.abs;
+import static net.minecraft.util.Mth.floor;
 
 public enum TravelersDirection implements StringRepresentable {
     N(0, 0f, -1f, "N"),
@@ -37,6 +39,10 @@ public enum TravelersDirection implements StringRepresentable {
     private final String name;
     private static final int[][] indexByXZ = {{14, 13, 12, 11, 10}, {15, -1, -1, -1, 9}, {0, -1, -1, -1, 8}, {1, -1, -1, -1, 7}, {2, 3, 4, 5, 6}};
     private static final TravelersDirection[] VALUES = values();
+        /**
+     * Normalized vector that points in the direction of this Direction
+     */
+    private final Vec2 normal;
 
     TravelersDirection(
             int index, float x, float z, String name
@@ -45,6 +51,7 @@ public enum TravelersDirection implements StringRepresentable {
         this.x = x;
         this.z = z;
         this.name = name;
+        this.normal = new Vec2(x, z);
     }
 
     public int getIndex() {
@@ -75,25 +82,15 @@ public enum TravelersDirection implements StringRepresentable {
         );
     }
 
-    public boolean isN() {
-        return this.z < 0;
+    public float getStepX() {
+        return this.normal.x;
     }
 
-    public boolean isE() {
-        return this.x > 0;
+
+    public float getStepZ() {
+        return this.normal.y;
     }
 
-    public boolean isS() {
-        return this.z > 0;
-    }
-
-    public boolean isW() {
-        return this.x < 0;
-    }
-
-    public boolean isVertical() {
-        return this.x == 0;
-    }
 
     public TravelersDirection getOpposite() {
         return VALUES[getOppositeIndex()];
@@ -104,11 +101,7 @@ public enum TravelersDirection implements StringRepresentable {
     }
 
     public int nextPosX(int distance) {
-        return (int) (x * distance);
-    }
-
-    public float nextPosXf(int distance) {
-        return x * distance;
+        return floor(getStepX() * distance);
     }
 
     public int nextSectionCenterX(int distance) {
@@ -120,11 +113,7 @@ public enum TravelersDirection implements StringRepresentable {
     }
 
     public int nextPosZ(int distance) {
-        return (int) (z * distance);
-    }
-
-    public float nextPosZf(int distance) {
-        return z * distance;
+        return floor(getStepZ()* distance);
     }
 
     public int nextSectionCenterZ(int distance) {
@@ -148,34 +137,25 @@ public enum TravelersDirection implements StringRepresentable {
         return VALUES[indexByXZ[(int) ((x + 1) * 2)][(int) ((z + 1) * 2)]];
     }
 
-    public ArrayList<TravelersDirection> weightedList() {
-        ArrayList<TravelersDirection> list = new ArrayList<>();
-        int above = this.getModifiedIndex(1);
+    public ArrayList<TravelersDirection> randomList() {
+        ArrayList<TravelersDirection> list = this.narrowRandomList();
         int above2 = this.getModifiedIndex(2);
-        int below = this.getModifiedIndex(-1);
         int below2 = this.getModifiedIndex(-2);
 
-        list.add(VALUES[above]);
-        list.add(VALUES[above]);
         list.add(VALUES[above2]);
-        list.add(VALUES[above2]);
-        list.add(VALUES[below]);
-        list.add(VALUES[below]);
-        list.add(VALUES[below2]);
         list.add(VALUES[below2]);
 
         return list;
     }
 
-    public ArrayList<TravelersDirection> weightedNarrowList() {
+    public ArrayList<TravelersDirection> narrowRandomList() {
         ArrayList<TravelersDirection> list = new ArrayList<>();
 
         int above = this.getModifiedIndex(1);
         int below = this.getModifiedIndex(-1);
 
+        list.add(this);
         list.add(VALUES[above]);
-        list.add(VALUES[above]);
-        list.add(VALUES[below]);
         list.add(VALUES[below]);
 
         return list;
@@ -190,7 +170,7 @@ public enum TravelersDirection implements StringRepresentable {
     }
 
     public TravelersDirection getRandomForDirection(RandomSource random) {
-        return getRandomList(random, this.weightedList());
+        return getRandomList(random, this.randomList());
     }
 
     public static TravelersDirection getRandomNarrowList(RandomSource random, ArrayList<TravelersDirection> weightedNarrowList) {
@@ -198,7 +178,7 @@ public enum TravelersDirection implements StringRepresentable {
     }
 
     public TravelersDirection getRandomNarrowForDirection(RandomSource random) {
-        return getRandomNarrowList(random, this.weightedNarrowList());
+        return getRandomNarrowList(random, this.narrowRandomList());
     }
 
     @Override
