@@ -35,9 +35,15 @@ public class TravelersBeginning extends Feature<NoneFeatureConfiguration> {
         ChunkPos originChunk = new ChunkPos(origin);
         origin = originChunk.getMiddleBlockPosition(origin.getY());
 
-        if (level.getBiome(origin).is(PATH_AVOID)) {
-            return false;
+        for (int x = originChunk.x - 1; x <= originChunk.x + 1; x++) {
+            for (int z = originChunk.z - 1; z <= originChunk.z + 1; z++) {
+                if (level.getBiome(new ChunkPos(x, z).getMiddleBlockPosition(origin.getY())).is(PATH_AVOID)) {
+                    TravelersCrossroads.LOGGER.debug("Bad Biome at: {}", origin);
+                    return false;
+                }
+            }
         }
+
         TravelersCrossroads.LOGGER.debug("Spawning Feature at: {}", origin);
         Optional<BlockPos> cairnPos;
         int tries = 0;
@@ -47,14 +53,20 @@ public class TravelersBeginning extends Feature<NoneFeatureConfiguration> {
             cairnPos = findY(level, cairnPos.get());
         } while (cairnPos.isEmpty() && tries < 16);
 
-        cairnPos.ifPresent(blockPos -> level.setBlock(
-                blockPos.above(),
-                TravelersInit.CAIRN.get().defaultBlockState().setValue(CairnBlock.FACING, Direction.from2DDataValue(random.nextInt(4))),
-                3
-        ));
-        cairnPos.ifPresent(blockPos -> TravelersCrossroads.LOGGER.debug("Cairn Placed at: {}", blockPos.above()));
+        cairnPos.ifPresent(blockPos -> {
+            level.setBlock(blockPos.above(), TravelersInit.CAIRN.get().defaultBlockState().setValue(
+                    CairnBlock.FACING, Direction.from2DDataValue(random.nextInt(4))
+            ), 3);
+            TravelersCrossroads.LOGGER.debug("Cairn Placed at: {}", blockPos.above());
+            TravelersCrossroads.WATCHER.addCrossroadToCreate(blockPos);
+        });
 
-        TravelersCrossroads.WATCHER.addCrossroadToCreate(origin);
+        if (cairnPos.isEmpty()) {
+            TravelersCrossroads.LOGGER.debug("Removed Pos {}", originChunk);
+            TravelersCrossroads.WATCHER.removeDistanceFilterNode(originChunk);
+            return false;
+        }
+
         return true;
     }
 
