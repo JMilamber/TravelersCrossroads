@@ -27,8 +27,7 @@ import java.util.function.Predicate;
 import static com.amber.roads.util.TravelersTags.Blocks.PATH_ABOVE;
 import static com.amber.roads.util.TravelersTags.Blocks.PATH_BELOW;
 
-import static com.amber.roads.util.TravelersUtil.isEven;
-import static com.amber.roads.util.TravelersUtil.offsetBlockPos;
+import static com.amber.roads.util.TravelersUtil.*;
 import static net.minecraft.util.Mth.*;
 
 public abstract class PathStyle {
@@ -76,7 +75,7 @@ public abstract class PathStyle {
             return false;
         }
 
-        int distance = this.getDistance();
+        float distance = (float) distanceTo2D(pos1, pos2);
         TravelersDirection direction = TravelersDirection.directionFromPos(pos1, pos2);
 
         // TravelersCrossroads.LOGGER.debug("place section {} {}", pos1, direction);
@@ -86,7 +85,7 @@ public abstract class PathStyle {
         List<BlockPos> extraBlocks = new ArrayList<>();
         PathPos currPos = pos1.asPathPos();
 
-        if (isEven(width)) {
+        if (!isEven(width)) {
             // If working with an odd path size, ensure center is middle of the block
             currPos.offset(.5f, .5f);
         }
@@ -94,33 +93,37 @@ public abstract class PathStyle {
         // Find the pathPos on the line between pos1 and pos2
         List<PathPos> linePos = new ArrayList<>();
         for (int i = 0; i < distance; i++) {
-            currPos = currPos.relative(direction);
             linePos.add(currPos);
+            currPos = currPos.relative(direction);
         }
-        // TravelersCrossroads.LOGGER.debug("Place Path Section Pos1: {}, Pos2 {}, Line Pos: {}", pos1, pos2, linePos);
+        // TravelersCrossroads.LOGGER.debug("Place Path Section Pos1: {}, Pos2 {}", pos1, pos2);
 
         int xWidth = floor(abs((width / 2f) * direction.getZ()));
         int zWidth = floor(abs((width / 2f) * direction.getX()));
         int xExtraWidth = floor(abs((extraWidth / 2f) * direction.getZ()));
         int zExtraWidth = floor(abs((extraWidth / 2f) * direction.getX()));
 
-        TravelersCrossroads.LOGGER.debug(
-                "PathSize: {} | Width: {} | xWidth: {} | zWidth: {} | xExtraWidth: {} | zExtraWidth: {}",
-                this.settings.pathSize(), width, xWidth, zWidth, xExtraWidth, zExtraWidth
-        );
+        // TravelersCrossroads.LOGGER.debug(
+        //        "PathSize: {} | Width: {} | xWidth: {} | zWidth: {} | xExtraWidth: {} | zExtraWidth: {}",
+        //        this.settings.pathSize(), width, xWidth, zWidth, xExtraWidth, zExtraWidth
+        //);
 
         BlockPos extraPos;
 
         // for each blockpos on the line,
         for (PathPos pos: linePos) {
-            for (int x = -xWidth; x <= zWidth; x++) {
-                for (int z = -zWidth; z <= zWidth; z++) {
-                    pathBlocks.add(pos.asBlockPos().offset(x, 0, z));
+            if (width == 1){
+                pathBlocks.add(pos.asBlockPos());
+            } else {
+                for (int x = -xWidth; x < zWidth; x++) {
+                    for (int z = -zWidth; z < zWidth; z++) {
+                        pathBlocks.add(pos.offset(x,  z).asBlockPos());
+                    }
                 }
             }
             for (int x = -xExtraWidth; x < xExtraWidth; x++) {
                 for (int z = -zExtraWidth; z < zExtraWidth; z++) {
-                    extraPos = pos.asBlockPos().offset(x, 0, z);
+                    extraPos = pos.offset(x,  z).asBlockPos();
                     if (!pathBlocks.contains(extraPos)) {
                         extraBlocks.add(extraPos);
                     }
@@ -128,7 +131,7 @@ public abstract class PathStyle {
             }
         }
 
-        BlockPos sectionCenter = direction.nextSectionCenter(pos1, distance);
+        BlockPos sectionCenter = direction.nextSectionCenter(pos1, floor(distance));
         int generationY = level.getChunkSource().getGenerator().getFirstOccupiedHeight(
                 sectionCenter.getX(), sectionCenter.getZ(), Heightmap.Types.WORLD_SURFACE,
                 level, level.getChunkSource().randomState());
@@ -169,6 +172,10 @@ public abstract class PathStyle {
 
     public int getDistance() {
         return pathSize.getDistance();
+    }
+
+    public int getWidth() {
+        return pathSize.getWidth();
     }
 
     abstract  MapCodec<? extends PathStyle> codec();
