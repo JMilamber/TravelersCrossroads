@@ -3,12 +3,13 @@ package com.amber.roads.util;
 import net.minecraft.util.StringRepresentable;
 import org.jetbrains.annotations.NotNull;
 
+import static java.lang.Math.round;
+
 public enum PathSize implements StringRepresentable {
     MINI("MINI", 1),
     SMALL("SMALL", 2),
     MEDIUM("MEDIUM", 3),
-    LARGE("LARGE", 4),
-    EXTRA_LARGE("EXTRA_LARGE", 5);
+    LARGE("LARGE", 4);
 
 
     private final int width;
@@ -20,7 +21,7 @@ public enum PathSize implements StringRepresentable {
         this.width = width;
         this.extraWidth = width + 2;
         this.name = name;
-        this.distance = (width + 1) * 2;
+        this.distance = round(0.667f * (width*width) - width + 5.333f);
     }
 
     public int getDistance() {
