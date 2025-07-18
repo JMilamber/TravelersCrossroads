@@ -1,6 +1,7 @@
 package com.amber.roads.util;
 
 import com.amber.roads.world.PathNode;
+import com.amber.roads.world.TravelersPath;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
@@ -83,8 +84,18 @@ public class CrossroadsData extends SavedData {
         this.setDirty();
     }
 
+    public void checkPaths() {
+        this.unfinishedPaths.removeIf(TravelersPath::completed);
+    }
+
     public void removePath(TravelersPath path) {
         this.unfinishedPaths.remove(path);
+        // Call set dirty if data changes
+        this.setDirty();
+    }
+
+    public void removePathNode(PathNode node) {
+        this.pathNodes.remove(node);
         // Call set dirty if data changes
         this.setDirty();
     }
