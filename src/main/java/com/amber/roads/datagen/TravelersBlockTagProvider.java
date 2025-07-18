@@ -21,9 +21,7 @@ public class TravelersBlockTagProvider extends BlockTagsProvider {
     @Override
     protected void addTags(HolderLookup.Provider provider) {
         this.tag(TravelersTags.Blocks.PATH_ABOVE)
-                .add(
-                        Blocks.SNOW_BLOCK, Blocks.POWDER_SNOW, TravelersInit.CAIRN.get()
-                )
+                .add(TravelersInit.CAIRN.get())
                 .addTag(BlockTags.REPLACEABLE)
                 .addTag(BlockTags.REPLACEABLE_BY_TREES)
                 .addTag(BlockTags.LEAVES)
@@ -36,7 +34,9 @@ public class TravelersBlockTagProvider extends BlockTagsProvider {
                 .addTag(BlockTags.DIRT)
                 .addTag(BlockTags.STONE_ORE_REPLACEABLES)
                 .addTag(BlockTags.SAND)
-                .addTag(BlockTags.SNOW)
+                .add(
+                        Blocks.SNOW_BLOCK, Blocks.POWDER_SNOW, TravelersInit.CAIRN.get()
+                )
                 .addTag(BlockTags.BADLANDS_TERRACOTTA);
 
     }

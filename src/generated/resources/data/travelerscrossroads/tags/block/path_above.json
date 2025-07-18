@@ -1,7 +1,5 @@
 {
   "values": [
-    "minecraft:snow_block",
-    "minecraft:powder_snow",
     "travelerscrossroads:cairn",
     "#minecraft:replaceable",
     "#minecraft:replaceable_by_trees",
