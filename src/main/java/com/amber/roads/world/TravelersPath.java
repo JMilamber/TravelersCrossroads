@@ -1,7 +1,7 @@
-package com.amber.roads.util;
+package com.amber.roads.world;
 
 import com.amber.roads.TravelersCrossroads;
-import com.amber.roads.world.PathNode;
+import com.amber.roads.util.TravelersDirection;
 import com.amber.roads.worldgen.TravelersFeatures;
 import com.amber.roads.worldgen.custom.pathstyle.PathStyle;
 import com.mojang.serialization.Dynamic;
@@ -37,15 +37,14 @@ public class TravelersPath {
         int styleDistance = pathStyle.getDistance();
         int doubleDistance = styleDistance * 2;
         PathNode currentNode = startNode;
-        TravelersDirection nextDir = TravelersDirection.directionFromPos(startNode, endNode);;
+        TravelersDirection nextDir;
 
         while (distanceTo2D(currentNode, endNode) > doubleDistance) {
             step = randomSource.nextInt(10);
-            if (step > 6) {
-                nextDir = TravelersDirection.directionFromPos(currentNode, endNode);
-            } else if (step > 2) {
+            nextDir = TravelersDirection.directionFromPos(currentNode, endNode);
+            if (step > 8) {
                 nextDir = nextDir.getRandomNarrowForDirection(randomSource);
-            } else {
+            } else if (step > 4) {
                 nextDir = nextDir.getRandomForDirection(randomSource);
             }
             currentNode = nextDir.nextPos(currentNode, styleDistance);
@@ -56,7 +55,7 @@ public class TravelersPath {
     }
 
     public TravelersPath(CompoundTag tag, int index) {
-
+        TravelersCrossroads.LOGGER.debug("Loading path");
         CompoundTag data = tag.getCompound("path" + index);
         this.completed = data.getBoolean("complete");
         this.path = new ArrayList<>();
@@ -68,7 +67,7 @@ public class TravelersPath {
         if (data.contains("style")) {
             PathStyle.DIRECT_CODEC
                     .parse(new Dynamic<>(NbtOps.INSTANCE, data.get("style")))
-                    .resultOrPartial(LOGGER::error)
+                    .resultOrPartial(TravelersCrossroads.LOGGER::error)
                     .ifPresentOrElse(
                             tag1 -> this.pathStyle = tag1,
                             () -> this.pathStyle = TravelersCrossroads.WATCHER.pathStyleReg.getOrThrow(TravelersFeatures.DEFAULT_STYLE_KEY)
@@ -87,6 +86,7 @@ public class TravelersPath {
             node.save(pathData, i);
             i++;
         }
+        data.putInt("currentIndex", this.currentIndex);
         data.putBoolean("complete", this.completed);
         data.put("path", pathData);
         data.putInt("length", this.path.size());
@@ -99,23 +99,22 @@ public class TravelersPath {
         return tag;
     }
 
-        public PathNode getEnd() {
+    public PathNode getEnd() {
         return this.path.getLast();
     }
 
     public void placeNextSection(ServerLevel level) {
-        // TravelersCrossroads.LOGGER.debug("Placing Chunk: {}" , placePos);
+        // TravelersCrossroads.LOGGER.debug("Placing Section for Path: {} {}", path.getFirst(), path.getLast());
 
         if (this.currentIndex < this.path.size() - 1) {
-            this.pathStyle.placeSection(level, this.path.get(this.currentIndex), this.path.get(this.currentIndex+1));
+            this.currentIndex += this.pathStyle.placeSection(level, this.path.get(this.currentIndex), this.path.get(this.currentIndex+1)) ? 1 : 0;
         } else {
             this.completed = true;
         }
-        this.currentIndex += 1;
     }
 
-    public boolean isInProgress() {
-        return !this.completed;
+    public boolean completed() {
+        return this.completed;
     }
 
     @Override
