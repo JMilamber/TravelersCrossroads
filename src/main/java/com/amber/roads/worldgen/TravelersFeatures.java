@@ -58,8 +58,8 @@ public class TravelersFeatures {
         placedRegister(
                 placedContext, PLACED_BEGINNING_KEY, configuredFeatures.getOrThrow(CONFIGURED_BEGINNING_KEY),
                 List.of(
-                        RarityFilter.onAverageOnceEvery(38),
-                        DistanceFilter.minimumEvery(20),
+                        RarityFilter.onAverageOnceEvery(20),
+                        DistanceFilter.minimumEvery(16),
                         InSquarePlacement.spread(),
                         PlacementUtils.HEIGHTMAP,
                         BiomeFilter.biome()
@@ -120,7 +120,7 @@ public class TravelersFeatures {
                 new PercentStyle(
                         new PathStyle.PathSettings(
                                 biomes.getOrThrow(BiomeTags.IS_OVERWORLD), BlockStateProvider.simple(Blocks.STONE_BRICKS),
-                                PathSize.SMALL.getSerializedName()
+                                PathSize.MEDIUM.getSerializedName()
                         ),
                         List.of(
                                 Blocks.MOSSY_STONE_BRICKS.defaultBlockState(), Blocks.MOSSY_STONE_BRICKS.defaultBlockState(),
@@ -134,7 +134,7 @@ public class TravelersFeatures {
                 RUSTIC_STYLE_KEY,
                 new PercentStyle(
                         new PathStyle.PathSettings(
-                                biomes.getOrThrow(BiomeTags.IS_OVERWORLD), BlockStateProvider.simple(Blocks.DIRT_PATH),
+                                biomes.getOrThrow(BiomeTags.IS_FOREST), BlockStateProvider.simple(Blocks.DIRT_PATH),
                                 PathSize.MINI.getSerializedName()
                         ),
                         List.of(Blocks.OAK_PLANKS.defaultBlockState(), Blocks.OAK_STAIRS.defaultBlockState(), Blocks.COARSE_DIRT.defaultBlockState()),
@@ -158,11 +158,11 @@ public class TravelersFeatures {
                 SPARSE_GRAVEL_STYLE_KEY,
                 new SparseStyle(
                         new PathStyle.PathSettings(
-                                biomes.getOrThrow(Tags.Biomes.IS_TEMPERATE),
+                                biomes.getOrThrow(Tags.Biomes.IS_TEMPERATE_OVERWORLD),
                                 BlockStateProvider.simple(Blocks.GRAVEL),
                                 PathSize.MINI.getSerializedName()
                         ),
-                        BlockStateProvider.simple(Blocks.COARSE_DIRT)
+                        List.of(Blocks.COARSE_DIRT.defaultBlockState())
                 )
         );
 

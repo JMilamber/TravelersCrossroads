@@ -3,11 +3,11 @@
   "placement": [
     {
       "type": "minecraft:rarity_filter",
-      "chance": 38
+      "chance": 20
     },
     {
       "type": "travelerscrossroads:distance_filter",
-      "distance": 20
+      "distance": 16
     },
     {
       "type": "minecraft:in_square"
