@@ -3,7 +3,6 @@ package com.amber.roads.worldgen.custom;
 import com.amber.roads.TravelersConfig;
 import com.amber.roads.TravelersCrossroads;
 import com.amber.roads.init.TravelersInit;
-import com.amber.roads.util.TravelersUtil;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -40,7 +39,7 @@ public class DistanceFilter extends PlacementFilter {
             return false;
         }
         closestPath.ifPresent(pathPos -> TravelersCrossroads.LOGGER.debug("Acceptable cairn pos distance {}", chunkDistanceTo(new ChunkPos(pos), pathPos)));
-        TravelersCrossroads.WATCHER.addDistanceFilterPath(new ChunkPos(pos));
+        TravelersCrossroads.WATCHER.addDistanceFilterNode(new ChunkPos(pos));
         return true;
     }
 
