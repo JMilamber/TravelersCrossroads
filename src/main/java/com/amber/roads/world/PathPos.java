@@ -34,6 +34,12 @@ public class PathPos {
             : new PathPos(this.getX() + dx, this.getZ() + dz);
     }
 
+    public PathPos offset(int dx, int dz) {
+        return dx == 0 && dz == 0
+            ? this
+            : new PathPos(this.getX() + dx, this.getZ() + dz);
+    }
+
     public PathPos relative(TravelersDirection direction) {
         return new PathPos(this.getX() + direction.getStepX(), this.getZ() + direction.getStepZ());
     }
