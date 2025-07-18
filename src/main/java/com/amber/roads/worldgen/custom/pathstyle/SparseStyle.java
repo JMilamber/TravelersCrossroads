@@ -3,49 +3,26 @@ package com.amber.roads.worldgen.custom.pathstyle;
 import com.amber.roads.init.TravelersInit;
 import com.amber.roads.util.TravelersDirection;
 import com.amber.roads.world.PathNode;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.RandomSource;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 
 import java.util.List;
 
-public class SparseStyle extends PathStyle {
+public class SparseStyle extends PercentStyle {
 
     public static final MapCodec<SparseStyle> CODEC = RecordCodecBuilder.mapCodec(instance ->
             instance.group(
                     settingsCodec(instance),
-                    BlockStateProvider.CODEC.fieldOf("sub_path_block").forGetter(sparseStyle -> sparseStyle.subPathBlock)
+                    ExtraCodecs.nonEmptyList(BlockState.CODEC.listOf()).fieldOf("texture_block").forGetter(style -> style.textureBlocks)
             ).apply(instance, SparseStyle::new)
     );
 
-    private final BlockStateProvider subPathBlock;
-
-    public SparseStyle(PathSettings settings, BlockStateProvider subPathBlock) {
-        super(settings);
-        this.subPathBlock = subPathBlock;
-    }
-
-    @Override
-    public void setPathBlock(ServerLevel level, BlockPos originPos) {
-        RandomSource randomSource = level.getRandom();
-
-        int blockValue = randomSource.nextInt(100);
-        BlockState setState = null;
-
-        if (blockValue <= 40) {
-            setState = settings.mainPathBlock().getState(randomSource, originPos);
-        } else if (blockValue <= 70) {
-            setState = subPathBlock.getState(randomSource, originPos);
-        }
-
-        if (setState != null) {
-            level.setBlock(originPos, setState, 2);
-        }
+    public SparseStyle(PathSettings settings, List<BlockState> textureBlocks) {
+        super(settings, textureBlocks, 50, 20, 30);
     }
 
     @Override

@@ -27,19 +27,19 @@ public class PercentStyle extends PathStyle {
             ).apply(instance, PercentStyle::new)
     );
 
-    private final List<BlockState> textureBlocks;
-    private final int minBlockChance;
-    private final int textureBlockChance;
-    private final int skipBlockChance;
-    private final int totalChance;
+    protected final List<BlockState> textureBlocks;
+    protected final int minBlockChance;
+    protected final int textureBlockChance;
+    protected final int skipBlockChance;
+    protected final int totalChance;
 
-    public PercentStyle(PathSettings settings,  List<BlockState> textureBlocks, int minBlockChance, int textureBlockChance, int skipBlockChance) {
+    public PercentStyle(PathSettings settings,  List<BlockState> textureBlocks, int mainBlockChance, int textureBlockChance, int skipBlockChance) {
         super(settings);
         this.textureBlocks = textureBlocks;
-        this.minBlockChance = minBlockChance;
+        this.minBlockChance = mainBlockChance;
         this.textureBlockChance = textureBlockChance;
         this.skipBlockChance = skipBlockChance;
-        this.totalChance = minBlockChance + textureBlockChance + skipBlockChance;
+        this.totalChance = mainBlockChance + textureBlockChance + skipBlockChance;
     }
 
 
