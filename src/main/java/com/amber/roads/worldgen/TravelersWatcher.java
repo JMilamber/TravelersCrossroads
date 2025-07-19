@@ -306,8 +306,8 @@ public class TravelersWatcher {
 
     public void setServer(MinecraftServer server) {
         this.server = server;
-        this.pathOffsets = server.registryAccess().registryOrThrow(TravelersRegistries.Keys.OFFSET_MODIFIERS);
-        this.pathStyleReg = server.registryAccess().registryOrThrow(TravelersRegistries.Keys.STYLE_MODIFIERS);
+        this.pathOffsets = server.registryAccess().registryOrThrow(TravelersRegistries.Keys.STRUCTURE_OFFSETS);
+        this.pathStyleReg = server.registryAccess().registryOrThrow(TravelersRegistries.Keys.PATH_STYLES);
         // Get list of possible PathStyles
         this.pathStyles = TravelersCrossroads.WATCHER.pathStyleReg.holders().map(Holder::value).toList();
     }

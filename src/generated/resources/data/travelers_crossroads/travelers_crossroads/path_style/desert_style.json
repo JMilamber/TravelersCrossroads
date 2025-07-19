@@ -1,0 +1,26 @@
+{
+  "type": "travelers_crossroads:percent_style",
+  "biomes": "#c:is_desert",
+  "main_block_chance": 60,
+  "main_path_block": {
+    "type": "minecraft:simple_state_provider",
+    "state": {
+      "Name": "minecraft:sandstone"
+    }
+  },
+  "pathSize": "SMALL",
+  "skip_block_chance": 10,
+  "texture_block_chance": 30,
+  "texture_blocks": [
+    {
+      "Name": "minecraft:gravel"
+    },
+    {
+      "Name": "minecraft:sandstone_slab",
+      "Properties": {
+        "type": "bottom",
+        "waterlogged": "false"
+      }
+    }
+  ]
+}

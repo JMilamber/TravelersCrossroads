@@ -1,0 +1,16 @@
+{
+  "type": "travelers_crossroads:sparse_style",
+  "biomes": "#c:is_temperate/overworld",
+  "main_path_block": {
+    "type": "minecraft:simple_state_provider",
+    "state": {
+      "Name": "minecraft:gravel"
+    }
+  },
+  "pathSize": "MINI",
+  "texture_blocks": [
+    {
+      "Name": "minecraft:coarse_dirt"
+    }
+  ]
+}

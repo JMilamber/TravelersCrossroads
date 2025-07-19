@@ -7,7 +7,6 @@ import com.amber.roads.worldgen.custom.OffsetModifier;
 import com.amber.roads.worldgen.custom.pathstyle.PathStyle;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
-import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import org.slf4j.Logger;
 
@@ -31,7 +30,7 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 public class TravelersCrossroads
 {
     // Define mod id in a common place for everything to reference
-    public static final String MOD_ID = "travelerscrossroads";
+    public static final String MOD_ID = "travelers_crossroads";
     // Directly reference a slf4j logger
     public static final Logger LOGGER = LogUtils.getLogger();
     public static final TravelersWatcher WATCHER = new TravelersWatcher();
@@ -63,8 +62,8 @@ public class TravelersCrossroads
     }
 
     void registerDatapackRegistries(DataPackRegistryEvent.NewRegistry event) {
-        event.dataPackRegistry(TravelersRegistries.Keys.STYLE_MODIFIERS, PathStyle.DIRECT_CODEC);
-        event.dataPackRegistry(TravelersRegistries.Keys.OFFSET_MODIFIERS, OffsetModifier.DIRECT_CODEC);
+        event.dataPackRegistry(TravelersRegistries.Keys.PATH_STYLES, PathStyle.DIRECT_CODEC);
+        event.dataPackRegistry(TravelersRegistries.Keys.STRUCTURE_OFFSETS, OffsetModifier.DIRECT_CODEC);
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call

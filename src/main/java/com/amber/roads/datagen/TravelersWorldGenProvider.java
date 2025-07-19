@@ -18,8 +18,8 @@ public class TravelersWorldGenProvider extends DatapackBuiltinEntriesProvider {
             .add(Registries.CONFIGURED_FEATURE, TravelersFeatures::configuredBootstrap)
             .add(Registries.PLACED_FEATURE, TravelersFeatures::placedBootstrap)
             .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, TravelersFeatures::biomeBootstrap)
-            .add(TravelersRegistries.Keys.OFFSET_MODIFIERS, TravelersFeatures::pathOffsetBootstrap)
-            .add(TravelersRegistries.Keys.STYLE_MODIFIERS, TravelersFeatures::pathBiomeStylesBootstrap);
+            .add(TravelersRegistries.Keys.STRUCTURE_OFFSETS, TravelersFeatures::pathOffsetBootstrap)
+            .add(TravelersRegistries.Keys.PATH_STYLES, TravelersFeatures::pathBiomeStylesBootstrap);
 
     public TravelersWorldGenProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
         super(output, registries, BUILDER, Set.of("minecraft", TravelersCrossroads.MOD_ID));

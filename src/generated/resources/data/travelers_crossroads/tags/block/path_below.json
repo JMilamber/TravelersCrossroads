@@ -1,0 +1,12 @@
+{
+  "values": [
+    "minecraft:gravel",
+    "#minecraft:dirt",
+    "#minecraft:stone_ore_replaceables",
+    "#minecraft:sand",
+    "minecraft:snow_block",
+    "minecraft:powder_snow",
+    "travelers_crossroads:cairn",
+    "#minecraft:badlands_terracotta"
+  ]
+}

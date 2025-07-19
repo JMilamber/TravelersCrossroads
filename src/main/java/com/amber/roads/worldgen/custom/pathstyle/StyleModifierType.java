@@ -9,6 +9,6 @@ public interface StyleModifierType<S extends PathStyle> {
     MapCodec<S> codec();
 
     private static <S extends PathStyle> StyleModifierType<S> register(String name, MapCodec<S> codec) {
-        return Registry.register(TravelersRegistries.STYLE_MODIFIER_TYPE, name, () -> codec);
+        return Registry.register(TravelersRegistries.PATH_STYLE_TYPE, name, () -> codec);
     }
 }

@@ -17,7 +17,7 @@ public class SparseStyle extends PercentStyle {
     public static final MapCodec<SparseStyle> CODEC = RecordCodecBuilder.mapCodec(instance ->
             instance.group(
                     settingsCodec(instance),
-                    ExtraCodecs.nonEmptyList(BlockState.CODEC.listOf()).fieldOf("texture_block").forGetter(style -> style.textureBlocks)
+                    ExtraCodecs.nonEmptyList(BlockState.CODEC.listOf()).fieldOf("texture_blocks").forGetter(style -> style.textureBlocks)
             ).apply(instance, SparseStyle::new)
     );
 

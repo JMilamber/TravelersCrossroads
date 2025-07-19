@@ -1,7 +1,6 @@
 package com.amber.roads.init;
 
 import com.amber.roads.TravelersCrossroads;
-import com.amber.roads.worldgen.TravelersFeatures;
 import com.amber.roads.worldgen.custom.OffsetModifier;
 import com.amber.roads.worldgen.custom.pathstyle.PathStyle;
 import com.amber.roads.worldgen.custom.pathstyle.StyleModifierType;
@@ -16,17 +15,16 @@ import net.neoforged.neoforge.registries.RegistryBuilder;
 @EventBusSubscriber(modid = TravelersCrossroads.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class TravelersRegistries {
 
-    public static final Registry<StyleModifierType<?>> STYLE_MODIFIER_TYPE = new RegistryBuilder<>(Keys.STYLE_MODIFIER_TYPE)
-            .create();
+    public static final Registry<StyleModifierType<?>> PATH_STYLE_TYPE = new RegistryBuilder<>(Keys.PATH_STYLE_TYPE).create();
 
-    public static final Registry<MapCodec<? extends OffsetModifier>> OFFSET_MODIFIER_SERIALIZERS = new RegistryBuilder<>(Keys.OFFSET_MODIFIER_SERIALIZERS).create();
+    public static final Registry<MapCodec<? extends OffsetModifier>> STRUCTURE_OFFSET_SERIALIZERS = new RegistryBuilder<>(Keys.STRUCTURE_OFFSET_SERIALIZERS).create();
 
     public static final class Keys {
-        public static final ResourceKey<Registry<StyleModifierType<?>>> STYLE_MODIFIER_TYPE = key("worldgen/style_modifier_type");
-        public static final ResourceKey<Registry<MapCodec<? extends OffsetModifier>>> OFFSET_MODIFIER_SERIALIZERS = key("offset_modifier_serializers");
+        public static final ResourceKey<Registry<StyleModifierType<?>>> PATH_STYLE_TYPE = key("path_style_type");
+        public static final ResourceKey<Registry<MapCodec<? extends OffsetModifier>>> STRUCTURE_OFFSET_SERIALIZERS = key("structure_offset_serializers");
         // Dynamic
-        public static final ResourceKey<Registry<PathStyle>> STYLE_MODIFIERS = key("worldgen/style_modifier");
-        public static final ResourceKey<Registry<OffsetModifier>> OFFSET_MODIFIERS = key("offset_modifier");
+        public static final ResourceKey<Registry<PathStyle>> PATH_STYLES = key("path_style");
+        public static final ResourceKey<Registry<OffsetModifier>> STRUCTURE_OFFSETS = key("structure_offset");
     }
 
     private static <T> ResourceKey<Registry<T>> key(String name) {
@@ -35,7 +33,7 @@ public class TravelersRegistries {
 
     @SubscribeEvent
     static void registerRegistries(NewRegistryEvent event) {
-        event.register(STYLE_MODIFIER_TYPE);
-        event.register(OFFSET_MODIFIER_SERIALIZERS);
+        event.register(PATH_STYLE_TYPE);
+        event.register(STRUCTURE_OFFSET_SERIALIZERS);
     }
 }

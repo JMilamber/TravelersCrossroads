@@ -38,8 +38,8 @@ public class TravelersInit {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, TravelersCrossroads.MOD_ID);
     public static final DeferredRegister<Feature<?>> FEATURES = DeferredRegister.create(Registries.FEATURE, TravelersCrossroads.MOD_ID);
     public static final DeferredRegister<PlacementModifierType<?>> PLACEMENTS = DeferredRegister.create(Registries.PLACEMENT_MODIFIER_TYPE, TravelersCrossroads.MOD_ID);
-    public static final DeferredRegister<StyleModifierType<?>> STYLE_MODIFIER_SERIALIZERS = DeferredRegister.create(TravelersRegistries.STYLE_MODIFIER_TYPE, TravelersCrossroads.MOD_ID);
-    public static final DeferredRegister<MapCodec<? extends OffsetModifier>> OFFSET_MODIFIER_SERIALIZERS = DeferredRegister.create(TravelersRegistries.OFFSET_MODIFIER_SERIALIZERS, TravelersCrossroads.MOD_ID);
+    public static final DeferredRegister<StyleModifierType<?>> STYLE_MODIFIER_SERIALIZERS = DeferredRegister.create(TravelersRegistries.PATH_STYLE_TYPE, TravelersCrossroads.MOD_ID);
+    public static final DeferredRegister<MapCodec<? extends OffsetModifier>> OFFSET_MODIFIER_SERIALIZERS = DeferredRegister.create(TravelersRegistries.STRUCTURE_OFFSET_SERIALIZERS, TravelersCrossroads.MOD_ID);
 
     public static final Supplier<Block> CAIRN = registerBlock(
             "cairn", () -> new CairnBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.GRAVEL).forceSolidOn())

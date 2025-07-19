@@ -191,11 +191,11 @@ public class TravelersFeatures {
     }
 
     private static ResourceKey<OffsetModifier> registerPathOffsetKey(String name) {
-        return ResourceKey.create(TravelersRegistries.Keys.OFFSET_MODIFIERS, TravelersCrossroads.travelersLocation(name));
+        return ResourceKey.create(TravelersRegistries.Keys.STRUCTURE_OFFSETS, TravelersCrossroads.travelersLocation(name));
     }
 
     private static ResourceKey<PathStyle> registerPathStyleKey(String name) {
-        return ResourceKey.create(TravelersRegistries.Keys.STYLE_MODIFIERS, TravelersCrossroads.travelersLocation(name));
+        return ResourceKey.create(TravelersRegistries.Keys.PATH_STYLES, TravelersCrossroads.travelersLocation(name));
     }
 }
 

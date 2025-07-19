@@ -1,12 +1,10 @@
 package com.amber.roads.worldgen.custom.pathstyle;
 
-import com.amber.roads.TravelersCrossroads;
 import com.amber.roads.init.TravelersRegistries;
 import com.amber.roads.world.PathNode;
 import com.amber.roads.util.PathSize;
 import com.amber.roads.util.TravelersDirection;
 import com.amber.roads.world.PathPos;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -35,13 +33,13 @@ public abstract class PathStyle {
      * Codec for (de)serializing Style modifiers inline.
      * Mods can use this for data generation.
      */
-    public static final Codec<PathStyle> DIRECT_CODEC = TravelersRegistries.STYLE_MODIFIER_TYPE.byNameCodec().dispatch(PathStyle::type, StyleModifierType::codec);
+    public static final Codec<PathStyle> DIRECT_CODEC = TravelersRegistries.PATH_STYLE_TYPE.byNameCodec().dispatch(PathStyle::type, StyleModifierType::codec);
 
     /**
      * Codec for referring to Style  modifiers by id in other datapack registry files.
      * Can only be used with {@link RegistryOps}.
      */
-    public static final Codec<Holder<PathStyle>> CODEC = RegistryFileCodec.create(TravelersRegistries.Keys.STYLE_MODIFIERS, DIRECT_CODEC);
+    public static final Codec<Holder<PathStyle>> CODEC = RegistryFileCodec.create(TravelersRegistries.Keys.PATH_STYLES, DIRECT_CODEC);
 
 
     protected final PathStyle.PathSettings settings;

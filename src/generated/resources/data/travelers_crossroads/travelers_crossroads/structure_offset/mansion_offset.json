@@ -1,0 +1,5 @@
+{
+  "type": "travelers_crossroads:distance_offset_modifier",
+  "offset": 20,
+  "structures": "#travelers_crossroads:mansion_offset_structures"
+}
