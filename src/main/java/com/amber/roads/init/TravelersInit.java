@@ -51,7 +51,7 @@ public class TravelersInit {
 
     public static final Supplier<CreativeModeTab> TRAVELERS_TAB = CREATIVE_MODE_TABS.register(
             "travelers_tab", () -> CreativeModeTab.builder()
-                    .title(Component.translatable("itemGroup.travelerscrossroads.travelers_tab"))
+                    .title(Component.translatable("itemGroup.travelers_crossroads.travelers_tab"))
                     .icon(() -> new ItemStack(CAIRN.get()))
                     .displayItems((pParameters, pOutput) -> pOutput.accept(CAIRN.get())
                     ).build()

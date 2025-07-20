@@ -1,6 +1,6 @@
 {
-  "block.travelerscrossroads.cairn": "Travelers Cairn",
-  "item.travelerscrossroads.pebble": "Pebble",
-  "itemGroup.travelerscrossroads.travelers_tab": "Travelers Tab"
+  "block.travelers_crossroads.cairn": "Travelers Cairn",
+  "item.travelers_crossroads.pebble": "Pebble",
+  "itemGroup.travelers_crossroads.travelers_tab": "Travelers Tab"
 
 }

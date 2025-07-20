@@ -1,18 +1,18 @@
 {
   "variants": {
     "facing=south": {
-      "model": "travelerscrossroads:block/cairn"
+      "model": "travelers_crossroads:block/cairn"
     },
     "facing=west": {
-      "model": "travelerscrossroads:block/cairn",
+      "model": "travelers_crossroads:block/cairn",
       "y": 90
     },
     "facing=north": {
-      "model": "travelerscrossroads:block/cairn",
+      "model": "travelers_crossroads:block/cairn",
       "y": 180
     },
     "facing=east": {
-      "model": "travelerscrossroads:block/cairn",
+      "model": "travelers_crossroads:block/cairn",
       "y": 270
     }
   }

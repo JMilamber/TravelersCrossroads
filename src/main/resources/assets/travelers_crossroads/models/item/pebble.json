@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [32, 32],
 	"textures": {
-		"0": "travelerscrossroads:block/cairn",
-		"particle": "travelerscrossroads:block/cairn"
+		"0": "travelers_crossroads:block/cairn",
+		"particle": "travelers_crossroads:block/cairn"
 	},
 	"elements": [
 		{

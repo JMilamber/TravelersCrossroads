@@ -2,7 +2,7 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [32, 32],
 	"textures": {
-		"1": "travelerscrossroads:block/cairn"
+		"1": "travelers_crossroads:block/cairn"
 	},
 	"elements": [
 		{

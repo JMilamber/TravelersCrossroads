@@ -35,7 +35,7 @@ public class TravelersBlockTagProvider extends BlockTagsProvider {
                 .addTag(BlockTags.STONE_ORE_REPLACEABLES)
                 .addTag(BlockTags.SAND)
                 .add(
-                        Blocks.SNOW_BLOCK, Blocks.POWDER_SNOW, TravelersInit.CAIRN.get()
+                        Blocks.SNOW_BLOCK, Blocks.POWDER_SNOW
                 )
                 .addTag(BlockTags.BADLANDS_TERRACOTTA);
 
