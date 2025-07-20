@@ -1,5 +1,6 @@
 package com.amber.roads.worldgen.custom.pathstyle;
 
+import com.amber.roads.init.TravelersInit;
 import com.amber.roads.init.TravelersRegistries;
 import com.amber.roads.world.PathNode;
 import com.amber.roads.util.PathSize;
@@ -14,6 +15,7 @@ import net.minecraft.resources.RegistryFileCodec;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 
@@ -138,7 +140,21 @@ public abstract class PathStyle {
         Optional<BlockPos> newPlacePos;
         for (BlockPos position : pathBlocks.stream().distinct().toList()) {
             newPlacePos = findY(level, position.above(generationY));
-            newPlacePos.ifPresent(blockPos -> this.setPathBlock(level, blockPos));
+            newPlacePos.ifPresent(blockPos -> {
+                boolean cairnAbove = level.getBlockState(blockPos.above()).is(TravelersInit.CAIRN.get());
+
+                this.setPathBlock(level, blockPos);
+
+                // chance to expose roads under snow
+                if (level.getBlockState(blockPos.above()).is(Blocks.SNOW) && level.random.nextFloat() > .8) {
+                    level.setBlock(blockPos.above(), Blocks.AIR.defaultBlockState(), 2);
+                }
+
+                // Replace a cairn if it was accidentally removed during path placement
+                if (cairnAbove) {
+                    level.setBlock(blockPos.above(), TravelersInit.CAIRN.get().defaultBlockState(), 2);
+                }
+            });
         }
 
         placeExtraBlocks(level, pos1, direction, extraBlocks.stream().distinct().toList());
