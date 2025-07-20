@@ -35,7 +35,6 @@ public class TravelersStructureTagProvider extends StructureTagsProvider {
                 .add(BuiltinStructures.RUINED_PORTAL_JUNGLE)
                 .add(BuiltinStructures.RUINED_PORTAL_SWAMP)
                 .add(BuiltinStructures.RUINED_PORTAL_MOUNTAIN)
-                .add(BuiltinStructures.TRIAL_CHAMBERS)
                 .add(BuiltinStructures.TRAIL_RUINS);
 
 
@@ -58,7 +57,8 @@ public class TravelersStructureTagProvider extends StructureTagsProvider {
                 .add(BuiltinStructures.VILLAGE_SAVANNA)
                 .add(BuiltinStructures.VILLAGE_SNOWY)
                 .add(BuiltinStructures.VILLAGE_TAIGA)
-                .add(BuiltinStructures.DESERT_PYRAMID);
+                .add(BuiltinStructures.DESERT_PYRAMID)
+                .add(BuiltinStructures.TRAIL_RUINS);
 
         this.tag(TravelersTags.Structures.MANSION_OFFSET_STRUCTURES)
                 .add(BuiltinStructures.WOODLAND_MANSION);
