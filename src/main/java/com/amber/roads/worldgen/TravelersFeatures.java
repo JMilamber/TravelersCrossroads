@@ -31,9 +31,9 @@ import java.util.List;
 
 public class TravelersFeatures {
 
-    public static final ResourceKey<ConfiguredFeature<?, ?>> CONFIGURED_BEGINNING_KEY = registerConfiguredKey("configured_road");
-    public static final ResourceKey<PlacedFeature> PLACED_BEGINNING_KEY = registerPlacedKey("placed_road");
-    public static final ResourceKey<BiomeModifier> BIOME_BEGINNING_KEY = registerBiomeKey("road_biomes");
+    public static final ResourceKey<ConfiguredFeature<?, ?>> CONFIGURED_PATH_START = registerConfiguredKey("configured_path_start");
+    public static final ResourceKey<PlacedFeature> PLACED_PATH_START = registerPlacedKey("placed_path_start");
+    public static final ResourceKey<BiomeModifier> PATH_START_BIOMES = registerBiomeKey("path_start_biomes");
     public static final ResourceKey<OffsetModifier> ZERO_OFFSET_KEY = registerPathOffsetKey("zero_offset");
     public static final ResourceKey<OffsetModifier> DEFAULT_OFFSET_KEY = registerPathOffsetKey("default_offset");
     public static final ResourceKey<OffsetModifier> VILLAGE_OFFSET_KEY = registerPathOffsetKey("village_offset");
@@ -47,7 +47,7 @@ public class TravelersFeatures {
 
     public static void configuredBootstrap(BootstrapContext<ConfiguredFeature<?, ?>> configuredContext) {
         configuredRegister(
-                configuredContext, CONFIGURED_BEGINNING_KEY, TravelersInit.TRAVELERS_BEGINNING.get(),
+                configuredContext, CONFIGURED_PATH_START, TravelersInit.TRAVELERS_BEGINNING.get(),
                 FeatureConfiguration.NONE
         );
     }
@@ -56,7 +56,7 @@ public class TravelersFeatures {
         HolderGetter<ConfiguredFeature<?, ?>> configuredFeatures = placedContext.lookup(Registries.CONFIGURED_FEATURE);
 
         placedRegister(
-                placedContext, PLACED_BEGINNING_KEY, configuredFeatures.getOrThrow(CONFIGURED_BEGINNING_KEY),
+                placedContext, PLACED_PATH_START, configuredFeatures.getOrThrow(CONFIGURED_PATH_START),
                 List.of(
                         RarityFilter.onAverageOnceEvery(20),
                         DistanceFilter.minimumEvery(16),
@@ -71,9 +71,9 @@ public class TravelersFeatures {
         var placedFeatures = biomeContext.lookup(Registries.PLACED_FEATURE);
         var biomes = biomeContext.lookup(Registries.BIOME);
 
-        biomeContext.register(BIOME_BEGINNING_KEY, new BiomeModifiers.AddFeaturesBiomeModifier(
+        biomeContext.register(PATH_START_BIOMES, new BiomeModifiers.AddFeaturesBiomeModifier(
                 biomes.getOrThrow(BiomeTags.IS_OVERWORLD),
-                HolderSet.direct(placedFeatures.getOrThrow(PLACED_BEGINNING_KEY)),
+                HolderSet.direct(placedFeatures.getOrThrow(PLACED_PATH_START)),
                 GenerationStep.Decoration.TOP_LAYER_MODIFICATION
         ));
 

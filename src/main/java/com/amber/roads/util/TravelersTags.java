@@ -46,7 +46,7 @@ public class TravelersTags {
     }
 
     public static class Biomes {
-        public static final TagKey<Biome> PATH_AVOID = createTag("path_avoid_biome");
+        public static final TagKey<Biome> PATH_START_AVOID_BIOME = createTag("path_start_avoid_biome");
 
         private static TagKey<Biome> createTag(String name) {
             return create(travelersLocation(name));

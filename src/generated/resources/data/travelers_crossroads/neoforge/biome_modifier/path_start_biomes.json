@@ -1,6 +1,6 @@
 {
   "type": "neoforge:add_features",
   "biomes": "#minecraft:is_overworld",
-  "features": "travelers_crossroads:placed_road",
+  "features": "travelers_crossroads:placed_path_start",
   "step": "top_layer_modification"
 }

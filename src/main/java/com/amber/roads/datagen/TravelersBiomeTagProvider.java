@@ -18,7 +18,7 @@ public class TravelersBiomeTagProvider extends BiomeTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
-        this.tag(TravelersTags.Biomes.PATH_AVOID)
+        this.tag(TravelersTags.Biomes.PATH_START_AVOID_BIOME)
                 .addTag(Tags.Biomes.IS_AQUATIC)
                 .addTag(Tags.Biomes.IS_AQUATIC_ICY);
     }

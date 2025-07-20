@@ -3,7 +3,7 @@ package com.amber.roads.init;
 import com.amber.roads.TravelersCrossroads;
 import com.amber.roads.block.CairnBlock;
 import com.amber.roads.worldgen.custom.*;
-import com.amber.roads.worldgen.TravelersBeginning;
+import com.amber.roads.worldgen.TravelersStart;
 import com.amber.roads.worldgen.custom.pathstyle.PathStyle;
 import com.amber.roads.worldgen.custom.pathstyle.PercentStyle;
 import com.amber.roads.worldgen.custom.pathstyle.SparseStyle;
@@ -58,7 +58,7 @@ public class TravelersInit {
     );
 
     public static final Supplier<Feature<NoneFeatureConfiguration>> TRAVELERS_BEGINNING = registerFeature(
-            "travelers_beginning", () -> new TravelersBeginning(NoneFeatureConfiguration.CODEC)
+            "travelers_beginning", () -> new TravelersStart(NoneFeatureConfiguration.CODEC)
     );
 
     public static final DeferredHolder<PlacementModifierType<?>, PlacementModifierType<DistanceFilter>> DISTANCE_FILTER = PLACEMENTS.register(

@@ -15,13 +15,13 @@ import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConf
 
 import java.util.Optional;
 
-import static com.amber.roads.util.TravelersTags.Biomes.PATH_AVOID;
+import static com.amber.roads.util.TravelersTags.Biomes.PATH_START_AVOID_BIOME;
 import static com.amber.roads.util.TravelersTags.Blocks.PATH_ABOVE;
 import static com.amber.roads.util.TravelersTags.Blocks.PATH_BELOW;
 
-public class TravelersBeginning extends Feature<NoneFeatureConfiguration> {
+public class TravelersStart extends Feature<NoneFeatureConfiguration> {
 
-    public TravelersBeginning(Codec<NoneFeatureConfiguration> codec) {
+    public TravelersStart(Codec<NoneFeatureConfiguration> codec) {
         super(codec);
     }
 
@@ -37,7 +37,7 @@ public class TravelersBeginning extends Feature<NoneFeatureConfiguration> {
 
         for (int x = originChunk.x - 1; x <= originChunk.x + 1; x++) {
             for (int z = originChunk.z - 1; z <= originChunk.z + 1; z++) {
-                if (level.getBiome(new ChunkPos(x, z).getMiddleBlockPosition(origin.getY())).is(PATH_AVOID)) {
+                if (level.getBiome(new ChunkPos(x, z).getMiddleBlockPosition(origin.getY())).is(PATH_START_AVOID_BIOME)) {
                     TravelersCrossroads.LOGGER.debug("Bad Biome at: {}", origin);
                     return false;
                 }

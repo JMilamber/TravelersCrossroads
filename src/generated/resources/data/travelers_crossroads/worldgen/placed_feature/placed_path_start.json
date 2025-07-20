@@ -1,5 +1,5 @@
 {
-  "feature": "travelers_crossroads:configured_road",
+  "feature": "travelers_crossroads:configured_path_start",
   "placement": [
     {
       "type": "minecraft:rarity_filter",
