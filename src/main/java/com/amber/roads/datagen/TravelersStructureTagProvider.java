@@ -6,6 +6,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.StructureTagsProvider;
 import net.minecraft.world.level.levelgen.structure.BuiltinStructures;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
@@ -17,7 +18,7 @@ public class TravelersStructureTagProvider extends StructureTagsProvider {
     }
 
     @Override
-    protected void addTags(HolderLookup.Provider provider) {
+    protected void addTags(HolderLookup.@NotNull Provider provider) {
         this.tag(TravelersTags.Structures.PATH_STRUCTURES)
                 .add(BuiltinStructures.PILLAGER_OUTPOST)
                 .add(BuiltinStructures.WOODLAND_MANSION)

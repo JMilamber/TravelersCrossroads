@@ -111,9 +111,7 @@ public class TravelersWatcher {
         // If no nearby structure check for nearby pathNode to connect to.
         if (structures.isEmpty()) {
             Optional<ChunkPos> crossRoadPos = getClosestAvoidCurrent(center, 30, connectionNodes);
-            crossRoadPos.ifPresent(pos -> {
-                this.addPath(new TravelersPath(this.randomSource, centerPos, new PathNode(pos), pathStyle));
-            });
+            crossRoadPos.ifPresent(pos -> this.addPath(new TravelersPath(this.randomSource, centerPos, new PathNode(pos), pathStyle)));
         }
     }
 

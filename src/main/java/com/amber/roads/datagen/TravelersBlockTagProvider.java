@@ -8,6 +8,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
@@ -19,7 +20,7 @@ public class TravelersBlockTagProvider extends BlockTagsProvider {
     }
 
     @Override
-    protected void addTags(HolderLookup.Provider provider) {
+    protected void addTags(HolderLookup.@NotNull Provider provider) {
         this.tag(TravelersTags.Blocks.PATH_ABOVE)
                 .add(TravelersInit.CAIRN.get())
                 .addTag(BlockTags.REPLACEABLE)
