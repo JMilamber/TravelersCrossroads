@@ -108,9 +108,13 @@ public class TravelersPath {
 
         if (this.currentIndex < this.path.size() - 1) {
             this.currentIndex += this.pathStyle.placeSection(level, this.path.get(this.currentIndex), this.path.get(this.currentIndex+1)) ? 1 : 0;
+            if (this.currentIndex % this.pathStyle.getNodeDistance() == 0 && this.path.size() - this.currentIndex > this.pathStyle.getNodeDistance()) {
+                TravelersCrossroads.WATCHER.crossroadsData.addPathNode(this.path.get(this.currentIndex+1));
+            }
         } else {
             this.completed = true;
         }
+
     }
 
     public boolean completed() {

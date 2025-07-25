@@ -192,6 +192,10 @@ public abstract class PathStyle {
         return pathSize.getWidth();
     }
 
+    public int getNodeDistance() {
+        return pathSize.getNodesPerImportantNode();
+    }
+
     abstract  MapCodec<? extends PathStyle> codec();
     public abstract StyleModifierType<?> type();
 

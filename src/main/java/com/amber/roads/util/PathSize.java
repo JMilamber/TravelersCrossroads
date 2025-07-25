@@ -15,6 +15,7 @@ public enum PathSize implements StringRepresentable {
     private final int width;
     private final int extraWidth;
     private final int distance;
+    private final int nodesPerImportantNode;
     private final String name;
 
     PathSize(String name, int width) {
@@ -22,6 +23,7 @@ public enum PathSize implements StringRepresentable {
         this.extraWidth = width + 2;
         this.name = name;
         this.distance = round(0.667f * (width*width) - width + 5.333f);
+        this.nodesPerImportantNode = 80 / distance;
     }
 
     public int getDistance() {
@@ -34,6 +36,10 @@ public enum PathSize implements StringRepresentable {
 
     public int getExtraWidth() {
         return extraWidth;
+    }
+
+    public int getNodesPerImportantNode() {
+        return nodesPerImportantNode;
     }
 
     @Override
