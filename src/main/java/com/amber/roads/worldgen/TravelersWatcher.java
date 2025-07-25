@@ -75,6 +75,7 @@ public class TravelersWatcher {
         for (TravelersPath path : connectionPaths) {
             this.addPath(path);
             connectionNodes.add(path.getEnd());
+            this.crossroadsData.addPathNode(path.getEnd());
         }
 
         // Find nearby structures and add paths to tower.
