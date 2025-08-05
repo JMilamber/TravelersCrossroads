@@ -1,0 +1,28 @@
+{
+  "type": "travelers_crossroads:percent_style",
+  "biomes": "#c:is_snowy",
+  "main_block_chance": 65,
+  "main_path_block": {
+    "type": "minecraft:simple_state_provider",
+    "state": {
+      "Name": "minecraft:cobblestone"
+    }
+  },
+  "pathSize": "SMALL",
+  "skip_block_chance": 10,
+  "texture_block_chance": 25,
+  "texture_blocks": [
+    {
+      "Name": "minecraft:stone"
+    },
+    {
+      "Name": "minecraft:gravel"
+    },
+    {
+      "Name": "minecraft:bone_block",
+      "Properties": {
+        "axis": "y"
+      }
+    }
+  ]
+}

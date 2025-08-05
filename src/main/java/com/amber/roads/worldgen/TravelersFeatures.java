@@ -15,6 +15,7 @@ import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.data.worldgen.placement.PlacementUtils;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BiomeTags;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.GenerationStep;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
@@ -41,9 +42,14 @@ public class TravelersFeatures {
 
     public static final ResourceKey<PathStyle> DEFAULT_STYLE_KEY = registerPathStyleKey("default_style");
     public static final ResourceKey<PathStyle> STONE_BRICKS_STYLE_KEY = registerPathStyleKey("stone_bricks_style");
+    public static final ResourceKey<PathStyle> ERODED_STONE_BRICKS_STYLE_KEY = registerPathStyleKey("eroded_stone_bricks_style");
+    public static final ResourceKey<PathStyle> RUSTIC_STYLE_KEY = registerPathStyleKey("rustic_style");
     public static final ResourceKey<PathStyle> DESERT_STYLE_KEY = registerPathStyleKey("desert_style");
     public static final ResourceKey<PathStyle> SPARSE_GRAVEL_STYLE_KEY = registerPathStyleKey("sparse_gravel_style");
-    public static final ResourceKey<PathStyle> RUSTIC_STYLE_KEY = registerPathStyleKey("rustic_style");
+    public static final ResourceKey<PathStyle> BADLANDS_STYLE_KEY = registerPathStyleKey("badlands_style");
+    public static final ResourceKey<PathStyle> SAVANNA_STYLE_KEY = registerPathStyleKey("savanna_style");
+    public static final ResourceKey<PathStyle> SNOWY_STYLE_KEY = registerPathStyleKey("snowy_style");
+    public static final ResourceKey<PathStyle> SPARSE_SNOWY_STYLE_KEY = registerPathStyleKey("sparse_snowy_style");
 
     public static void configuredBootstrap(BootstrapContext<ConfiguredFeature<?, ?>> configuredContext) {
         configuredRegister(
@@ -107,7 +113,8 @@ public class TravelersFeatures {
                 DEFAULT_STYLE_KEY,
                 new PercentStyle(
                         new PathStyle.PathSettings(
-                                biomes.getOrThrow(BiomeTags.IS_OVERWORLD), BlockStateProvider.simple(Blocks.DIRT_PATH),
+                                biomes.getOrThrow(BiomeTags.IS_OVERWORLD),
+                                BlockStateProvider.simple(Blocks.DIRT_PATH),
                                 PathSize.SMALL.getSerializedName()
                         ),
                         List.of(Blocks.GRAVEL.defaultBlockState(), Blocks.COARSE_DIRT.defaultBlockState()),
@@ -119,7 +126,8 @@ public class TravelersFeatures {
                 STONE_BRICKS_STYLE_KEY,
                 new PercentStyle(
                         new PathStyle.PathSettings(
-                                biomes.getOrThrow(BiomeTags.IS_OVERWORLD), BlockStateProvider.simple(Blocks.STONE_BRICKS),
+                                biomes.getOrThrow(BiomeTags.IS_OVERWORLD),
+                                BlockStateProvider.simple(Blocks.STONE_BRICKS),
                                 PathSize.MEDIUM.getSerializedName()
                         ),
                         List.of(
@@ -131,10 +139,25 @@ public class TravelersFeatures {
         );
 
         pathStylesContext.register(
+                ERODED_STONE_BRICKS_STYLE_KEY,
+                new SparseStyle(
+                        new PathStyle.PathSettings(
+                                biomes.getOrThrow(BiomeTags.HAS_RUINED_PORTAL_MOUNTAIN),
+                                BlockStateProvider.simple(Blocks.STONE_BRICKS),
+                                PathSize.MEDIUM.getSerializedName()
+                        ),
+                        List.of(
+                                Blocks.MOSSY_STONE_BRICKS.defaultBlockState(), Blocks.STONE_BRICK_SLAB.defaultBlockState()
+                        )
+                )
+        );
+
+        pathStylesContext.register(
                 RUSTIC_STYLE_KEY,
                 new PercentStyle(
                         new PathStyle.PathSettings(
-                                biomes.getOrThrow(BiomeTags.IS_FOREST), BlockStateProvider.simple(Blocks.DIRT_PATH),
+                                biomes.getOrThrow(BiomeTags.IS_FOREST),
+                                BlockStateProvider.simple(Blocks.DIRT_PATH),
                                 PathSize.MINI.getSerializedName()
                         ),
                         List.of(Blocks.OAK_PLANKS.defaultBlockState(), Blocks.OAK_STAIRS.defaultBlockState(), Blocks.COARSE_DIRT.defaultBlockState()),
@@ -146,7 +169,8 @@ public class TravelersFeatures {
                 DESERT_STYLE_KEY,
                 new PercentStyle(
                         new PathStyle.PathSettings(
-                                biomes.getOrThrow(Tags.Biomes.IS_DESERT), BlockStateProvider.simple(Blocks.SANDSTONE),
+                                biomes.getOrThrow(Tags.Biomes.IS_DESERT),
+                                BlockStateProvider.simple(Blocks.SANDSTONE),
                                 PathSize.SMALL.getSerializedName()
                         ),
                         List.of(Blocks.GRAVEL.defaultBlockState(), Blocks.SANDSTONE_SLAB.defaultBlockState()),
@@ -163,6 +187,57 @@ public class TravelersFeatures {
                                 PathSize.MINI.getSerializedName()
                         ),
                         List.of(Blocks.COARSE_DIRT.defaultBlockState())
+                )
+        );
+
+        pathStylesContext.register(
+                BADLANDS_STYLE_KEY,
+                new PercentStyle(
+                        new PathStyle.PathSettings(
+                                biomes.getOrThrow(BiomeTags.IS_BADLANDS),
+                                BlockStateProvider.simple(Blocks.RED_SANDSTONE),
+                                PathSize.SMALL.getSerializedName()
+                        ),
+                        List.of(Blocks.GRAVEL.defaultBlockState(), Blocks.RED_SANDSTONE_SLAB.defaultBlockState()),
+                        60, 30, 10
+                )
+        );
+
+        pathStylesContext.register(
+                SAVANNA_STYLE_KEY,
+                new PercentStyle(
+                        new PathStyle.PathSettings(
+                                biomes.getOrThrow(BiomeTags.IS_SAVANNA),
+                                BlockStateProvider.simple(Blocks.ACACIA_PLANKS),
+                                PathSize.MEDIUM.getSerializedName()
+                        ),
+                        List.of(Blocks.RED_SANDSTONE.defaultBlockState(), Blocks.ORANGE_TERRACOTTA.defaultBlockState(), Blocks.STRIPPED_ACACIA_WOOD.defaultBlockState()),
+                        60, 30, 10
+                )
+        );
+
+        pathStylesContext.register(
+                SNOWY_STYLE_KEY,
+                new PercentStyle(
+                        new PathStyle.PathSettings(
+                                biomes.getOrThrow(Tags.Biomes.IS_SNOWY),
+                                BlockStateProvider.simple(Blocks.COBBLESTONE),
+                                PathSize.SMALL.getSerializedName()
+                        ),
+                        List.of(Blocks.STONE.defaultBlockState(), Blocks.GRAVEL.defaultBlockState(), Blocks.BONE_BLOCK.defaultBlockState()),
+                        65, 25, 10
+                )
+        );
+
+        pathStylesContext.register(
+                SPARSE_SNOWY_STYLE_KEY,
+                new SparseStyle(
+                        new PathStyle.PathSettings(
+                                biomes.getOrThrow(Tags.Biomes.IS_SNOWY),
+                                BlockStateProvider.simple(Blocks.COBBLESTONE),
+                                PathSize.MINI.getSerializedName()
+                        ),
+                        List.of(Blocks.STONE.defaultBlockState(), Blocks.BONE_BLOCK.defaultBlockState())
                 )
         );
 

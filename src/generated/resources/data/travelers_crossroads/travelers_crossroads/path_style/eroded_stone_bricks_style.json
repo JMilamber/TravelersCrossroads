@@ -1,0 +1,23 @@
+{
+  "type": "travelers_crossroads:sparse_style",
+  "biomes": "#minecraft:has_structure/ruined_portal_mountain",
+  "main_path_block": {
+    "type": "minecraft:simple_state_provider",
+    "state": {
+      "Name": "minecraft:stone_bricks"
+    }
+  },
+  "pathSize": "MEDIUM",
+  "texture_blocks": [
+    {
+      "Name": "minecraft:mossy_stone_bricks"
+    },
+    {
+      "Name": "minecraft:stone_brick_slab",
+      "Properties": {
+        "type": "bottom",
+        "waterlogged": "false"
+      }
+    }
+  ]
+}

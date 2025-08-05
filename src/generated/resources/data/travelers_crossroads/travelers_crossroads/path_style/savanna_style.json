@@ -1,0 +1,28 @@
+{
+  "type": "travelers_crossroads:percent_style",
+  "biomes": "#minecraft:is_savanna",
+  "main_block_chance": 60,
+  "main_path_block": {
+    "type": "minecraft:simple_state_provider",
+    "state": {
+      "Name": "minecraft:acacia_planks"
+    }
+  },
+  "pathSize": "MEDIUM",
+  "skip_block_chance": 10,
+  "texture_block_chance": 30,
+  "texture_blocks": [
+    {
+      "Name": "minecraft:red_sandstone"
+    },
+    {
+      "Name": "minecraft:orange_terracotta"
+    },
+    {
+      "Name": "minecraft:stripped_acacia_wood",
+      "Properties": {
+        "axis": "y"
+      }
+    }
+  ]
+}
