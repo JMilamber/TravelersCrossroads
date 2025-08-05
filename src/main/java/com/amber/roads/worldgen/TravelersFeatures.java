@@ -147,7 +147,7 @@ public class TravelersFeatures {
                                 PathSize.MEDIUM.getSerializedName()
                         ),
                         List.of(
-                                Blocks.MOSSY_STONE_BRICKS.defaultBlockState(), Blocks.STONE_BRICK_SLAB.defaultBlockState()
+                                Blocks.MOSSY_STONE_BRICKS.defaultBlockState(), Blocks.COBBLESTONE.defaultBlockState()
                         )
                 )
         );

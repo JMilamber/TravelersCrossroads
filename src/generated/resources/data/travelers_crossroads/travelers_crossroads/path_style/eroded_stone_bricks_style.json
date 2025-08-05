@@ -13,11 +13,7 @@
       "Name": "minecraft:mossy_stone_bricks"
     },
     {
-      "Name": "minecraft:stone_brick_slab",
-      "Properties": {
-        "type": "bottom",
-        "waterlogged": "false"
-      }
+      "Name": "minecraft:cobblestone"
     }
   ]
 }
