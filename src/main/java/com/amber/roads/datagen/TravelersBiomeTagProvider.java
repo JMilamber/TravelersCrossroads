@@ -4,6 +4,7 @@ import com.amber.roads.util.TravelersTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.BiomeTagsProvider;
+import net.minecraft.tags.BiomeTags;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.NotNull;
@@ -22,5 +23,9 @@ public class TravelersBiomeTagProvider extends BiomeTagsProvider {
         this.tag(TravelersTags.Biomes.PATH_START_AVOID_BIOME)
                 .addTag(Tags.Biomes.IS_AQUATIC)
                 .addTag(Tags.Biomes.IS_AQUATIC_ICY);
+
+        this.tag(TravelersTags.Biomes.HAS_STONE_BRICKS_PATH)
+                .addTag(BiomeTags.HAS_RUINED_PORTAL_MOUNTAIN)
+                .addTag(BiomeTags.HAS_RUINED_PORTAL_STANDARD);
     }
 }

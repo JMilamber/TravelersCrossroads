@@ -126,7 +126,7 @@ public class TravelersFeatures {
                 STONE_BRICKS_STYLE_KEY,
                 new PercentStyle(
                         new PathStyle.PathSettings(
-                                biomes.getOrThrow(BiomeTags.IS_OVERWORLD),
+                                biomes.getOrThrow(TravelersTags.Biomes.HAS_STONE_BRICKS_PATH),
                                 BlockStateProvider.simple(Blocks.STONE_BRICKS),
                                 PathSize.MEDIUM.getSerializedName()
                         ),
