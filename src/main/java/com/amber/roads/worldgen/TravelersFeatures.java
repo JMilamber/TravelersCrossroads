@@ -50,6 +50,7 @@ public class TravelersFeatures {
     public static final ResourceKey<PathStyle> SAVANNA_STYLE_KEY = registerPathStyleKey("savanna_style");
     public static final ResourceKey<PathStyle> SNOWY_STYLE_KEY = registerPathStyleKey("snowy_style");
     public static final ResourceKey<PathStyle> SPARSE_SNOWY_STYLE_KEY = registerPathStyleKey("sparse_snowy_style");
+    public static final ResourceKey<PathStyle> JUNGLE_STYLE_KEY = registerPathStyleKey("jungle_style");
 
     public static void configuredBootstrap(BootstrapContext<ConfiguredFeature<?, ?>> configuredContext) {
         configuredRegister(
@@ -238,6 +239,19 @@ public class TravelersFeatures {
                                 PathSize.MINI.getSerializedName()
                         ),
                         List.of(Blocks.STONE.defaultBlockState(), Blocks.BONE_BLOCK.defaultBlockState())
+                )
+        );
+
+        pathStylesContext.register(
+                JUNGLE_STYLE_KEY,
+                new PercentStyle(
+                        new PathStyle.PathSettings(
+                                biomes.getOrThrow(BiomeTags.IS_JUNGLE),
+                                BlockStateProvider.simple(Blocks.JUNGLE_PLANKS),
+                                PathSize.SMALL.getSerializedName()
+                        ),
+                        List.of(Blocks.JUNGLE_SLAB.defaultBlockState(), Blocks.MOSS_BLOCK.defaultBlockState(), Blocks.OAK_LOG.defaultBlockState()),
+                        60, 30, 10
                 )
         );
 
