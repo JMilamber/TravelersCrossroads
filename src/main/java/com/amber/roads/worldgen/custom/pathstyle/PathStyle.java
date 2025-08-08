@@ -1,5 +1,6 @@
 package com.amber.roads.worldgen.custom.pathstyle;
 
+import com.amber.roads.TravelersCrossroads;
 import com.amber.roads.init.TravelersInit;
 import com.amber.roads.init.TravelersRegistries;
 import com.amber.roads.world.PathNode;
@@ -51,6 +52,7 @@ public abstract class PathStyle {
     public static <S extends PathStyle> RecordCodecBuilder<S, PathSettings> settingsCodec(RecordCodecBuilder.Instance<S> instance) {
         return PathSettings.CODEC.forGetter(style -> style.settings); // FORGE: Patch codec to ignore field redirect coremods.
     }
+
     protected PathStyle(PathSettings settings) {
         this.settings = settings;
         this.pathSize = PathSize.valueOf(settings.pathSize);
@@ -78,7 +80,7 @@ public abstract class PathStyle {
         float distance = (float) distanceTo2D(pos1, pos2);
         TravelersDirection direction = TravelersDirection.directionFromPos(pos1, pos2);
 
-        // TravelersCrossroads.LOGGER.debug("place section {} {}", pos1, direction);
+        // TravelersCrossroads.LOGGER.debug("place section {} : {} : {}", pos1, pos2, distance);
         int width = this.pathSize.getWidth();
         int extraWidth = this.pathSize.getExtraWidth();
         List<BlockPos> pathBlocks = new ArrayList<>();
@@ -87,7 +89,7 @@ public abstract class PathStyle {
 
         if (!isEven(width)) {
             // If working with an odd path size, ensure center is middle of the block
-            currPos.offset(.5f, .5f);
+            currPos.offset(.5f * direction.getStepX(), .5f * direction.getStepZ());
         }
 
         // Find the pathPos on the line between pos1 and pos2
@@ -196,7 +198,7 @@ public abstract class PathStyle {
         return pathSize.getNodesPerImportantNode();
     }
 
-    public abstract  MapCodec<? extends PathStyle> codec();
+    abstract  MapCodec<? extends PathStyle> codec();
     public abstract StyleModifierType<?> type();
 
     public record PathSettings(

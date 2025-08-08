@@ -67,7 +67,7 @@ public class PercentStyle extends PathStyle {
 
     @Override
     public MapCodec<? extends PathStyle> codec() {
-        return this.codec();
+        return CODEC;
     }
 
     @Override

@@ -6,9 +6,11 @@ import com.amber.roads.worldgen.TravelersFeatures;
 import com.amber.roads.worldgen.TravelersWatcher;
 import com.amber.roads.worldgen.custom.pathstyle.PathStyle;
 import com.mojang.serialization.Dynamic;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 
@@ -67,11 +69,11 @@ public class TravelersPath {
         }
         this.currentIndex = data.getInt("currentIndex");
         if (data.contains("style")) {
-            PathStyle.REFERENCE_CODEC
-                    .parse(new Dynamic<>(NbtOps.INSTANCE, data.get("style")))
-                    .resultOrPartial(TravelersCrossroads.LOGGER::error)
+            PathStyle.DIRECT_CODEC
+                    .parse(new Dynamic<>( RegistryOps.create(NbtOps.INSTANCE, TravelersWatcher.server.registryAccess()), data.get("style")))
+                    .result()
                     .ifPresentOrElse(
-                            tag1 -> this.pathStyle = tag1.value(),
+                            tag1 -> this.pathStyle = tag1,
                             () -> this.pathStyle = TravelersWatcher.pathStyleReg.getOrThrow(TravelersFeatures.DEFAULT_STYLE_KEY)
                     );
         } else {
@@ -91,10 +93,10 @@ public class TravelersPath {
         data.putBoolean("complete", this.completed);
         data.put("path", pathData);
         data.putInt("length", this.path.size());
-        PathStyle.REFERENCE_CODEC
-                .encodeStart(NbtOps.INSTANCE, Holder.direct(this.pathStyle))
-                .resultOrPartial(TravelersCrossroads.LOGGER::error)
-                .ifPresent(tag1 -> data.put("style", tag1));
+        data.put("style", PathStyle.DIRECT_CODEC
+                .encodeStart(RegistryOps.create(NbtOps.INSTANCE, TravelersWatcher.server.registryAccess()), this.pathStyle)
+                .getOrThrow()
+                );
         tag.put("path" + index, data);
 
         return tag;
