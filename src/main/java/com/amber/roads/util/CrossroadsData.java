@@ -26,13 +26,13 @@ public class CrossroadsData extends SavedData {
     // Load existing instance of saved data
     public static CrossroadsData load(CompoundTag tag, HolderLookup.Provider lookupProvider) {
         CrossroadsData data = CrossroadsData.create();
-        int length = tag.getInt("len");
+        int length = tag.getInt("paths");
         for (int i = 0; i < length; i++) {
             data.unfinishedPaths.add(new TravelersPath(tag, i));
         }
-        int nodes_len = tag.getInt("nodes_len");
+        int nodes_len = tag.getInt("nodes");
         for (int i = 0; i < nodes_len; i++) {
-            data.pathNodes.add(new PathNode(NbtUtils.readBlockPos(tag, "nodes" + i).orElseThrow()));
+            data.pathNodes.add(new PathNode(NbtUtils.readBlockPos(tag, "node" + i).orElseThrow()));
         }
         // Load saved data
         return data;
@@ -41,15 +41,15 @@ public class CrossroadsData extends SavedData {
     @Override
     public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
 
-        tag.putInt("len", this.unfinishedPaths.size());
+        tag.putInt("paths", this.unfinishedPaths.size());
         for (int i = 0; i < this.unfinishedPaths.size(); i++) {
             TravelersPath path = this.unfinishedPaths.get(i);
             path.save(tag, i);
         }
 
-        tag.putInt("nodes_len", this.pathNodes.size());
+        tag.putInt("nodes", this.pathNodes.size());
         for (int i = 0; i < this.pathNodes.size(); i++) {
-            tag.put("nodes" + i, NbtUtils.writeBlockPos(this.pathNodes.get(i).asBlockPos()));
+            tag.put("node" + i, NbtUtils.writeBlockPos(this.pathNodes.get(i).asBlockPos()));
         }
         return tag;
     }
