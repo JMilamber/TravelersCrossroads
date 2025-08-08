@@ -91,7 +91,7 @@ public class TravelersPath {
         data.putBoolean("complete", this.completed);
         data.put("path", pathData);
         data.putInt("length", this.path.size());
-        this.pathStyle.codec().encoder()
+        PathStyle.REFERENCE_CODEC
                 .encodeStart(NbtOps.INSTANCE, Holder.direct(this.pathStyle))
                 .resultOrPartial(TravelersCrossroads.LOGGER::error)
                 .ifPresent(tag1 -> data.put("style", tag1));
