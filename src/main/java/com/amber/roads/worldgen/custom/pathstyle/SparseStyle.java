@@ -31,7 +31,7 @@ public class SparseStyle extends PercentStyle {
     }
 
     @Override
-    MapCodec<? extends PathStyle> codec() {
+    public MapCodec<? extends PathStyle> codec() {
         return this.codec();
     }
 

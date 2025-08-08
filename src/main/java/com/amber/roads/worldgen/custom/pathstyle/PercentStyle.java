@@ -3,7 +3,6 @@ package com.amber.roads.worldgen.custom.pathstyle;
 import com.amber.roads.init.TravelersInit;
 import com.amber.roads.util.TravelersDirection;
 import com.amber.roads.world.PathNode;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -67,7 +66,7 @@ public class PercentStyle extends PathStyle {
     }
 
     @Override
-    MapCodec<? extends PathStyle> codec() {
+    public MapCodec<? extends PathStyle> codec() {
         return this.codec();
     }
 
