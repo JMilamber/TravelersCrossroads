@@ -41,7 +41,7 @@ public abstract class PathStyle {
      * Codec for referring to Style  modifiers by id in other datapack registry files.
      * Can only be used with {@link RegistryOps}.
      */
-    public static final Codec<Holder<PathStyle>> CODEC = RegistryFileCodec.create(TravelersRegistries.Keys.PATH_STYLES, DIRECT_CODEC);
+    public static final Codec<Holder<PathStyle>> REFERENCE_CODEC = RegistryFileCodec.create(TravelersRegistries.Keys.PATH_STYLES, DIRECT_CODEC);
 
 
     protected final PathStyle.PathSettings settings;
@@ -196,7 +196,7 @@ public abstract class PathStyle {
         return pathSize.getNodesPerImportantNode();
     }
 
-    abstract  MapCodec<? extends PathStyle> codec();
+    public abstract  MapCodec<? extends PathStyle> codec();
     public abstract StyleModifierType<?> type();
 
     public record PathSettings(
