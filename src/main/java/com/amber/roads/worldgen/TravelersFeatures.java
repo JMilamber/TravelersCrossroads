@@ -171,7 +171,7 @@ public class TravelersFeatures {
                 new PercentStyle(
                         new PathStyle.PathSettings(
                                 biomes.getOrThrow(Tags.Biomes.IS_DESERT),
-                                BlockStateProvider.simple(Blocks.SANDSTONE),
+                                BlockStateProvider.simple(Blocks.CUT_SANDSTONE),
                                 PathSize.SMALL.getSerializedName()
                         ),
                         List.of(Blocks.GRAVEL.defaultBlockState(), Blocks.SANDSTONE_SLAB.defaultBlockState()),
