@@ -3,8 +3,10 @@ package com.amber.roads.world;
 import com.amber.roads.TravelersCrossroads;
 import com.amber.roads.util.TravelersDirection;
 import com.amber.roads.worldgen.TravelersFeatures;
+import com.amber.roads.worldgen.TravelersWatcher;
 import com.amber.roads.worldgen.custom.pathstyle.PathStyle;
 import com.mojang.serialization.Dynamic;
+import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.level.ServerLevel;
@@ -65,15 +67,15 @@ public class TravelersPath {
         }
         this.currentIndex = data.getInt("currentIndex");
         if (data.contains("style")) {
-            PathStyle.DIRECT_CODEC
+            PathStyle.REFERENCE_CODEC
                     .parse(new Dynamic<>(NbtOps.INSTANCE, data.get("style")))
                     .resultOrPartial(TravelersCrossroads.LOGGER::error)
                     .ifPresentOrElse(
-                            tag1 -> this.pathStyle = tag1,
-                            () -> this.pathStyle = TravelersCrossroads.WATCHER.pathStyleReg.getOrThrow(TravelersFeatures.DEFAULT_STYLE_KEY)
-                            );
+                            tag1 -> this.pathStyle = tag1.value(),
+                            () -> this.pathStyle = TravelersWatcher.pathStyleReg.getOrThrow(TravelersFeatures.DEFAULT_STYLE_KEY)
+                    );
         } else {
-            this.pathStyle = TravelersCrossroads.WATCHER.pathStyleReg.getOrThrow(TravelersFeatures.DEFAULT_STYLE_KEY);
+            this.pathStyle = TravelersWatcher.pathStyleReg.getOrThrow(TravelersFeatures.DEFAULT_STYLE_KEY);
         }
     }
 
@@ -84,14 +86,13 @@ public class TravelersPath {
         for (int i = 0; i < this.path.size(); i++) {
             PathNode node = this.path.get(i);
             node.save(pathData, i);
-            i++;
         }
         data.putInt("currentIndex", this.currentIndex);
         data.putBoolean("complete", this.completed);
         data.put("path", pathData);
         data.putInt("length", this.path.size());
-        PathStyle.DIRECT_CODEC
-                .encodeStart(NbtOps.INSTANCE, this.pathStyle)
+        this.pathStyle.codec().encoder()
+                .encodeStart(NbtOps.INSTANCE, Holder.direct(this.pathStyle))
                 .resultOrPartial(TravelersCrossroads.LOGGER::error)
                 .ifPresent(tag1 -> data.put("style", tag1));
         tag.put("path" + index, data);
@@ -107,9 +108,9 @@ public class TravelersPath {
         // TravelersCrossroads.LOGGER.debug("Placing Section for Path: {} {}", path.getFirst(), path.getLast());
 
         if (this.currentIndex < this.path.size() - 1) {
-            this.currentIndex += this.pathStyle.placeSection(level, this.path.get(this.currentIndex), this.path.get(this.currentIndex+1)) ? 1 : 0;
+            this.currentIndex += this.pathStyle.placeSection(level, this.path.get(this.currentIndex), this.path.get(this.currentIndex + 1)) ? 1 : 0;
             if (this.currentIndex % this.pathStyle.getNodeDistance() == 0 && this.path.size() - this.currentIndex > this.pathStyle.getNodeDistance()) {
-                TravelersCrossroads.WATCHER.crossroadsData.addPathNode(this.path.get(this.currentIndex+1));
+                TravelersWatcher.crossroadsData.addPathNode(this.path.get(this.currentIndex+1));
             }
         } else {
             this.completed = true;
