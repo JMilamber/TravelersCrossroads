@@ -37,7 +37,7 @@ public class PathNode {
         CompoundTag data = new CompoundTag();
         data.putInt("x", this.x);
         data.putInt("z", this.z);
-        data.putBoolean("z", this.start);
+        data.putBoolean("start", this.start);
 
         tag.put(String.valueOf(index), data);
         return tag;
