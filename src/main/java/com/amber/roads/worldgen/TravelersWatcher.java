@@ -39,34 +39,34 @@ import java.util.Optional;
 public class TravelersWatcher {
 
     // Changed on Server start
-    public MinecraftServer server;
-    public Registry<PathStyle> pathStyleReg;
-    public Registry<OffsetModifier> pathOffsets;
-    public List<PathStyle> pathStyles;
-    public RandomSource randomSource;
+    public static MinecraftServer server;
+    public static Registry<PathStyle> pathStyleReg;
+    public static Registry<OffsetModifier> pathOffsets;
+    public static List<PathStyle> pathStyles;
+    public static RandomSource randomSource;
 
     // Changed while playing
-    public int tickCount = 0;
-    public CrossroadsData crossroadsData = null;
-    public ArrayList<BlockPos> newCrossroadPositions = new ArrayList<>();
-    public ArrayList<ChunkPos> beforeServerLoadNodes = new ArrayList<>();
+    public static int tickCount = 0;
+    public static CrossroadsData crossroadsData = null;
+    public static ArrayList<BlockPos> newCrossroadPositions = new ArrayList<>();
+    public static ArrayList<ChunkPos> beforeServerLoadNodes = new ArrayList<>();
 
     public TravelersWatcher() {}
 
     public void addCrossroadToCreate(BlockPos center) {
-        this.newCrossroadPositions.add(center);
+        newCrossroadPositions.add(center);
     }
 
     public void placeCrossroad(BlockPos center) {
-        Holder<Biome> biome = this.server.overworld().getBiome(center);
+        Holder<Biome> biome = server.overworld().getBiome(center);
         PathNode centerPos = new PathNode(center);
 
         // Get list of possible PathStyles
-        List<PathStyle> possiblePathStyles = this.pathStyles.stream()
+        List<PathStyle> possiblePathStyles = pathStyles.stream()
                 .filter(pathBiomeStyleHolder -> pathBiomeStyleHolder.checkBiome(biome))
                 .toList();
         // TravelersCrossroads.LOGGER.debug("Biome {} Possible Styles {}", biome.getRegisteredName(), possibleStyles);
-        PathStyle pathStyle = possiblePathStyles.get(this.randomSource.nextInt(possiblePathStyles.size()));
+        PathStyle pathStyle = possiblePathStyles.get(randomSource.nextInt(possiblePathStyles.size()));
 
         List<TravelersPath> connectionPaths = this.placeConnectionPaths(pathStyle, centerPos);
         List<PathNode> connectionNodes = new ArrayList<>();
@@ -75,7 +75,7 @@ public class TravelersWatcher {
         for (TravelersPath path : connectionPaths) {
             this.addPath(path);
             connectionNodes.add(path.getEnd());
-            this.crossroadsData.addPathNode(path.getEnd());
+            crossroadsData.addPathNode(path.getEnd());
         }
 
         // Find nearby structures and add paths to tower.
@@ -88,7 +88,7 @@ public class TravelersWatcher {
                 }
             }
             if (offset == null) {
-                offset = this.pathOffsets.getOrThrow(TravelersFeatures.DEFAULT_OFFSET_KEY);
+                offset = pathOffsets.getOrThrow(TravelersFeatures.DEFAULT_OFFSET_KEY);
             }
 
             PathNode structPathPos = new PathNode(struct.getFirst());
@@ -105,14 +105,14 @@ public class TravelersWatcher {
             if (distance <= pathStyle.getDistance()) {
                 break;
             }
-            this.addPath(new TravelersPath(this.randomSource, closest, structPathPos, pathStyle));
+            this.addPath(new TravelersPath(randomSource, closest, structPathPos, pathStyle));
             TravelersCrossroads.LOGGER.debug("Structure Path - Start:  {} | End: {} | Structure {}", closest, structPathPos, struct.getSecond().getRegisteredName());
         }
 
         // If no nearby structure check for nearby pathNode to connect to.
         if (structures.isEmpty()) {
             Optional<ChunkPos> crossRoadPos = getClosestAvoidCurrent(center, 30, connectionNodes);
-            crossRoadPos.ifPresent(pos -> this.addPath(new TravelersPath(this.randomSource, centerPos, new PathNode(pos), pathStyle)));
+            crossRoadPos.ifPresent(pos -> this.addPath(new TravelersPath(randomSource, centerPos, new PathNode(pos), pathStyle)));
         }
     }
 
@@ -126,20 +126,20 @@ public class TravelersWatcher {
         int distance = pathStyle.getDistance();
         PathNode nextPos = centerPos;
         // add 1-3 connections
-        for (int i = 0; i < this.randomSource.nextInt(2) + 1; i++) {
+        for (int i = 0; i < randomSource.nextInt(2) + 1; i++) {
             do {
-                startDirection = TravelersDirection.getRandom(this.randomSource);
+                startDirection = TravelersDirection.getRandom(randomSource);
                 // TravelersCrossroads.LOGGER.debug("New Direction: {} | Current Connections : {}", startDirection, this.connectionDirections);
             } while (connectionDirections.contains(startDirection));
 
             nextPos = startDirection.nextPos(nextPos, distance);
 
             // Move the end point of the new connection up to 7-13 positions away (less when bigger paths)
-            for (int j = 0; j < this.randomSource.nextInt(7 - pathStyle.getWidth()) + 7; j++) {
-                nextDirection = startDirection.getRandomForDirection(this.randomSource);
+            for (int j = 0; j < randomSource.nextInt(7 - pathStyle.getWidth()) + 7; j++) {
+                nextDirection = startDirection.getRandomForDirection(randomSource);
                 nextPos = nextDirection.nextPos(nextPos, distance);
             }
-            paths.add(new TravelersPath(this.randomSource, centerPos, nextPos, pathStyle));
+            paths.add(new TravelersPath(randomSource, centerPos, nextPos, pathStyle));
             connectionDirections.addAll(startDirection.getNeighbors());
             // TravelersCrossroads.LOGGER.debug("Connections {}", connectionDirections);
         }
@@ -147,8 +147,8 @@ public class TravelersWatcher {
     }
 
     public void addPath(TravelersPath path) {
-        this.crossroadsData.addPath(path);
-        this.crossroadsData.addPathNode(path.getEnd());
+        crossroadsData.addPath(path);
+        crossroadsData.addPathNode(path.getEnd());
     }
 
     public List<Pair<ChunkPos, Holder<Structure>>> getNearbyStructures(BlockPos center, List<PathNode> pathNodeList) {
@@ -171,7 +171,7 @@ public class TravelersWatcher {
                 int distance = chunkDistanceTo(centerChunk, structChunkPos);
                 if (distance <= 20 && distance > 1) {
                     structs.add(Pair.of(structChunkPos, struct.getSecond()));
-                    // TravelersCrossroads.LOGGER.debug("Structure found {} {}", struct.getFirst(), struct.getSecond());
+                    TravelersCrossroads.LOGGER.debug("Structure found {} {}", struct.getFirst(), struct.getSecond());
                 }
             }
         }
@@ -197,8 +197,8 @@ public class TravelersWatcher {
         Optional<ChunkPos> foundPos = Optional.empty();
         ChunkPos chunkPos = new ChunkPos(checkPos);
 
-        if (this.crossroadsData == null) {
-            for (ChunkPos pos : this.beforeServerLoadNodes) {
+        if (crossroadsData == null) {
+            for (ChunkPos pos : beforeServerLoadNodes) {
                 newDist = chunkDistanceTo(chunkPos, pos);
                 if (newDist < distance) {
                     distance = newDist;
@@ -208,7 +208,7 @@ public class TravelersWatcher {
             return foundPos;
         }
 
-        for (PathNode pathPos : this.crossroadsData.getPathNodes()) {
+        for (PathNode pathPos : crossroadsData.getPathNodes()) {
             newDist = chunkDistanceTo(chunkPos, pathPos.asChunkPos());
             if (newDist < distance) {
                 distance = newDist;
@@ -231,8 +231,8 @@ public class TravelersWatcher {
             }
         }
 
-        if (this.crossroadsData == null) {
-            for (ChunkPos pos : this.beforeServerLoadNodes) {
+        if (crossroadsData == null) {
+            for (ChunkPos pos : beforeServerLoadNodes) {
                 newDist = chunkDistanceTo(chunkPos, pos);
                 if (newDist < distance) {
                     distance = newDist;
@@ -242,7 +242,7 @@ public class TravelersWatcher {
             return foundPos;
         }
 
-        for (PathNode pathPos : this.crossroadsData.getPathNodes()) {
+        for (PathNode pathPos : crossroadsData.getPathNodes()) {
             newDist = chunkDistanceTo(chunkPos, pathPos.asChunkPos());
             if (newDist > farthestCurrent && newDist < distance) {
                 distance = newDist;
@@ -253,20 +253,20 @@ public class TravelersWatcher {
     }
 
     public void addDistanceFilterNode(ChunkPos pos) {
-        if (this.crossroadsData == null) {
-            this.beforeServerLoadNodes.add(pos);
+        if (crossroadsData == null) {
+            beforeServerLoadNodes.add(pos);
         }
         else {
-            this.crossroadsData.addPathNode(new PathNode(pos));
+            crossroadsData.addPathNode(new PathNode(pos));
         }
     }
 
     public void removeDistanceFilterNode(ChunkPos pos) {
-        if (this.crossroadsData == null) {
-            this.beforeServerLoadNodes.remove(pos);
+        if (crossroadsData == null) {
+            beforeServerLoadNodes.remove(pos);
         }
         else {
-            this.crossroadsData.removePathNode(new PathNode(pos));
+            crossroadsData.removePathNode(new PathNode(pos));
         }
     }
 
@@ -279,20 +279,20 @@ public class TravelersWatcher {
     }
 
     public void buildPaths () {
-        this.tickCount++;
+        tickCount++;
         if (tickCount % 3 != 0) {
             return;
         }
 
-        if (!this.newCrossroadPositions.isEmpty()) {
-            this.placeCrossroad(this.newCrossroadPositions.removeFirst());
+        if (!newCrossroadPositions.isEmpty()) {
+            this.placeCrossroad(newCrossroadPositions.removeFirst());
         }
 
-        List<TravelersPath> paths = this.crossroadsData.getUnfinishedPaths();
+        List<TravelersPath> paths = crossroadsData.getUnfinishedPaths();
         for (TravelersPath path: paths) {
             if (!path.completed()) {
                 try {
-                    path.placeNextSection(this.server.overworld());
+                    path.placeNextSection(server.overworld());
                 } catch (Exception e) {
                     System.out.println("path placement failed: ");
                     e.printStackTrace();
@@ -300,21 +300,21 @@ public class TravelersWatcher {
             }
         }
 
-        this.crossroadsData.checkPaths();
+        crossroadsData.checkPaths();
     }
 
-    public void setServer(MinecraftServer server) {
-        this.server = server;
-        this.pathOffsets = server.registryAccess().registryOrThrow(TravelersRegistries.Keys.STRUCTURE_OFFSETS);
-        this.pathStyleReg = server.registryAccess().registryOrThrow(TravelersRegistries.Keys.PATH_STYLES);
+    public void setServer(MinecraftServer newServer) {
+        server = newServer;
+        pathOffsets = server.registryAccess().registryOrThrow(TravelersRegistries.Keys.STRUCTURE_OFFSETS);
+        pathStyleReg = server.registryAccess().registryOrThrow(TravelersRegistries.Keys.PATH_STYLES);
         // Get list of possible PathStyles
-        this.pathStyles = TravelersCrossroads.WATCHER.pathStyleReg.holders().map(Holder::value).toList();
+        pathStyles = pathStyleReg.holders().map(Holder::value).toList();
     }
 
     public void setPathData() {
-        this.crossroadsData = CrossroadsData.instance(server.overworld().getDataStorage());
-        TravelersCrossroads.LOGGER.debug("Server Load adding beforeServerLoadNodes {}", this.beforeServerLoadNodes.size());
-        this.beforeServerLoadNodes.forEach(pos -> this.crossroadsData.addPathNode(new PathNode(pos)));
-        this.randomSource = RandomSource.create(this.server.overworld().getSeed());
+        crossroadsData = CrossroadsData.instance(server.overworld().getDataStorage());
+        TravelersCrossroads.LOGGER.debug("Server Load adding beforeServerLoadNodes {}", beforeServerLoadNodes.size());
+        beforeServerLoadNodes.forEach(pos -> crossroadsData.addPathNode(new PathNode(pos)));
+        randomSource = RandomSource.create(server.overworld().getSeed());
     }
 }
