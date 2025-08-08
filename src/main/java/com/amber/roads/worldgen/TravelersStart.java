@@ -57,7 +57,7 @@ public class TravelersStart extends Feature<NoneFeatureConfiguration> {
             level.setBlock(blockPos.above(), TravelersInit.CAIRN.get().defaultBlockState().setValue(
                     CairnBlock.FACING, Direction.from2DDataValue(random.nextInt(4))
             ), 3);
-            TravelersCrossroads.LOGGER.debug("Cairn Placed at: {}", blockPos.above());
+            // TravelersCrossroads.LOGGER.debug("Cairn Placed at: {}", blockPos.above());
             TravelersCrossroads.WATCHER.addCrossroadToCreate(blockPos);
         });
 
