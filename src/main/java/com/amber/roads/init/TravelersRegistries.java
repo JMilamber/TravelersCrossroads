@@ -12,7 +12,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
 import net.neoforged.neoforge.registries.RegistryBuilder;
 
-@EventBusSubscriber(modid = TravelersCrossroads.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = TravelersCrossroads.MOD_ID)
 public class TravelersRegistries {
 
     public static final Registry<StyleModifierType<?>> PATH_STYLE_TYPE = new RegistryBuilder<>(Keys.PATH_STYLE_TYPE).create();

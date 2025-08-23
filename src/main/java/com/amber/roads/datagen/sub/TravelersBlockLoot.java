@@ -1,4 +1,4 @@
-package com.amber.roads.datagen;
+package com.amber.roads.datagen.sub;
 
 import com.amber.roads.init.TravelersInit;
 import net.minecraft.core.Holder;
@@ -10,8 +10,8 @@ import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 
 import java.util.Set;
 
-public class TravelersLootTableProvider extends BlockLootSubProvider {
-    protected TravelersLootTableProvider(HolderLookup.Provider provider) {
+public class TravelersBlockLoot extends BlockLootSubProvider {
+    public TravelersBlockLoot(HolderLookup.Provider provider) {
         super(Set.of(), FeatureFlags.REGISTRY.allFlags(), provider);
     }
 

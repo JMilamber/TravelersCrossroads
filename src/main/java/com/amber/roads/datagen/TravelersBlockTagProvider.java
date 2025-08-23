@@ -1,5 +1,6 @@
 package com.amber.roads.datagen;
 
+import com.amber.roads.TravelersCrossroads;
 import com.amber.roads.init.TravelersInit;
 import com.amber.roads.util.TravelersTags;
 import net.minecraft.core.HolderLookup;
@@ -7,16 +8,14 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
 public class TravelersBlockTagProvider extends BlockTagsProvider {
 
-    public TravelersBlockTagProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> provider, String modId, @Nullable ExistingFileHelper existingFileHelper) {
-        super(output, provider, modId, existingFileHelper);
+    public TravelersBlockTagProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> provider) {
+        super(output, provider, TravelersCrossroads.MOD_ID);
     }
 
     @Override

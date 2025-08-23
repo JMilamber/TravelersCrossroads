@@ -74,10 +74,10 @@ public class TravelersPath {
                     .result()
                     .ifPresentOrElse(
                             tag1 -> this.pathStyle = tag1,
-                            () -> this.pathStyle = TravelersWatcher.pathStyleReg.getOrThrow(TravelersFeatures.DEFAULT_STYLE_KEY)
+                            () -> this.pathStyle = TravelersWatcher.pathStyleReg.getOrThrow(TravelersFeatures.DEFAULT_STYLE_KEY).value()
                     );
         } else {
-            this.pathStyle = TravelersWatcher.pathStyleReg.getOrThrow(TravelersFeatures.DEFAULT_STYLE_KEY);
+            this.pathStyle = TravelersWatcher.pathStyleReg.getOrThrow(TravelersFeatures.DEFAULT_STYLE_KEY).value();
         }
     }
 

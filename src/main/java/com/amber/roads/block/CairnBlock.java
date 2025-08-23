@@ -10,7 +10,7 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -19,7 +19,7 @@ import static com.amber.roads.util.TravelersUtil.rotateShape;
 
 public class CairnBlock extends Block {
 
-    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
+    public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     protected static final MapCodec<CairnBlock> CODEC = simpleCodec(CairnBlock::new);
 
     public static final VoxelShape SHAPE = Shapes.or(
@@ -52,9 +52,9 @@ public class CairnBlock extends Block {
         return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection());
     }
 
-       @Override
-    protected VoxelShape getOcclusionShape(BlockState state, BlockGetter level, BlockPos pos) {
-        return getRotatedShape(state, level, pos);
+    @Override
+    protected VoxelShape getOcclusionShape(BlockState state) {
+        return getRotatedShape(state);
     }
 
     @Override
@@ -64,15 +64,15 @@ public class CairnBlock extends Block {
 
     @Override
     protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return getRotatedShape(state, level, pos);
+        return getRotatedShape(state);
     }
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return getRotatedShape(state, level, pos);
+        return getRotatedShape(state);
     }
 
-    protected VoxelShape getRotatedShape(BlockState state, BlockGetter level, BlockPos pos) {
+    protected VoxelShape getRotatedShape(BlockState state) {
         return state.getValue(FACING) == Direction.SOUTH ? SHAPE : rotateShape(Direction.SOUTH, state.getValue(FACING), SHAPE);
 
     }

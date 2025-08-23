@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@EventBusSubscriber(modid = TravelersCrossroads.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = TravelersCrossroads.MOD_ID)
 public class TravelersWatcher {
 
     // Changed on Server start
@@ -82,13 +82,13 @@ public class TravelersWatcher {
         List<Pair<ChunkPos, Holder<Structure>>> structures = this.getNearbyStructures(center, connectionNodes);
         for (Pair<ChunkPos, Holder<Structure>> struct : structures) {
             OffsetModifier offset = null;
-            for (OffsetModifier offsetCheck: pathOffsets.holders().map(Holder::value).toList()) {
+            for (OffsetModifier offsetCheck: pathOffsets.stream().toList()) {
                 if (offsetCheck.checkStructure(struct.getSecond())) {
                     offset = offsetCheck;
                 }
             }
             if (offset == null) {
-                offset = pathOffsets.getOrThrow(TravelersFeatures.DEFAULT_OFFSET_KEY);
+                offset = pathOffsets.getValueOrThrow(TravelersFeatures.DEFAULT_OFFSET_KEY);
             }
 
             PathNode structPathPos = new PathNode(struct.getFirst());
@@ -185,7 +185,7 @@ public class TravelersWatcher {
             return null;
         } else {
             ServerLevel level = server.overworld();
-            Optional<HolderSet.Named<Structure>> optional = level.registryAccess().registryOrThrow(Registries.STRUCTURE).getTag(structureTag);
+            Optional<HolderSet.Named<Structure>> optional = level.registryAccess().lookupOrThrow(Registries.STRUCTURE).get(structureTag);
             return optional.map(holders -> level.getChunkSource()
                     .getGenerator()
                     .findNearestMapStructure(level, holders, pos, 30, false)).orElse(null);
@@ -305,10 +305,10 @@ public class TravelersWatcher {
 
     public void setServer(MinecraftServer newServer) {
         server = newServer;
-        pathOffsets = server.registryAccess().registryOrThrow(TravelersRegistries.Keys.STRUCTURE_OFFSETS);
-        pathStyleReg = server.registryAccess().registryOrThrow(TravelersRegistries.Keys.PATH_STYLES);
+        pathOffsets = server.registryAccess().lookupOrThrow(TravelersRegistries.Keys.STRUCTURE_OFFSETS);
+        pathStyleReg = server.registryAccess().lookupOrThrow(TravelersRegistries.Keys.PATH_STYLES);
         // Get list of possible PathStyles
-        pathStyles = pathStyleReg.holders().map(Holder::value).toList();
+        pathStyles = pathStyleReg.stream().toList();
     }
 
     public void setPathData() {

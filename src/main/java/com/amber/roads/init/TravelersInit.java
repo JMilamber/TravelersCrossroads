@@ -26,14 +26,15 @@ import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
 
 public class TravelersInit {
 
-    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.createBlocks(TravelersCrossroads.MOD_ID);
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, TravelersCrossroads.MOD_ID);
+    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(TravelersCrossroads.MOD_ID);
+    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(TravelersCrossroads.MOD_ID);
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, TravelersCrossroads.MOD_ID);
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, TravelersCrossroads.MOD_ID);
     public static final DeferredRegister<Feature<?>> FEATURES = DeferredRegister.create(Registries.FEATURE, TravelersCrossroads.MOD_ID);
@@ -41,19 +42,22 @@ public class TravelersInit {
     public static final DeferredRegister<StyleModifierType<?>> STYLE_MODIFIER_SERIALIZERS = DeferredRegister.create(TravelersRegistries.PATH_STYLE_TYPE, TravelersCrossroads.MOD_ID);
     public static final DeferredRegister<MapCodec<? extends OffsetModifier>> OFFSET_MODIFIER_SERIALIZERS = DeferredRegister.create(TravelersRegistries.STRUCTURE_OFFSET_SERIALIZERS, TravelersCrossroads.MOD_ID);
 
-    public static final Supplier<Block> CAIRN = registerBlock(
-            "cairn", () -> new CairnBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.GRAVEL).forceSolidOn())
+    public static final DeferredBlock<Block> CAIRN = BLOCKS.registerBlock(
+            "cairn", CairnBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.GRAVEL).forceSolidOn()
     );
 
-    public static final Supplier<Item> PEBBLE = ITEMS.register(
-            "pebble", () -> new Item(new Item.Properties().stacksTo(24))
+    public static final DeferredItem<BlockItem> CAIRN_ITEM = ITEMS.registerSimpleBlockItem(CAIRN);
+
+
+    public static final DeferredItem<Item> PEBBLE = ITEMS.registerItem(
+            "pebble", Item::new, new Item.Properties().stacksTo(24)
     );
 
     public static final Supplier<CreativeModeTab> TRAVELERS_TAB = CREATIVE_MODE_TABS.register(
             "travelers_tab", () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.travelers_crossroads.travelers_tab"))
-                    .icon(() -> new ItemStack(CAIRN.get()))
-                    .displayItems((pParameters, pOutput) -> pOutput.accept(CAIRN.get())
+                    .icon(() -> new ItemStack(CAIRN_ITEM.get()))
+                    .displayItems((pParameters, pOutput) -> pOutput.accept(CAIRN_ITEM.get())
                     ).build()
     );
 
@@ -79,16 +83,6 @@ public class TravelersInit {
                             Codec.intRange(0, Integer.MAX_VALUE).fieldOf("offset").forGetter(PathModifiers.DistanceModifier::offset))
                     .apply(builder, PathModifiers.DistanceModifier::new))
     );
-
-    private static <T extends Block> DeferredBlock<T> registerBlock(String name, Supplier<T> block) {
-        DeferredBlock<T> toReturn = (DeferredBlock<T>) BLOCKS.register(name, block);
-        registerBlockItem(name, toReturn);
-        return toReturn;
-    }
-
-    private static <T extends Block> void registerBlockItem(String name, DeferredBlock<T> block) {
-        ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));
-    }
 
     private static <T extends Feature<?>> Supplier<T> registerFeature(String name, Supplier<T> feature) {
         return FEATURES.register(name, feature);

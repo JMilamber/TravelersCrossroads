@@ -1,6 +1,5 @@
 package com.amber.roads.worldgen.custom.pathstyle;
 
-import com.amber.roads.TravelersCrossroads;
 import com.amber.roads.init.TravelersInit;
 import com.amber.roads.init.TravelersRegistries;
 import com.amber.roads.world.PathNode;
