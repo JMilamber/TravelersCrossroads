@@ -1,25 +1,26 @@
+A simple worldgen mod that adds randomly generated roads to your minecraft world as features!
 
-Installation information
-=======
+The goal of this mod is to make your minecraft world feel more lived-in by adding sparse non-instrusive paths that often lead to structures (Even underground ones).
 
-This template repository can be directly cloned to get you started with a new
-mod. Simply create a new repository cloned from this one, by following the
-instructions provided by [GitHub](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
+The mod is fully customizable via datapacks. 
 
-Once you have your clone, simply open the repository in the IDE of your choice. The usual recommendation for an IDE is either IntelliJ IDEA or Eclipse.
+There are 4 path sizes - 
 
-If at any point you are missing libraries in your IDE, or you've run into problems you can
-run `gradlew --refresh-dependencies` to refresh the local cache. `gradlew clean` to reset everything 
-{this does not affect your code} and then start the process again.
+| Name    | Path Width | Node Distance |
+| :------ | :--------: | :-----------: |
+| Mini    | 1          | 2             |
+| Small   | 2          | 6             |
+| Medium  | 3          | 9             |
+| Large   | 4          | 12            |
+		
 
-Mapping Names:
-============
-By default, the MDK is configured to use the official mapping names from Mojang for methods and fields 
-in the Minecraft codebase. These names are covered by a specific license. All modders should be aware of this
-license. For the latest license text, refer to the mapping file itself, or the reference copy here:
-https://github.com/NeoForged/NeoForm/blob/main/Mojang.md
+The Node Distance represent the length of each placed path section for the given size.
 
-Additional Resources: 
-==========
-Community Documentation: https://docs.neoforged.net/  
-NeoForged Discord: https://discord.neoforged.net/
+Each path starts from a crossroad with 1-2 connections that extend 7-13x the Node Distance of a path. Each crossroad will automatically search for nearby structures and generate a path to the structure.
+
+There are several already defined path styles, but you can add your own path styles to the mod via datapacks. 
+Each path style can be constrained to specific biomes using biome tags.
+
+Each path also only extends to structures up to a predefined offset (which can be added/adjusted via datapacks) the default offset is 10 blocks away from the center of a structure. 
+
+See the github wiki here for examples and tutorials on datapack extension.
