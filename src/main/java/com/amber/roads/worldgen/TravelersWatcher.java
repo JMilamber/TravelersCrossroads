@@ -1,5 +1,6 @@
 package com.amber.roads.worldgen;
 
+import com.amber.roads.TravelersConfig;
 import com.amber.roads.TravelersCrossroads;
 import com.amber.roads.init.TravelersRegistries;
 import com.amber.roads.util.CrossroadsData;
@@ -289,10 +290,17 @@ public class TravelersWatcher {
         }
 
         List<TravelersPath> paths = crossroadsData.getUnfinishedPaths();
+        int sectionsPlaced = 0;
+        int maxSectionsPerTick = Math.max(1, TravelersConfig.maxSectionsPerTick);
         for (TravelersPath path: paths) {
+            if (sectionsPlaced >= maxSectionsPerTick) {
+                break;
+            }
             if (!path.completed()) {
                 try {
-                    path.placeNextSection(server.overworld());
+                    if (path.placeNextSection(server.overworld())) {
+                        sectionsPlaced++;
+                    }
                 } catch (Exception e) {
                     System.out.println("path placement failed: ");
                     e.printStackTrace();

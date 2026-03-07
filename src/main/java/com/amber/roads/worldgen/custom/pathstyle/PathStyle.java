@@ -1,5 +1,6 @@
 package com.amber.roads.worldgen.custom.pathstyle;
 
+import com.amber.roads.TravelersConfig;
 import com.amber.roads.TravelersCrossroads;
 import com.amber.roads.init.TravelersInit;
 import com.amber.roads.init.TravelersRegistries;
@@ -166,24 +167,35 @@ public abstract class PathStyle {
     public abstract void placeExtraBlocks(ServerLevel level, PathNode pos1, TravelersDirection direction, List<BlockPos> extraBlockPositions);
 
     public static Optional<BlockPos> findY(ServerLevel level, BlockPos origin) {
-
-        while (!level.getBlockState(origin.above()).is(PATH_ABOVE) || !level.getBlockState(origin).is(PATH_BELOW)) {
+        BlockPos current = origin;
+        final int minBuildHeight = level.getMinBuildHeight();
+        final int maxBuildHeight = level.getMaxBuildHeight();
+        final int maxSteps = Math.max(1, TravelersConfig.maxFindYSteps);
+        for (int steps = 0; steps < maxSteps; steps++) {
+            if (current.getY() <= minBuildHeight || current.getY() >= maxBuildHeight - 1) {
+                return Optional.empty();
+            }
+            var aboveState = level.getBlockState(current.above());
+            var currentState = level.getBlockState(current);
+            if (aboveState.is(PATH_ABOVE) && currentState.is(PATH_BELOW)) {
+                return Optional.of(current);
+            }
             /**TravelersCrossroads.LOGGER.debug(
                     "Blockstates: {} {}",
-                    level.getBlockState(origin.above()),
-                    level.getBlockState(origin)
+                    aboveState,
+                    currentState
             );*/
-            if (level.getBlockState(origin.above()).getFluidState().isSource() || level.getBlockState(origin).getFluidState().isSource()){
+            if (aboveState.getFluidState().isSource() || currentState.getFluidState().isSource()){
                 return Optional.empty();
-            } else if (level.getBlockState(origin).is(PATH_ABOVE)) {
-                origin = origin.below();
-            } else if (level.getBlockState(origin.above()).is(PATH_BELOW)) {
-                origin = origin.above();
+            } else if (currentState.is(PATH_ABOVE)) {
+                current = current.below();
+            } else if (aboveState.is(PATH_BELOW)) {
+                current = current.above();
             } else {
-                break;
+                return Optional.empty();
             }
         }
-        return Optional.of(origin);
+        return Optional.empty();
     }
 
     public int getDistance() {
