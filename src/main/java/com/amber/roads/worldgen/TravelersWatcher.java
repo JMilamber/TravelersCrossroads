@@ -291,7 +291,7 @@ public class TravelersWatcher {
 
         List<TravelersPath> paths = crossroadsData.getUnfinishedPaths();
         int sectionsPlaced = 0;
-        int maxSectionsPerTick = Math.max(1, TravelersConfig.maxSectionsPerTick);
+        int maxSectionsPerTick = Math.max(1, TravelersConfig.maxSectionsPerTick * 3);
         for (TravelersPath path: paths) {
             if (sectionsPlaced >= maxSectionsPerTick) {
                 break;
