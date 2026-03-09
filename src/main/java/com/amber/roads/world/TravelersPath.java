@@ -1,5 +1,6 @@
 package com.amber.roads.world;
 
+import com.amber.roads.TravelersConfig;
 import com.amber.roads.TravelersCrossroads;
 import com.amber.roads.util.TravelersDirection;
 import com.amber.roads.worldgen.TravelersFeatures;
@@ -24,6 +25,7 @@ public class TravelersPath {
     private boolean completed;
     private final ArrayList<PathNode> path;
     private int currentIndex;
+    private int failedPlacementRetries;
 
     public TravelersPath(
             RandomSource randomSource,
@@ -32,6 +34,7 @@ public class TravelersPath {
     ) {
         this.currentIndex = 0;
         this.completed = false;
+        this.failedPlacementRetries = 0;
         this.path = new ArrayList<>();
         this.path.add(startNode);
         this.pathStyle = pathStyle;
@@ -68,6 +71,7 @@ public class TravelersPath {
             this.path.add(new PathNode(pathData.getCompound(String.valueOf(i))));
         }
         this.currentIndex = data.getInt("currentIndex");
+        this.failedPlacementRetries = 0;
         if (data.contains("style")) {
             PathStyle.DIRECT_CODEC
                     .parse(new Dynamic<>( RegistryOps.create(NbtOps.INSTANCE, TravelersWatcher.server.registryAccess()), data.get("style")))
@@ -106,18 +110,33 @@ public class TravelersPath {
         return this.path.getLast();
     }
 
-    public void placeNextSection(ServerLevel level) {
+    public boolean placeNextSection(ServerLevel level) {
         // TravelersCrossroads.LOGGER.debug("Placing Section for Path: {} {}", path.getFirst(), path.getLast());
 
         if (this.currentIndex < this.path.size() - 1) {
-            this.currentIndex += this.pathStyle.placeSection(level, this.path.get(this.currentIndex), this.path.get(this.currentIndex + 1)) ? 1 : 0;
-            if (this.currentIndex % this.pathStyle.getNodeDistance() == 0 && this.path.size() - this.currentIndex > this.pathStyle.getNodeDistance()) {
-                TravelersWatcher.crossroadsData.addPathNode(this.path.get(this.currentIndex+1));
+            boolean placed = this.pathStyle.placeSection(level, this.path.get(this.currentIndex), this.path.get(this.currentIndex + 1));
+            if (placed) {
+                this.currentIndex += 1;
+                this.failedPlacementRetries = 0;
+                if (this.currentIndex % this.pathStyle.getNodeDistance() == 0 && this.path.size() - this.currentIndex > this.pathStyle.getNodeDistance()) {
+                    TravelersWatcher.crossroadsData.addPathNode(this.path.get(this.currentIndex+1));
+                }
+                return true;
+            }
+
+            this.failedPlacementRetries++;
+            if (this.failedPlacementRetries >= Math.max(1, TravelersConfig.maxSectionPlaceRetries)) {
+                TravelersCrossroads.LOGGER.debug(
+                        "Aborting stuck path section after {} retries. start={} end={} currentIndex={}",
+                        this.failedPlacementRetries, this.path.getFirst(), this.path.getLast(), this.currentIndex
+                );
+                this.completed = true;
             }
         } else {
             this.completed = true;
         }
 
+        return false;
     }
 
     public boolean completed() {
