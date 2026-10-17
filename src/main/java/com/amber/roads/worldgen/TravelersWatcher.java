@@ -35,6 +35,8 @@ import static com.amber.roads.util.TravelersUtil.distanceTo2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @EventBusSubscriber(modid = TravelersCrossroads.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public class TravelersWatcher {
@@ -49,8 +51,8 @@ public class TravelersWatcher {
     // Changed while playing
     public static int tickCount = 0;
     public static CrossroadsData crossroadsData = null;
-    public static ArrayList<BlockPos> newCrossroadPositions = new ArrayList<>();
-    public static ArrayList<ChunkPos> beforeServerLoadNodes = new ArrayList<>();
+    public static ConcurrentLinkedQueue<BlockPos> newCrossroadPositions = new ConcurrentLinkedQueue<>();
+    public static CopyOnWriteArrayList<ChunkPos> beforeServerLoadNodes = new CopyOnWriteArrayList<>();
 
     public TravelersWatcher() {}
 
@@ -285,8 +287,9 @@ public class TravelersWatcher {
             return;
         }
 
-        if (!newCrossroadPositions.isEmpty()) {
-            this.placeCrossroad(newCrossroadPositions.removeFirst());
+        BlockPos nextCrossroad = newCrossroadPositions.poll();
+        if (nextCrossroad != null) {
+            this.placeCrossroad(nextCrossroad);
         }
 
         List<TravelersPath> paths = crossroadsData.getUnfinishedPaths();

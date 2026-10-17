@@ -9,11 +9,13 @@ import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class CrossroadsData extends SavedData {
 
     private ArrayList<TravelersPath> unfinishedPaths = new ArrayList<>();
-    private ArrayList<PathNode> pathNodes = new ArrayList<>();
+    private final CopyOnWriteArrayList<PathNode> pathNodes = new CopyOnWriteArrayList<>();
     // Create new instance of saved data
     public static CrossroadsData create() {
         return new CrossroadsData();
@@ -47,9 +49,10 @@ public class CrossroadsData extends SavedData {
             path.save(tag, i);
         }
 
-        tag.putInt("nodes", this.pathNodes.size());
-        for (int i = 0; i < this.pathNodes.size(); i++) {
-            tag.put("node" + i, NbtUtils.writeBlockPos(this.pathNodes.get(i).asBlockPos()));
+        List<PathNode> nodes = List.copyOf(this.pathNodes);
+        tag.putInt("nodes", nodes.size());
+        for (int i = 0; i < nodes.size(); i++) {
+            tag.put("node" + i, NbtUtils.writeBlockPos(nodes.get(i).asBlockPos()));
         }
         return tag;
     }
@@ -59,7 +62,7 @@ public class CrossroadsData extends SavedData {
     }
 
 
-    public ArrayList<PathNode> getPathNodes() {
+    public List<PathNode> getPathNodes() {
         return pathNodes;
     }
 
@@ -75,13 +78,9 @@ public class CrossroadsData extends SavedData {
     }
 
     public void addPathNode(PathNode node) {
-        if (this.pathNodes.contains(node)) {
-            return;
+        if (this.pathNodes.addIfAbsent(node)) {
+            this.setDirty();
         }
-
-        this.pathNodes.add(node);
-        // Call set dirty if data changes
-        this.setDirty();
     }
 
     public void checkPaths() {
