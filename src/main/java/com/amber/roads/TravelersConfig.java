@@ -32,7 +32,7 @@ public class TravelersConfig
 
     private static final ModConfigSpec.IntValue STRUCTURE_SEARCH_RADIUS = BUILDER
             .comment("How far to search for structures, in structure grid cells (about 32-40 chunks each for vanilla structures). High values can freeze the server when nothing is nearby")
-            .defineInRange("structureSearchRadius", 3, 1, 100);
+            .defineInRange("structureSearchRadius", 3, 1, 15);
 
     static final ModConfigSpec SPEC = BUILDER.build();
 
