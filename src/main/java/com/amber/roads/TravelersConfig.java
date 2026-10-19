@@ -26,12 +26,22 @@ public class TravelersConfig
             .comment("Maximum retries for placing the same path section before aborting that path")
             .defineInRange("maxSectionPlaceRetries", 12, 1, Integer.MAX_VALUE);
 
+    private static final ModConfigSpec.IntValue MAX_STRUCTURE_DISTANCE = BUILDER
+            .comment("How many chunks away from a crossroad a structure can be and still get a path")
+            .defineInRange("maxStructureDistance", 20, 1, 256);
+
+    private static final ModConfigSpec.IntValue STRUCTURE_SEARCH_RADIUS = BUILDER
+            .comment("How far to search for structures, in structure grid cells (about 32-40 chunks each for vanilla structures). High values can freeze the server when nothing is nearby")
+            .defineInRange("structureSearchRadius", 3, 1, 15);
+
     static final ModConfigSpec SPEC = BUILDER.build();
 
     public static int distanceFromWorldCenter;
     public static int maxFindYSteps;
     public static int maxSectionsPerTick;
     public static int maxSectionPlaceRetries;
+    public static int maxStructureDistance;
+    public static int structureSearchRadius;
 
 
     @SubscribeEvent
@@ -40,5 +50,7 @@ public class TravelersConfig
         maxFindYSteps = MAX_FIND_Y_STEPS.get();
         maxSectionsPerTick = MAX_SECTIONS_PER_TICK.get();
         maxSectionPlaceRetries = MAX_SECTION_PLACE_RETRIES.get();
+        maxStructureDistance = MAX_STRUCTURE_DISTANCE.get();
+        structureSearchRadius = STRUCTURE_SEARCH_RADIUS.get();
     }
 }

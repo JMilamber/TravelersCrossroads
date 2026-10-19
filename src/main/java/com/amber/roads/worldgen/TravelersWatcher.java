@@ -162,7 +162,7 @@ public class TravelersWatcher {
             if (struct != null) {
                 ChunkPos structChunkPos = new ChunkPos(struct.getFirst());
                 int distance = chunkDistanceTo(centerChunk, structChunkPos);
-                if (distance <= 20 && distance > 4) {
+                if (distance <= TravelersConfig.maxStructureDistance && distance > 4) {
                     structs.add(Pair.of(structChunkPos, struct.getSecond()));
                 }
             }
@@ -172,7 +172,7 @@ public class TravelersWatcher {
             if (struct != null) {
                 ChunkPos structChunkPos = new ChunkPos(struct.getFirst());
                 int distance = chunkDistanceTo(centerChunk, structChunkPos);
-                if (distance <= 20 && distance > 1) {
+                if (distance <= TravelersConfig.maxStructureDistance && distance > 1) {
                     structs.add(Pair.of(structChunkPos, struct.getSecond()));
                     TravelersCrossroads.LOGGER.debug("Structure found {} {}", struct.getFirst(), struct.getSecond());
                 }
@@ -191,7 +191,7 @@ public class TravelersWatcher {
             Optional<HolderSet.Named<Structure>> optional = level.registryAccess().registryOrThrow(Registries.STRUCTURE).getTag(structureTag);
             return optional.map(holders -> level.getChunkSource()
                     .getGenerator()
-                    .findNearestMapStructure(level, holders, pos, 30, false)).orElse(null);
+                    .findNearestMapStructure(level, holders, pos, TravelersConfig.structureSearchRadius, false)).orElse(null);
         }
     }
 
